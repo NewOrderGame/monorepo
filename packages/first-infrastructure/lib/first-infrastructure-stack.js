@@ -13,6 +13,7 @@ class FirstInfrastructureStack extends Stack {
 
     new s3.Bucket(this, "FirstBucket", {
       versioned: true,
+      removalPolicy: RemovalPolicy.DESTROY,
     });
   }
 }
