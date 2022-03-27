@@ -8,7 +8,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "dev": "npx http-server ./lib/site-contents"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
