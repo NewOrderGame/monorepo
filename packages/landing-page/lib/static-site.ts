@@ -9,12 +9,12 @@ import * as cloudfront_origins from "aws-cdk-lib/aws-cloudfront-origins";
 import { CfnOutput, Duration, RemovalPolicy, Stack } from "aws-cdk-lib";
 import * as iam from "aws-cdk-lib/aws-iam";
 import { Construct } from "constructs";
-import {IHostedZone} from "aws-cdk-lib/aws-route53";
+import {HostedZone} from "aws-cdk-lib/aws-route53";
+import {HttpsRedirect} from "aws-cdk-lib/aws-route53-patterns";
 
 export interface StaticSiteProps {
   domainName: string;
   siteSubDomain: string;
-  zone: IHostedZone
 }
 
 /**
@@ -26,6 +26,10 @@ export interface StaticSiteProps {
 export class StaticSite extends Construct {
   constructor(parent: Stack, name: string, props: StaticSiteProps) {
     super(parent, name);
+
+    const zone = HostedZone.fromLookup(this, "NewOrderGameZone", {
+      domainName: props.domainName,
+    });
 
     const siteDomain = props.siteSubDomain + "." + props.domainName;
     const cloudfrontOAI = new cloudfront.OriginAccessIdentity(
@@ -78,7 +82,7 @@ export class StaticSite extends Construct {
       "SiteCertificate",
       {
         domainName: siteDomain,
-        hostedZone: props.zone,
+        hostedZone: zone,
         region: "us-east-1", // Cloudfront only checks this region for certificates.
       }
     );
@@ -118,8 +122,15 @@ export class StaticSite extends Construct {
       target: route53.RecordTarget.fromAlias(
         new targets.CloudFrontTarget(distribution)
       ),
-      zone: props.zone,
+      zone,
     });
+
+    // HTTPS Redirects to WWW
+    new HttpsRedirect(this, 'nonWwwToWWW', {
+      recordNames: [props.domainName],
+      targetDomain: siteDomain,
+      zone
+    })
 
     // Deploy site contents to S3 bucket
     new s3deploy.BucketDeployment(this, "DeployWithInvalidation", {

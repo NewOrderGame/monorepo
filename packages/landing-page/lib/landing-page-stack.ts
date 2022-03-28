@@ -21,14 +21,9 @@ export class LandingPageStack extends Stack {
     const domainName = this.node.tryGetContext("domain");
     const siteSubDomain = this.node.tryGetContext("subdomain");
 
-    const zone = aws_route53.HostedZone.fromLookup(this, "NewOrderGameZone", {
-      domainName,
-    });
-
     new StaticSite(this, "StaticSite", {
       domainName,
-      siteSubDomain,
-      zone,
+      siteSubDomain
     });
   }
 }
