@@ -126,7 +126,7 @@ export class StaticSite extends Construct {
     });
 
     // HTTPS Redirects to WWW
-    new HttpsRedirect(this, 'nonWwwToWWW', {
+    new HttpsRedirect(this, 'nonWwwToWww', {
       recordNames: [props.domainName],
       targetDomain: siteDomain,
       zone
