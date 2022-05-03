@@ -1,5 +1,5 @@
-const { Stack, RemovalPolicy } = require("aws-cdk-lib");
-const s3 = require("aws-cdk-lib/aws-s3");
+const { Stack, RemovalPolicy } = require('aws-cdk-lib');
+const s3 = require('aws-cdk-lib/aws-s3');
 
 class FirstInfrastructureStack extends Stack {
   /**
@@ -11,9 +11,9 @@ class FirstInfrastructureStack extends Stack {
   constructor(scope, id, props) {
     super(scope, id, props);
 
-    new s3.Bucket(this, "FirstBucket", {
+    new s3.Bucket(this, 'FirstBucket', {
       versioned: true,
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.DESTROY
     });
   }
 }
