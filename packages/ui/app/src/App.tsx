@@ -1,11 +1,30 @@
-import React from 'react';
+import * as React from "react";
+import {Navigate, Outlet, Route, Routes,} from "react-router-dom";
+import {AuthProvider, RequireAuth} from "./utils/auth";
+import {RootPage} from "./pages/RootPage";
+import {LoginPage} from "./pages/LoginPage";
+import {GamePage} from "./pages/GamePage";
+import {LogoutPage} from "./pages/LogoutPage";
 
-function App() {
+export default function App() {
   return (
-    <div className="App">
-      New Order Game!
-    </div>
+    <AuthProvider>
+      <Routes>
+        <Route element={<Outlet/>}>
+          <Route path="/" element={<RootPage/>}/>
+          <Route path="/login" element={<LoginPage/>}/>
+          <Route path="/logout" element={<LogoutPage/>}/>
+          <Route
+            path="/game"
+            element={
+              <RequireAuth>
+                <GamePage/>
+              </RequireAuth>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace/>}/>
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
-
-export default App;
