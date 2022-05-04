@@ -10,7 +10,6 @@ import * as cloudfront_origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import { CfnOutput, Duration, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { HttpsRedirect } from 'aws-cdk-lib/aws-route53-patterns';
 
 export interface StaticSiteProps {
   domainName: string;
@@ -127,7 +126,7 @@ export class StaticSite extends Construct {
 
     // Deploy site contents to S3 bucket
     new s3deploy.BucketDeployment(this, 'DeployWithInvalidation', {
-      sources: [s3deploy.Source.asset('../app/build')],
+      sources: [s3deploy.Source.asset('./app/build')],
       destinationBucket: siteBucket,
       distribution,
       distributionPaths: ['/*']
