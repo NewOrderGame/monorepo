@@ -79,7 +79,7 @@ export class StaticSite extends Construct {
     // TLS certificate
     const certificate = new acm.DnsValidatedCertificate(
       this,
-      'SiteCertificate',
+      'WwwNewOrderGameComCertificate',
       {
         domainName: siteDomain,
         hostedZone: zone,
