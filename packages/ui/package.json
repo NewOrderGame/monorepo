@@ -5,7 +5,7 @@
     "ui": "bin/ui.js"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "cd app && npm run build; cd ..; tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
