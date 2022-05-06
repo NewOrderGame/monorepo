@@ -33,14 +33,16 @@ export function RequireAuth({children}: { children: JSX.Element }) {
   const auth = useAuth();
   const location = useLocation();
 
+  console.log(auth);
   if (!auth.user) {
+    console.log('no user');
     return <Navigate to="/login" state={{from: location}} replace/>;
   }
   return children;
 }
 
 export function AuthProvider({children}: { children: React.ReactNode }) {
-  const storedUser: User = JSON.parse(window.localStorage.getItem('user') || '{}');
+  const storedUser: User = JSON.parse(window.localStorage.getItem('user') || 'null');
 
   const [user, setUser] = React.useState<User | null>(storedUser);
 
