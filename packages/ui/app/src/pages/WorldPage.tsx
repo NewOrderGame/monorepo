@@ -19,7 +19,7 @@ export function WorldPage() {
 
   return <>
     <MapContainer center={[46.4768564, 30.7278205]} zoom={18} scrollWheelZoom={false} dragging={false} keyboard={false}
-                  zoomControl={false}>
+                  zoomControl={false} touchZoom={false} boxZoom={false}>
       <TileLayer
         url="https://api.mapbox.com/styles/v1/devlysh/cl10ns92r000814pon7kefjjt/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGV2bHlzaCIsImEiOiJjanB5Y3dzeGgwMDA0NDhwa3M5eGtlOXBqIn0.0t-lPs1RNPM85YTIyLLbzA"
       />
@@ -34,7 +34,7 @@ export function WorldPage() {
       </defs>
       <mask id="mask">
         <rect fill="white" width="100%" height="100%"/>
-        <circle fill="black" cx="50%" cy="50%" r="400px" stroke-width="2" filter="url(#blur)"/>
+        <circle fill="black" cx="50%" cy="50%" r="50%" stroke-width="2" filter="url(#blur)"/>
       </mask>
       <rect mask="url(#mask)" fill="rgba(0,0,0,0.5)" width="100%" height="100%"/>
     </svg>
