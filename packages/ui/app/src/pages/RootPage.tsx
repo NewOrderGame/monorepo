@@ -8,7 +8,7 @@ export function RootPage() {
 
   useEffect(() => {
     if (auth.user) {
-      navigate("/game");
+      navigate("/world");
     } else {
       navigate("/login");
     }

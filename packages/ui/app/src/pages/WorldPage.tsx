@@ -11,8 +11,8 @@ const flyOptions = {
   noMoveStart: true
 };
 
-export function GamePage() {
-  console.log('GamePage');
+export function WorldPage() {
+  console.log('WorldPage');
   const auth = useAuth();
 
   console.log(auth.user);

@@ -13,7 +13,7 @@ export function LoginPage() {
     const username = formData.get("username") as string;
 
     auth.signIn({username, isAdmin: false}, () => {
-      navigate("/game", {replace: true});
+      navigate("/world", {replace: true});
     });
   }
 
