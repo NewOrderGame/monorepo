@@ -9,7 +9,7 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "dev": "npx http-server ./lib/site-contents"
+    "dev": "npx http-server lib/public"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
