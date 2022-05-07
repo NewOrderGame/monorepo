@@ -30,7 +30,7 @@ export class UiStack extends Stack {
       }
     );
 
-    new CfnOutput(this, "UiUrl", { value: "https://" + uiDomain });
+    new CfnOutput(this, "Url", { value: "https://" + uiDomain });
 
     // Content bucket
     const uiBucket = new s3.Bucket(this, "UiBucket", {
@@ -117,7 +117,7 @@ export class UiStack extends Stack {
 
     // Deploy ui contents to S3 bucket
     new s3deploy.BucketDeployment(this, "DeployWithInvalidation", {
-      sources: [s3deploy.Source.asset("./app/build")],
+      sources: [s3deploy.Source.asset("../build")],
       destinationBucket: uiBucket,
       distribution,
       distributionPaths: ["/*"]

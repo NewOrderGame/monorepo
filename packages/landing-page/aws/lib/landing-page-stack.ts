@@ -125,7 +125,7 @@ export class LandingPageStack extends Stack {
 
     // Deploy landingPage contents to S3 bucket
     new s3deploy.BucketDeployment(this, "DeployWithInvalidation", {
-      sources: [s3deploy.Source.asset("./lib/public")],
+      sources: [s3deploy.Source.asset("../public")],
       destinationBucket: landingPageBucket,
       distribution,
       distributionPaths: ["/*"]
