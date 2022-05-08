@@ -4,7 +4,7 @@
   "description": "My webpack project",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon ./src/index.ts",
+    "start": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "cd aws && cdk deploy; cd ..",
     "build": "webpack --mode=production --node-env=production",
