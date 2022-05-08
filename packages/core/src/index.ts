@@ -11,7 +11,7 @@ wss.on("connection", async (wsc: WebSocket) => {
   wsc.on("message", async (message) => {
     const data = message.toString();
 
-    wsc.send('sam ti ' + data);
+    wsc.send('sam ti ' + data + '!');
     console.log(data);
   });
 });

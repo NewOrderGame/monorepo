@@ -13,6 +13,7 @@
     "docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin 766633548623.dkr.ecr.eu-central-1.amazonaws.com",
     "docker:tag": "docker tag core-service 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "docker:push": "docker push 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
+    "docker:stop": "aws ecs stop-task --cluster arn:aws:ecs:eu-central-1:766633548623:cluster/CoreStack-ClusterEB0386A7-DW2YFGnxOHk3 --task arn:aws:ecs:eu-central-1:766633548623:task/CoreStack-ClusterEB0386A7-DW2YFGnxOHk3/007e38f6ef44495d8a486cf03b4a5102",
     "watch": "webpack --watch"
   },
   "author": "",

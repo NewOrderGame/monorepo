@@ -41,6 +41,7 @@ export class CoreStack extends Stack {
           taskImageOptions: {
             image: image,
             containerPort: 3000,
+            enableLogging: true
           },
           protocol: ApplicationProtocol.HTTPS,
           domainName: coreServiceDomain,
