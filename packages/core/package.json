@@ -7,9 +7,12 @@
     "start": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "cd aws && cdk deploy; cd ..",
-    "build": "webpack --mode=production --node-env=production",
-    "build:dev": "webpack --mode=development",
-    "build:prod": "webpack --mode=production --node-env=production",
+    "build": "docker build -t core-service .",
+    "webpack:build": "webpack --mode=production --node-env=production",
+    "docker:build": "npm run build",
+    "docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin 766633548623.dkr.ecr.eu-central-1.amazonaws.com",
+    "docker:tag": "docker tag core-service 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
+    "docker:push": "docker push 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "watch": "webpack --watch"
   },
   "author": "",
@@ -19,7 +22,6 @@
   },
   "devDependencies": {
     "@types/ws": "^8.5.3",
-    "@webpack-cli/generators": "^2.4.2",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "ts-loader": "^9.3.0",
