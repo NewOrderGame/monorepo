@@ -1,9 +1,9 @@
-import {aws_ecs_patterns, Stack, StackProps} from "aws-cdk-lib";
-import {Construct} from "constructs";
-import {Repository} from "aws-cdk-lib/aws-ecr";
-import {ContainerImage} from "aws-cdk-lib/aws-ecs";
-import {HostedZone} from "aws-cdk-lib/aws-route53";
-import {ApplicationProtocol} from "aws-cdk-lib/aws-elasticloadbalancingv2";
+import { aws_ecs_patterns, Stack, StackProps } from "aws-cdk-lib";
+import { Construct } from "constructs";
+import { Repository } from "aws-cdk-lib/aws-ecr";
+import { ContainerImage } from "aws-cdk-lib/aws-ecs";
+import { HostedZone } from "aws-cdk-lib/aws-route53";
+import { ApplicationProtocol } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import ec2 = require("aws-cdk-lib/aws-ec2");
 import ecs = require("aws-cdk-lib/aws-ecs");
 
@@ -15,9 +15,9 @@ export class CoreStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpc = new ec2.Vpc(this, "CoreServiceVpc", {maxAzs: 2});
+    const vpc = new ec2.Vpc(this, "CoreServiceVpc", { maxAzs: 2 });
 
-    const cluster = new ecs.Cluster(this, "Cluster", {vpc});
+    const cluster = new ecs.Cluster(this, "Cluster", { vpc });
 
     const repository = Repository.fromRepositoryName(
       this,
@@ -40,7 +40,7 @@ export class CoreStack extends Stack {
         taskImageOptions: {
           image: image,
           containerPort: 3000,
-          enableLogging: true
+          enableLogging: true,
         },
         protocol: ApplicationProtocol.HTTPS,
         domainName: coreServiceDomain,
