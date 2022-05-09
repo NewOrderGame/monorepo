@@ -4,28 +4,28 @@
   "description": "My webpack project",
   "main": "src/index.ts",
   "scripts": {
-    "start": "nodemon",
+    "start": "NODE_ENV=development nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push",
-    "build": "npm run docker:build",
-    "aws:deploy": "cd aws && cdk deploy; cd ..",
-    "webpack:build": "webpack --mode=production --node-env=production",
+    "cdk:deploy": "cd aws && cdk deploy; cd ..",
     "docker:build": "docker build -t core-service .",
     "docker:tag": "docker tag core-service $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com",
     "docker:push": "docker push $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
+    "webpack:build": "webpack --mode=production --node-env=production",
+    "webpack:watch": "webpack --watch",
     "update-common": "npm i -S @newordergame/common",
-    "watch": "webpack --watch",
     "prettier": "npx prettier --write ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@newordergame/common": "^1.0.5",
-    "ws": "^8.6.0"
+    "install": "^0.13.0",
+    "npm": "^8.9.0",
+    "socket.io": "^4.5.0"
   },
   "devDependencies": {
-    "@types/ws": "^8.5.3",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "ts-loader": "^9.3.0",

@@ -1,20 +1,28 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { AuthProvider, RequireAuth } from './utils/auth';
 import { RootPage } from './pages/RootPage';
 import { LoginPage } from './pages/LoginPage';
 import { WorldPage } from './pages/WorldPage';
 import { LogoutPage } from './pages/LogoutPage';
-import { useEffect } from 'react';
 import core from './utils/core';
-import { Action } from '@newordergame/common';
 
 export default function App() {
   useEffect(() => {
-    core.connect();
-    core.send({ action: Action.MOVE, payload: { lat: 40, lng: 50 } });
-  }, []);
+    core.socket.connect();
+    core.socket.on('connect', () => {
+      core.socket.emit('message', { payload: 'hello!' });
 
+      core.socket.on('message', (message) => {
+        console.log(message);
+      });
+    });
+
+    return () => {
+      core.socket.off('connect');
+    };
+  }, []);
   return (
     <AuthProvider>
       <Routes>

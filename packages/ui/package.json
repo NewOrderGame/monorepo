@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@newordergame/common": "^1.0.5",
+    "@newordergame/common": "^1.0.6",
     "@types/lodash": "^4.14.182",
     "leaflet": "^1.8.0",
     "lodash": "^4.17.21",
@@ -12,7 +12,8 @@
     "react-leaflet": "^4.0.0",
     "react-router": "^6.3.0",
     "react-router-dom": "^6.3.0",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "socket.io-client": "^4.5.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.4",

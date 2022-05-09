@@ -1,23 +1,24 @@
-import { Server, WebSocket } from "ws";
+import { Server } from 'socket.io';
 
-const WS_PORT = 5000;
+const io = new Server({
+  cors: {
+    origin: 'http://localhost:3000'
+  }
+});
 
-const wss: Server = new Server({ port: WS_PORT });
-console.log(`Started WebSocket on ${WS_PORT} port`);
+const UI_ORIGIN =
+  process.env.NODE_ENV === 'development'
+    ? 'http://localhost:3000'
+    : 'https://play.newordergame.com';
 
-wss.on("connection", (wsc: WebSocket) => {
-  console.log("connection");
+io.on('connection', (socket) => {
+  console.log(socket.id);
 
-  wsc.send("hello from server!");
+  socket.emit('message', 'hello from server!');
 
-  wsc.on("message", (message) => {
-    const data = message.toString();
-
-    wsc.send("sam ti " + data + "!3");
-    console.log(data);
-  });
-
-  wss.on("error", (error) => {
-    console.error(error);
+  socket.on('message', (message) => {
+    console.log(message);
   });
 });
+
+io.listen(5000);
