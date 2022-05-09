@@ -1,6 +1,6 @@
-import {useNavigate} from "react-router-dom";
-import {useEffect} from "react";
-import {useAuth} from "../utils/auth";
+import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAuth } from '../utils/auth';
 
 export function RootPage() {
   const auth = useAuth();
@@ -8,10 +8,10 @@ export function RootPage() {
 
   useEffect(() => {
     if (auth.user) {
-      navigate("/world");
+      navigate('/world');
     } else {
-      navigate("/login");
+      navigate('/login');
     }
-  })
+  });
   return null;
 }

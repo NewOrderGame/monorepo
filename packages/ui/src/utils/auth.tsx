@@ -1,5 +1,5 @@
-import * as React from "react";
-import {Navigate, useLocation} from "react-router-dom";
+import * as React from 'react';
+import { Navigate, useLocation } from 'react-router-dom';
 
 export type User = {
   username: string;
@@ -12,10 +12,11 @@ export type AuthContextType = {
   signOut: (callback?: VoidFunction) => void;
 };
 
-export const AuthContext = React.createContext<AuthContextType>({} as AuthContextType);
+export const AuthContext = React.createContext<AuthContextType>(
+  {} as AuthContextType
+);
 
 export const fakeAuthProvider = (() => {
-
   return {
     signIn(user: User, callback: VoidFunction) {
       window.localStorage.setItem('user', JSON.stringify(user));
@@ -23,26 +24,25 @@ export const fakeAuthProvider = (() => {
     },
     signOut(callback?: VoidFunction) {
       window.localStorage.removeItem('user');
-      setTimeout(callback || (() => {
-      }), 100);
-    },
+      setTimeout(callback || (() => {}), 100);
+    }
   };
 })();
 
-export function RequireAuth({children}: { children: JSX.Element }) {
+export function RequireAuth({ children }: { children: JSX.Element }) {
   const auth = useAuth();
   const location = useLocation();
 
-  console.log(auth);
   if (!auth.user) {
-    console.log('no user');
-    return <Navigate to="/login" state={{from: location}} replace/>;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
   return children;
 }
 
-export function AuthProvider({children}: { children: React.ReactNode }) {
-  const storedUser: User = JSON.parse(window.localStorage.getItem('user') || 'null');
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const storedUser: User = JSON.parse(
+    window.localStorage.getItem('user') || 'null'
+  );
 
   const [user, setUser] = React.useState<User | null>(storedUser);
 
@@ -60,7 +60,7 @@ export function AuthProvider({children}: { children: React.ReactNode }) {
     });
   };
 
-  const value = {user, signIn, signOut};
+  const value = { user, signIn, signOut };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

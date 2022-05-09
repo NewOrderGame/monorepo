@@ -3,7 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@newordergame/common": "^1.0.5",
+    "@types/lodash": "^4.14.182",
     "leaflet": "^1.8.0",
+    "lodash": "^4.17.21",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-leaflet": "^4.0.0",
@@ -12,25 +15,28 @@
     "react-scripts": "5.0.1"
   },
   "devDependencies": {
-    "@types/leaflet": "^1.7.9",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.1.1",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.0",
+    "@types/leaflet": "^1.7.9",
     "@types/node": "^16.11.33",
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3",
     "@types/react-router": "^5.1.18",
     "@types/react-router-dom": "^5.3.3",
+    "prettier": "^2.6.2",
     "typescript": "^4.6.4",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "NODE_ENV=production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && cd aws && npm run deploy; cd .."
+    "deploy": "npm run build && cd aws && npm run deploy; cd ..",
+    "update-common": "npm i -S @newordergame/common",
+    "prettier": "npx prettier --write ."
   },
   "eslintConfig": {
     "extends": [
