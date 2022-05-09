@@ -13,7 +13,7 @@ wss.on("connection", (wsc: WebSocket) => {
   wsc.on("message", (message) => {
     const data = message.toString();
 
-    wsc.send("sam ti " + data + "!");
+    wsc.send("sam ti " + data + "!3");
     console.log(data);
   });
 

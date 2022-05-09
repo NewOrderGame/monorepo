@@ -39,7 +39,7 @@ export class CoreStack extends Stack {
         cluster,
         taskImageOptions: {
           image: image,
-          containerPort: 3000,
+          containerPort: 5000,
           enableLogging: true,
         },
         protocol: ApplicationProtocol.HTTPS,
