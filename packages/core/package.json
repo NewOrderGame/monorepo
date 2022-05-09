@@ -6,19 +6,22 @@
   "scripts": {
     "start": "nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "cd aws && cdk deploy; cd ..",
+    "deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push",
     "build": "docker build -t core-service .",
+    "aws:deploy": "cd aws && cdk deploy; cd ..",
     "webpack:build": "webpack --mode=production --node-env=production",
     "docker:build": "npm run build",
     "docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin 766633548623.dkr.ecr.eu-central-1.amazonaws.com",
     "docker:tag": "docker tag core-service 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "docker:push": "docker push 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
-    "docker:stop": "aws ecs stop-task --cluster arn:aws:ecs:eu-central-1:766633548623:cluster/CoreStack-ClusterEB0386A7-DW2YFGnxOHk3 --task arn:aws:ecs:eu-central-1:766633548623:task/CoreStack-ClusterEB0386A7-DW2YFGnxOHk3/007e38f6ef44495d8a486cf03b4a5102",
-    "watch": "webpack --watch"
+    "update-common": "npm i -S @newordergame/common",
+    "watch": "webpack --watch",
+    "prettier": "npx prettier --write ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@newordergame/common": "^1.0.5",
     "ws": "^8.6.0"
   },
   "devDependencies": {

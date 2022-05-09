@@ -1,17 +1,23 @@
-import { Server, WebSocket } from "ws";
+import {Server, WebSocket} from "ws";
 
-const WS_PORT = 3000;
+const WS_PORT = 5000;
 
-const wss: Server = new Server({ port: WS_PORT });
-console.log("started server on 3000 port");
+const wss: Server = new Server({port: WS_PORT});
+console.log(`Started WebSocket on ${WS_PORT} port`);
 
-wss.on("connection", async (wsc: WebSocket) => {
+wss.on("connection", (wsc: WebSocket) => {
   console.log("connection");
 
-  wsc.on("message", async (message) => {
+  wsc.send('hello from server!');
+
+  wsc.on("message",  (message) => {
     const data = message.toString();
 
     wsc.send('sam ti ' + data + '!');
     console.log(data);
+  });
+
+  wss.on('error', (error) => {
+    console.error(error);
   });
 });
