@@ -11,9 +11,9 @@
     "aws:deploy": "cd aws && cdk deploy; cd ..",
     "webpack:build": "webpack --mode=production --node-env=production",
     "docker:build": "docker build -t core-service .",
-    "docker:tag": "docker tag core-service 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
-    "docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin 766633548623.dkr.ecr.eu-central-1.amazonaws.com",
-    "docker:push": "docker push 766633548623.dkr.ecr.eu-central-1.amazonaws.com/core-service",
+    "docker:tag": "docker tag core-service $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
+    "docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com",
+    "docker:push": "docker push $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "update-common": "npm i -S @newordergame/common",
     "watch": "webpack --watch",
     "prettier": "npx prettier --write ."
