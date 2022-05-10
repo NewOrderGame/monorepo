@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-
-export type User = {
-  username: string;
-  isAdmin: boolean;
-};
+import { User } from '@newordergame/common';
 
 export type AuthContextType = {
   user: User | null;
@@ -47,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<User | null>(storedUser);
 
   const signIn = (newUser: User, callback: VoidFunction) => {
+    signOut();
     return fakeAuthProvider.signIn(newUser, () => {
       setUser(newUser);
       callback();

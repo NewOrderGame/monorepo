@@ -12,7 +12,7 @@ export function LoginPage() {
     const formData = new FormData(event.currentTarget);
     const username = formData.get('username') as string;
 
-    auth.signIn({ username, isAdmin: false }, () => {
+    auth.signIn({ username }, () => {
       navigate('/world', { replace: true });
     });
   }

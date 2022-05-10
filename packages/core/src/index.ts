@@ -1,23 +1,28 @@
 import { Server } from 'socket.io';
-
-const io = new Server({
-  cors: {
-    origin: 'http://localhost:3000'
-  }
-});
+import { User } from '@newordergame/common/index';
 
 const UI_ORIGIN =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
     : 'https://play.newordergame.com';
 
-io.on('connection', (socket) => {
+const io = new Server({
+  cors: {
+    origin: UI_ORIGIN
+  }
+});
+
+io.of('/world').on('connection', (socket) => {
   console.log(socket.id);
 
-  socket.emit('message', 'hello from server!');
+  socket.emit('message', 'Hello from server!');
+  socket.on('auth', ({ user }: { user: User }) => {
+    socket.data.user = user;
+    console.log(`${socket.data.user.username} Connected`);
+  });
 
-  socket.on('message', (message) => {
-    console.log(message);
+  socket.on('disconnect', () => {
+    console.log(`${socket.data.user.username} disconnected`);
   });
 });
 

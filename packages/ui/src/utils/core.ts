@@ -1,4 +1,4 @@
-import { io, Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 
 export const CORE_URL =
   process.env.NODE_ENV === 'development'
@@ -6,10 +6,10 @@ export const CORE_URL =
     : 'wss://core.newordergame.com';
 
 function core() {
-  const socket = io(CORE_URL, { autoConnect: false });
+  const worldNamespace = io(`${CORE_URL}/world`);
 
   return {
-    socket
+    worldNamespace
   };
 }
 

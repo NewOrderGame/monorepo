@@ -20,7 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "^1.0.5",
+    "@newordergame/common": "^1.0.9",
     "install": "^0.13.0",
     "npm": "^8.9.0",
     "socket.io": "^4.5.0"

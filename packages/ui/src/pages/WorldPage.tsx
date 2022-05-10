@@ -1,7 +1,10 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { useAuth } from '../utils/auth';
+import core from '../utils/core';
 
 const flyOptions = {
   animate: true,
@@ -11,6 +14,26 @@ const flyOptions = {
 };
 
 export function WorldPage() {
+  const auth = useAuth();
+
+  useEffect(() => {
+    core.worldNamespace.on('connect', () => {
+      core.worldNamespace.emit('auth', auth);
+      core.worldNamespace.on('message', console.log);
+
+      core.worldNamespace.on('disconnecting', () => {
+        console.log('Disconnecting...');
+      });
+
+      core.worldNamespace.on('disconnect', () => {
+        console.log('Disconnected');
+      });
+    });
+
+    return () => {
+      core.worldNamespace.off('connect');
+    };
+  }, [auth]);
   return (
     <>
       <MapContainer
