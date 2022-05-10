@@ -1,6 +1,6 @@
 {
   "name": "@newordergame/common",
-  "version": "1.0.9",
+  "version": "1.0.11",
   "description": "",
   "main": "index.ts",
   "types": "index.d.ts",
