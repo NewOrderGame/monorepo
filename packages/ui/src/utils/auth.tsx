@@ -4,26 +4,13 @@ import { User } from '@newordergame/common';
 
 export type AuthContextType = {
   user: User | null;
-  signIn: (user: User, callback: VoidFunction) => void;
-  signOut: (callback?: VoidFunction) => void;
+  logIn: (user: User, callback?: VoidFunction) => void;
+  logOut: (callback?: VoidFunction) => void;
 };
 
 export const AuthContext = React.createContext<AuthContextType>(
   {} as AuthContextType
 );
-
-export const fakeAuthProvider = (() => {
-  return {
-    signIn(user: User, callback: VoidFunction) {
-      window.localStorage.setItem('user', JSON.stringify(user));
-      setTimeout(callback, 100); // fake async
-    },
-    signOut(callback?: VoidFunction) {
-      window.localStorage.removeItem('user');
-      setTimeout(callback || (() => {}), 100);
-    }
-  };
-})();
 
 export function RequireAuth({ children }: { children: JSX.Element }) {
   const auth = useAuth();
@@ -36,28 +23,24 @@ export function RequireAuth({ children }: { children: JSX.Element }) {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const storedUser: User = JSON.parse(
-    window.localStorage.getItem('user') || 'null'
-  );
+  const [user, setUser] = React.useState<User | null>(null);
 
-  const [user, setUser] = React.useState<User | null>(storedUser);
-
-  const signIn = (newUser: User, callback: VoidFunction) => {
-    signOut();
-    return fakeAuthProvider.signIn(newUser, () => {
-      setUser(newUser);
+  const logIn = (newUser: User, callback?: VoidFunction) => {
+    logOut();
+    setUser(newUser);
+    if (typeof callback === 'function') {
       callback();
-    });
+    }
   };
 
-  const signOut = (callback?: VoidFunction) => {
-    return fakeAuthProvider.signOut(() => {
-      setUser(null);
-      callback && callback();
-    });
+  const logOut = (callback?: VoidFunction) => {
+    setUser(null);
+    if (typeof callback === 'function') {
+      callback();
+    }
   };
 
-  const value = { user, signIn, signOut };
+  const value = { user, logIn, logOut };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

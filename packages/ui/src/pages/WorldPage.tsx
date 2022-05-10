@@ -1,10 +1,15 @@
 import * as React from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import { LeafletMouseEvent } from 'leaflet';
+import { LatLng, LeafletMouseEvent } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useAuth } from '../utils/auth';
 import core from '../utils/core';
+import { useNavigate } from 'react-router-dom';
+import { DEFAULT_COORDINATES } from '@newordergame/common/index';
+
+const MAPBOX_URL =
+  'https://api.mapbox.com/styles/v1/devlysh/cl10ns92r000814pon7kefjjt/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGV2bHlzaCIsImEiOiJjanB5Y3dzeGgwMDA0NDhwa3M5eGtlOXBqIn0.0t-lPs1RNPM85YTIyLLbzA';
 
 const flyOptions = {
   animate: true,
@@ -15,29 +20,67 @@ const flyOptions = {
 
 export function WorldPage() {
   const auth = useAuth();
+  const navigate = useNavigate();
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+  const [firstCoordinates, setFirstCoordinates] = useState(null);
 
   useEffect(() => {
-    core.worldNamespace.on('connect', () => {
-      core.worldNamespace.emit('auth', auth);
-      core.worldNamespace.on('message', console.log);
-
-      core.worldNamespace.on('disconnecting', () => {
-        console.log('Disconnecting...');
-      });
-
-      core.worldNamespace.on('disconnect', () => {
-        console.log('Disconnected');
-      });
-    });
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      core.worldNamespace.off('connect');
+      window.removeEventListener('resize', handleResize);
     };
-  }, [auth]);
-  return (
+  }, []);
+
+  useEffect(() => {
+    if (auth.user) {
+      const sessionId = window.localStorage.getItem('sessionId');
+      if (sessionId) {
+        core.world.auth = { sessionId };
+        core.world.connect();
+      } else {
+        core.world.auth = { username: auth.user?.username };
+        core.world.connect();
+      }
+
+      core.world.on(
+        'session',
+        ({ sessionId, userId, username, coordinates }) => {
+          core.world.auth = { sessionId };
+          localStorage.setItem('sessionId', sessionId);
+          localStorage.setItem('userId', userId);
+          localStorage.setItem('username', username);
+          setFirstCoordinates(coordinates);
+          auth.logIn({ username });
+        }
+      );
+
+      core.world.on('connect_error', (error) => {
+        if (error.message === 'Invalid username') {
+          navigate('/logout');
+        }
+      });
+
+      return () => {
+        core.world.off('connect');
+        core.world.off('disconnecting');
+        core.world.off('disconnect');
+        core.world.off('session');
+        core.world.off('connect_error');
+      };
+    }
+  }, []);
+
+  function handleResize() {
+    setWindowWidth(window.innerWidth);
+    setWindowHeight(window.innerHeight);
+  }
+
+  return firstCoordinates ? (
     <>
       <MapContainer
-        center={[46.4768564, 30.7278205]}
+        center={firstCoordinates}
         zoom={18}
         scrollWheelZoom={false}
         dragging={false}
@@ -46,42 +89,60 @@ export function WorldPage() {
         touchZoom={false}
         boxZoom={false}
       >
-        <TileLayer url="https://api.mapbox.com/styles/v1/devlysh/cl10ns92r000814pon7kefjjt/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGV2bHlzaCIsImEiOiJjanB5Y3dzeGgwMDA0NDhwa3M5eGtlOXBqIn0.0t-lPs1RNPM85YTIyLLbzA" />
+        <TileLayer url={MAPBOX_URL} />
         <Map />
       </MapContainer>
-      <img className="character" src="character.png" />
-      {/*<svg*/}
-      {/*  width="100%"*/}
-      {/*  height="100%"*/}
-      {/*  className="fog-of-war"*/}
-      {/*  viewBox="0 0 100% 100%"*/}
-      {/*>*/}
-      {/*  <defs>*/}
-      {/*    <filter id="blur" x="-20%" y="-20%" width="150%" height="150%">*/}
-      {/*      <feGaussianBlur in="SourceGraphic" stdDeviation="10" />*/}
-      {/*    </filter>*/}
-      {/*  </defs>*/}
-      {/*  <mask id="mask">*/}
-      {/*    <rect fill="white" width="100%" height="100%" />*/}
-      {/*    <circle fill="black" cx="50%" cy="50%" r="50%" filter="url(#blur)" />*/}
-      {/*  </mask>*/}
-      {/*  <rect*/}
-      {/*    mask="url(#mask)"*/}
-      {/*    fill="rgba(0,0,0,0.5)"*/}
-      {/*    width="100%"*/}
-      {/*    height="100%"*/}
-      {/*  />*/}
-      {/*</svg>*/}
+      <img className="character" src="/character.png" alt="" />
+      <svg
+        width="100%"
+        height="100%"
+        className="fog-of-war"
+        viewBox={`0 0 ${windowWidth} ${windowHeight}`}
+      >
+        <defs>
+          <filter id="blur" x="-20%" y="-20%" width="150%" height="150%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+          </filter>
+        </defs>
+        <mask id="mask">
+          <rect fill="white" width="100%" height="100%" />
+          <circle
+            fill="black"
+            cx="50%"
+            cy="50%"
+            r="100px"
+            filter="url(#blur)"
+          />
+        </mask>
+        <rect
+          mask="url(#mask)"
+          fill="rgba(0,0,0,0.5)"
+          width="100%"
+          height="100%"
+        />
+      </svg>
     </>
+  ) : (
+    <div>Loading...</div>
   );
 }
 
 function Map() {
   const map = useMap();
 
+  useEffect(() => {
+    core.world.on('move', (coordinates: LatLng) => {
+      map.flyTo(coordinates, map.getZoom(), flyOptions);
+    });
+    // core.world.on('session', ({ coordinates }) => {
+    //   map.flyTo(coordinates, map.getZoom(), flyOptions);
+    // });
+    return () => {};
+  }, [map]);
+
   useMapEvents({
     click(event: LeafletMouseEvent) {
-      map.flyTo(event.latlng, map.getZoom(), flyOptions);
+      core.world.emit('move', event.latlng);
     }
   });
   return null;

@@ -1,4 +1,4 @@
-import { io } from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
 export const CORE_URL =
   process.env.NODE_ENV === 'development'
@@ -6,10 +6,21 @@ export const CORE_URL =
     : 'wss://core.newordergame.com';
 
 function core() {
-  const worldNamespace = io(`${CORE_URL}/world`);
+  const auth: Socket = io(`${CORE_URL}/auth`, {
+    autoConnect: false
+  });
+
+  const world: Socket = io(`${CORE_URL}/world`, {
+    autoConnect: false
+  });
+
+  world.onAny((event, ...args) => {
+    console.log('world |', event, args);
+  });
 
   return {
-    worldNamespace
+    auth,
+    world
   };
 }
 

@@ -12,6 +12,6 @@ export function RootPage() {
     } else {
       navigate('/login');
     }
-  });
+  }, []);
   return null;
 }
