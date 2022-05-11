@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import { LatLng, LeafletMouseEvent } from 'leaflet';
+import { icon, LatLng, LeafletMouseEvent, marker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useAuth } from '../utils/auth';
 import core from '../utils/core';
 import { useNavigate } from 'react-router-dom';
-import { DEFAULT_COORDINATES } from '@newordergame/common/index';
+import { CharacterInSight } from '@newordergame/common';
 
 const MAPBOX_URL =
   'https://api.mapbox.com/styles/v1/devlysh/cl10ns92r000814pon7kefjjt/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGV2bHlzaCIsImEiOiJjanB5Y3dzeGgwMDA0NDhwa3M5eGtlOXBqIn0.0t-lPs1RNPM85YTIyLLbzA';
@@ -110,7 +110,7 @@ export function WorldPage() {
             fill="black"
             cx="50%"
             cy="50%"
-            r="100px"
+            r="200px"
             filter="url(#blur)"
           />
         </mask>
@@ -127,17 +127,39 @@ export function WorldPage() {
   );
 }
 
+var greenIcon = icon({
+  iconUrl: 'character.png',
+  iconSize: [32, 32] // size of the icon
+});
+
 function Map() {
   const map = useMap();
 
   useEffect(() => {
+    let charactersInSight: (CharacterInSight & { marker: L.Marker })[] = [];
+
     core.world.on('move', (coordinates: LatLng) => {
       map.flyTo(coordinates, map.getZoom(), flyOptions);
     });
-    // core.world.on('session', ({ coordinates }) => {
-    //   map.flyTo(coordinates, map.getZoom(), flyOptions);
-    // });
-    return () => {};
+
+    core.world.on('characters-in-sight', (characters: CharacterInSight[]) => {
+      charactersInSight.forEach((character) => {
+        character.marker.remove();
+      });
+
+      charactersInSight = [];
+
+      characters.forEach((character) => {
+        charactersInSight.push({
+          ...character,
+          marker: marker(character.coordinates, { icon: greenIcon }).addTo(map)
+        });
+      });
+    });
+    return () => {
+      core.world.off('move');
+      core.world.off('characters-in-sight');
+    };
   }, [map]);
 
   useMapEvents({

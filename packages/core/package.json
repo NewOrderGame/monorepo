@@ -20,7 +20,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "^1.0.11",
+    "@newordergame/common": "^1.0.12",
     "@turf/turf": "^6.5.0",
     "install": "^0.13.0",
     "nanoid": "^3.3.4",

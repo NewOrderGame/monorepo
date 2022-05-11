@@ -1,14 +1,4 @@
-import { LatLng } from 'leaflet';
-
-export type Character = {
-  username: string;
-  userId: string;
-  sessionId: string;
-  coordinates: {lat: number, lng: number};
-  movesTo: {lat: number, lng: number} | null;
-  viewSight: number; // m
-  speed: number; // m/s
-};
+import { Character } from '@newordergame/common';
 
 class CharacterStore {
   getCharacter(id: string) {}

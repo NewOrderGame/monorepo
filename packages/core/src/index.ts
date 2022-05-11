@@ -2,7 +2,7 @@ import { Server } from 'socket.io';
 import { nanoid } from 'nanoid';
 import characterStore from './characterStore';
 import sessionStore from './sessionStore';
-import { DEFAULT_COORDINATES } from '@newordergame/common/index';
+import { CharacterInSight, DEFAULT_COORDINATES } from '@newordergame/common';
 import {
   bearing as calculateBearing,
   destination as calculateDestination,
@@ -29,10 +29,12 @@ io.listen(5000);
 const auth = io.of('/auth');
 
 auth.on('connection', (socket) => {
+  console.log('Auth connected');
   const sessionId = socket.handshake.auth.sessionId;
   const session = sessionStore.findSession(sessionId);
   if (session) {
     socket.emit('get-username', { username: session.username });
+    console.log(`Sent username to ${session.username}`);
   } else {
     socket.emit('get-username', { username: null });
   }
@@ -51,6 +53,7 @@ world.use((socket, next) => {
       socket.data.userId = session.userId;
       socket.data.username = session.username;
       socket.data.coordinates = session.coordinates;
+      console.log(`Found existing session for ${session.username}`);
       return next();
     }
   }
@@ -63,6 +66,7 @@ world.use((socket, next) => {
   socket.data.userId = nanoid();
   socket.data.username = username;
   socket.data.coordinates = DEFAULT_COORDINATES;
+  console.log(`Created new session for ${username}`);
   return next();
 });
 
@@ -79,14 +83,16 @@ world.on('connection', (socket) => {
   const character = characterStore.getCharacter(socket.data.userId);
 
   if (!character) {
+    console.log(`Created new character for ${socket.data.username}`);
     characterStore.setCharacter(socket.data.userId, {
       sessionId: socket.data.sessionId,
       userId: socket.data.userId,
       username: socket.data.username,
       coordinates: socket.data.coordinates,
       movesTo: null,
-      viewSight: 10,
-      speed: 30
+      sightDistance: 100,
+      speed: 30,
+      charactersInSight: []
     });
   }
 
@@ -117,6 +123,9 @@ world.on('connection', (socket) => {
   });
 
   socket.on('move', (coordinates: { lat: number; lng: number }) => {
+    console.log(
+      `Move ${socket.data.username} to lat: ${coordinates.lat}, lng: ${coordinates.lng}.`
+    );
     const character = characterStore.getCharacter(socket.data.userId);
 
     if (!character) {
@@ -131,47 +140,55 @@ world.on('connection', (socket) => {
 });
 
 setInterval(() => {
-  console.log('worldCharacters: ', characterStore.size());
-
-  characterStore.forEach((valueX, keyX) => {
+  characterStore.forEach((characterX, userIdX) => {
+    const charactersInSight: CharacterInSight[] = [];
     // comparison and setting
-    characterStore.forEach((valueY, keyY) => {
-      if (keyX !== keyY) {
-        // console.log(keyX, keyY);
+    characterStore.forEach((characterY, userIdY) => {
+      if (userIdX !== userIdY) {
+        const distance = calculateDistance(
+          [characterX.coordinates.lat, characterX.coordinates.lng],
+          [characterY.coordinates.lat, characterY.coordinates.lng],
+          { units: 'meters' }
+        );
+        if (distance <= characterX.sightDistance) {
+          charactersInSight.push({
+            coordinates: characterY.coordinates,
+            userId: characterY.userId,
+            username: characterY.username
+          });
+        }
       }
     });
 
     // emit stage
-    // console.log(keyX, valueX);
-    if (valueX.movesTo) {
+    if (characterX.movesTo) {
       const socket = Array.from(world.sockets.values()).find((socket) => {
-        return socket.data?.userId === valueX.userId;
+        return socket.data?.userId === characterX.userId;
       });
 
       const distance = calculateDistance(
-        [valueX.coordinates.lat, valueX.coordinates.lng],
-        [valueX.movesTo.lat, valueX.movesTo.lng],
+        [characterX.coordinates.lat, characterX.coordinates.lng],
+        [characterX.movesTo.lat, characterX.movesTo.lng],
         { units: 'meters' }
       );
 
-      if (distance < valueX.speed) {
-        world.to(valueX.userId).emit('move', valueX.movesTo);
-        characterStore.setCharacter(valueX.userId, {
-          ...valueX,
-          coordinates: valueX.movesTo,
+      if (distance < characterX.speed) {
+        world.to(characterX.userId).emit('move', characterX.movesTo);
+        socket.data.coordinates = characterX.movesTo;
+        characterStore.setCharacter(characterX.userId, {
+          ...characterX,
+          coordinates: characterX.movesTo,
           movesTo: null
         });
-
-        socket.data.coordinates = valueX.movesTo;
       } else {
         const bearing = calculateBearing(
-          [valueX.coordinates.lat, valueX.coordinates.lng],
-          [valueX.movesTo.lat, valueX.movesTo.lng]
+          [characterX.coordinates.lat, characterX.coordinates.lng],
+          [characterX.movesTo.lat, characterX.movesTo.lng]
         );
 
         const destination = calculateDestination(
-          [valueX.coordinates.lat, valueX.coordinates.lng],
-          valueX.speed,
+          [characterX.coordinates.lat, characterX.coordinates.lng],
+          characterX.speed,
           bearing,
           { units: 'meters' }
         );
@@ -181,16 +198,17 @@ setInterval(() => {
           lng: destination.geometry.coordinates[1]
         };
 
-        world.to(valueX.userId).emit('move', coordinates);
+        world.to(characterX.userId).volatile.emit('move', coordinates);
 
         socket.data.coordinates = coordinates;
 
-        characterStore.setCharacter(valueX.userId, {
-          ...valueX,
+        characterStore.setCharacter(characterX.userId, {
+          ...characterX,
           coordinates
         });
-        socket.data.coordinates = coordinates;
       }
     }
+
+    world.to(characterX.userId).emit('characters-in-sight', charactersInSight);
   });
 }, 1000);
