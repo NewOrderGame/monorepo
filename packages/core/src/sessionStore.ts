@@ -1,5 +1,5 @@
-import { Coord } from "@turf/turf";
-import { LatLng } from "leaflet";
+import { Coord } from '@turf/turf';
+import { LatLng } from 'leaflet';
 
 interface Session {
   sessionId: string;

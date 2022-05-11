@@ -6,8 +6,10 @@
   "scripts": {
     "start": "NODE_ENV=development nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push",
+    "deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push && npm run cdk:deploy",
     "cdk:deploy": "cd aws && cdk deploy; cd ..",
+    "cdk:diff": "cd aws && cdk diff; cd ..",
+    "cdk:synth": "cd aws && cdk synth; cd ..",
     "docker:build": "docker build -t core-service .",
     "docker:tag": "docker tag core-service $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com",

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
-import "source-map-support/register";
-import * as cdk from "aws-cdk-lib";
-import { CoreStack } from "../lib/core-stack";
+import 'source-map-support/register';
+import * as cdk from 'aws-cdk-lib';
+import { CoreStack } from '../lib/core-stack';
 
 const app = new cdk.App();
-new CoreStack(app, "CoreStack", {
+new CoreStack(app, 'CoreStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -20,6 +20,6 @@ new CoreStack(app, "CoreStack", {
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
   env: {
     account: process.env.NOG_AWS_ACCOUNT_ID,
-    region: "eu-central-1",
-  },
+    region: 'eu-central-1'
+  }
 });

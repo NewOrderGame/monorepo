@@ -6,5 +6,5 @@ RUN npm install
 COPY webpack.config.js tsconfig.json ./
 COPY src ./src
 RUN npm run webpack:build
-EXPOSE 3000
+EXPOSE 5000
 CMD [ "node", "build/main.js" ]
