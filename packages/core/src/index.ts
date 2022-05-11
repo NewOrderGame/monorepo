@@ -136,6 +136,16 @@ world.on('connection', (socket) => {
       ...character,
       movesTo: coordinates
     });
+
+    const distance = calculateDistance(
+      [socket.data.coordinates.lat, socket.data.coordinates.lng],
+      [coordinates.lat, coordinates.lng],
+      { units: 'meters' }
+    );
+
+    const duration = distance / character.speed;
+
+    world.to(socket.data.userId).emit('move', { coordinates, duration });
   });
 });
 
@@ -173,8 +183,8 @@ setInterval(() => {
       );
 
       if (distance < characterX.speed) {
-        world.to(characterX.userId).emit('move', characterX.movesTo);
         socket.data.coordinates = characterX.movesTo;
+
         characterStore.setCharacter(characterX.userId, {
           ...characterX,
           coordinates: characterX.movesTo,
@@ -197,8 +207,6 @@ setInterval(() => {
           lat: destination.geometry.coordinates[0],
           lng: destination.geometry.coordinates[1]
         };
-
-        world.to(characterX.userId).volatile.emit('move', coordinates);
 
         socket.data.coordinates = coordinates;
 

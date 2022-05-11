@@ -143,8 +143,8 @@ function Map() {
   useEffect(() => {
     let charactersInSight: (CharacterInSight & { marker: L.Marker })[] = [];
 
-    core.world.on('move', (coordinates: LatLng) => {
-      map.flyTo(coordinates, map.getZoom(), zoomPanOptions);
+    core.world.on('move', ({ coordinates, duration }: { coordinates: LatLng, duration: number }) => {
+      map.flyTo(coordinates, map.getZoom(), {...zoomPanOptions, duration});
     });
 
     core.world.on('characters-in-sight', (characters: CharacterInSight[]) => {
