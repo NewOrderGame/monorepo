@@ -14,6 +14,10 @@ function core() {
     autoConnect: false
   });
 
+  auth.onAny((event, ...args) => {
+    console.log('auth |', event, args);
+  });
+
   world.onAny((event, ...args) => {
     console.log('world |', event, args);
   });

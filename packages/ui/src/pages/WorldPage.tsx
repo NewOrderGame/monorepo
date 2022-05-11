@@ -1,7 +1,13 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
-import { icon, LatLng, LeafletMouseEvent, marker } from 'leaflet';
+import {
+  icon,
+  LatLng,
+  LeafletMouseEvent,
+  marker,
+  ZoomPanOptions
+} from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useAuth } from '../utils/auth';
 import core from '../utils/core';
@@ -11,11 +17,10 @@ import { CharacterInSight } from '@newordergame/common';
 const MAPBOX_URL =
   'https://api.mapbox.com/styles/v1/devlysh/cl10ns92r000814pon7kefjjt/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGV2bHlzaCIsImEiOiJjanB5Y3dzeGgwMDA0NDhwa3M5eGtlOXBqIn0.0t-lPs1RNPM85YTIyLLbzA';
 
-const flyOptions = {
+const zoomPanOptions: ZoomPanOptions = {
   animate: true,
-  easeLinearity: 1.0,
   duration: 1,
-  noMoveStart: true
+  easeLinearity: 1
 };
 
 export function WorldPage() {
@@ -139,7 +144,7 @@ function Map() {
     let charactersInSight: (CharacterInSight & { marker: L.Marker })[] = [];
 
     core.world.on('move', (coordinates: LatLng) => {
-      map.flyTo(coordinates, map.getZoom(), flyOptions);
+      map.flyTo(coordinates, map.getZoom(), zoomPanOptions);
     });
 
     core.world.on('characters-in-sight', (characters: CharacterInSight[]) => {
