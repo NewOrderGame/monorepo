@@ -1,12 +1,9 @@
-import { Coord } from '@turf/turf';
-import { LatLng } from 'leaflet';
-
 interface Session {
   sessionId: string;
   userId: string;
   username: string;
   connected: boolean;
-  coordinates: LatLng;
+  coordinates: { lat: number; lng: number };
 }
 
 class SessionStore {

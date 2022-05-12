@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@newordergame/common": "^1.0.12",
+    "@newordergame/common": "^1.0.13",
     "@types/lodash": "^4.14.182",
     "leaflet": "^1.8.0",
     "lodash": "^4.17.21",

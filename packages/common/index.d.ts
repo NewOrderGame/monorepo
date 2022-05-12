@@ -8,6 +8,7 @@ export declare type CharacterInSight = {
     };
     username: string;
     userId: string;
+    distance: number;
 };
 export declare type Character = {
     username: string;

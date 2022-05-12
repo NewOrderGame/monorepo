@@ -4,10 +4,10 @@ import characterStore from './characterStore';
 import sessionStore from './sessionStore';
 import { CharacterInSight, DEFAULT_COORDINATES } from '@newordergame/common';
 import {
-  bearing as calculateBearing,
-  destination as calculateDestination,
-  distance as calculateDistance
-} from '@turf/turf';
+  getGreatCircleBearing as computeBearing,
+  computeDestinationPoint as computeDestination,
+  getDistance as computeDistance
+} from 'geolib';
 
 const UI_ORIGIN =
   process.env.NODE_ENV === 'development'
@@ -137,15 +137,20 @@ world.on('connection', (socket) => {
       movesTo: coordinates
     });
 
-    const distance = calculateDistance(
-      [socket.data.coordinates.lat, socket.data.coordinates.lng],
-      [coordinates.lat, coordinates.lng],
-      { units: 'meters' }
+    const distance = computeDistance(
+      {
+        latitude: socket.data.coordinates.lat,
+        longitude: socket.data.coordinates.lng
+      },
+      { latitude: coordinates.lat, longitude: coordinates.lng },
+      0.001
     );
 
     const duration = distance / character.speed;
 
-    world.to(socket.data.userId).emit('move', { coordinates, duration });
+    world
+      .to(socket.data.userId)
+      .emit('move', { coordinates, duration, distance });
   });
 });
 
@@ -155,16 +160,23 @@ setInterval(() => {
     // comparison and setting
     characterStore.forEach((characterY, userIdY) => {
       if (userIdX !== userIdY) {
-        const distance = calculateDistance(
-          [characterX.coordinates.lat, characterX.coordinates.lng],
-          [characterY.coordinates.lat, characterY.coordinates.lng],
-          { units: 'meters' }
+        const distance = computeDistance(
+          {
+            latitude: characterX.coordinates.lat,
+            longitude: characterX.coordinates.lng
+          },
+          {
+            latitude: characterY.coordinates.lat,
+            longitude: characterY.coordinates.lng
+          },
+          0.001
         );
         if (distance <= characterX.sightDistance) {
           charactersInSight.push({
             coordinates: characterY.coordinates,
             userId: characterY.userId,
-            username: characterY.username
+            username: characterY.username,
+            distance
           });
         }
       }
@@ -176,10 +188,13 @@ setInterval(() => {
         return socket.data?.userId === characterX.userId;
       });
 
-      const distance = calculateDistance(
-        [characterX.coordinates.lat, characterX.coordinates.lng],
-        [characterX.movesTo.lat, characterX.movesTo.lng],
-        { units: 'meters' }
+      const distance = computeDistance(
+        {
+          latitude: characterX.coordinates.lat,
+          longitude: characterX.coordinates.lng
+        },
+        { latitude: characterX.movesTo.lat, longitude: characterX.movesTo.lng },
+        0.001
       );
 
       if (distance < characterX.speed) {
@@ -191,21 +206,31 @@ setInterval(() => {
           movesTo: null
         });
       } else {
-        const bearing = calculateBearing(
-          [characterX.coordinates.lat, characterX.coordinates.lng],
-          [characterX.movesTo.lat, characterX.movesTo.lng]
+        const bearing = computeBearing(
+          {
+            latitude: characterX.coordinates.lat,
+            longitude: characterX.coordinates.lng
+          },
+          {
+            latitude: characterX.movesTo.lat,
+            longitude: characterX.movesTo.lng
+          }
         );
 
-        const destination = calculateDestination(
-          [characterX.coordinates.lat, characterX.coordinates.lng],
+        const destination = computeDestination(
+          {
+            latitude: characterX.coordinates.lat,
+            longitude: characterX.coordinates.lng
+          },
           characterX.speed,
-          bearing,
-          { units: 'meters' }
+          bearing
         );
+
+        console.log(destination);
 
         const coordinates: { lat: number; lng: number } = {
-          lat: destination.geometry.coordinates[0],
-          lng: destination.geometry.coordinates[1]
+          lat: destination.latitude,
+          lng: destination.longitude
         };
 
         socket.data.coordinates = coordinates;

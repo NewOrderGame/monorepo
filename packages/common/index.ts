@@ -6,6 +6,7 @@ export type CharacterInSight = {
   coordinates: { lat: number; lng: number };
   username: string;
   userId: string;
+  distance: number;
 };
 
 export type Character = {

@@ -115,7 +115,7 @@ export function WorldPage() {
             fill="black"
             cx="50%"
             cy="50%"
-            r="200px"
+            r="240px"
             filter="url(#blur)"
           />
         </mask>
@@ -143,9 +143,20 @@ function Map() {
   useEffect(() => {
     let charactersInSight: (CharacterInSight & { marker: L.Marker })[] = [];
 
-    core.world.on('move', ({ coordinates, duration }: { coordinates: LatLng, duration: number }) => {
-      map.flyTo(coordinates, map.getZoom(), {...zoomPanOptions, duration});
-    });
+    core.world.on(
+      'move',
+      ({
+        coordinates,
+        duration,
+        distance
+      }: {
+        coordinates: LatLng;
+        duration: number;
+        distance: number;
+      }) => {
+        map.flyTo(coordinates, map.getZoom(), { ...zoomPanOptions, duration });
+      }
+    );
 
     core.world.on('characters-in-sight', (characters: CharacterInSight[]) => {
       charactersInSight.forEach((character) => {

@@ -22,14 +22,16 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "^1.0.12",
+    "@newordergame/common": "^1.0.19",
     "@turf/turf": "^6.5.0",
+    "geolib": "^3.3.3",
     "install": "^0.13.0",
     "nanoid": "^3.3.4",
     "npm": "^8.9.0",
     "socket.io": "^4.5.0"
   },
   "devDependencies": {
+    "@types/geolib": "^2.0.23",
     "@types/leaflet": "^1.7.9",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
