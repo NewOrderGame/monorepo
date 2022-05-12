@@ -9,6 +9,8 @@ import {
   getDistance as computeDistance
 } from 'geolib';
 
+const SPEED_MULTIPLIER = 4;
+
 const UI_ORIGIN =
   process.env.NODE_ENV === 'development'
     ? 'http://localhost:3000'
@@ -193,11 +195,14 @@ setInterval(() => {
           latitude: characterX.coordinates.lat,
           longitude: characterX.coordinates.lng
         },
-        { latitude: characterX.movesTo.lat, longitude: characterX.movesTo.lng },
+        {
+          latitude: characterX.movesTo.lat,
+          longitude: characterX.movesTo.lng
+        },
         0.001
       );
 
-      if (distance < characterX.speed) {
+      if (distance < characterX.speed / SPEED_MULTIPLIER) {
         socket.data.coordinates = characterX.movesTo;
 
         characterStore.setCharacter(characterX.userId, {
@@ -222,11 +227,9 @@ setInterval(() => {
             latitude: characterX.coordinates.lat,
             longitude: characterX.coordinates.lng
           },
-          characterX.speed,
+          characterX.speed / SPEED_MULTIPLIER,
           bearing
         );
-
-        console.log(destination);
 
         const coordinates: { lat: number; lng: number } = {
           lat: destination.latitude,
@@ -244,4 +247,4 @@ setInterval(() => {
 
     world.to(characterX.userId).emit('characters-in-sight', charactersInSight);
   });
-}, 1000);
+}, 1000 / SPEED_MULTIPLIER);
