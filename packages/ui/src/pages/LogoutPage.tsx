@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
 export function LogoutPage() {
+  console.log('Logout Page');
   const auth = useAuth();
   const navigate = useNavigate();
   useEffect(() => {

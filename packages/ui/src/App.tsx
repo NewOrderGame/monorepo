@@ -5,6 +5,7 @@ import { RootPage } from './pages/RootPage';
 import { LoginPage } from './pages/LoginPage';
 import { WorldPage } from './pages/WorldPage';
 import { LogoutPage } from './pages/LogoutPage';
+import { EncounterPage } from './pages/EncounterPage';
 
 export default function App() {
   return (
@@ -18,6 +19,14 @@ export default function App() {
           element={
             <RequireAuth>
               <WorldPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/encounter"
+          element={
+            <RequireAuth>
+              <EncounterPage />
             </RequireAuth>
           }
         />

@@ -2,18 +2,29 @@ import { Server } from 'socket.io';
 import { nanoid } from 'nanoid';
 import characterStore from './characterStore';
 import sessionStore from './sessionStore';
-import { CharacterInSight, DEFAULT_COORDINATES } from '@newordergame/common';
 import {
-  getGreatCircleBearing as computeBearing,
+  Character,
+  CharacterInSight,
+  DEFAULT_COORDINATES,
+  EncounterInSight,
+  errorWithLogout,
+  Session
+} from '@newordergame/common';
+import {
   computeDestinationPoint as computeDestination,
-  getDistance as computeDistance
+  getCenter,
+  getDistance as computeDistance,
+  getGreatCircleBearing as computeBearing
 } from 'geolib';
+import encounterStore from './encounterStore';
 
 const SPEED_MULTIPLIER = 4;
+const DISTANCE_ACCURACY = 0.001;
+const ENCOUNTER_DISTANCE = 10;
 
 const UI_ORIGIN =
   process.env.NODE_ENV === 'development'
-    ? 'http://localhost:3000'
+    ? 'http://10.108.1.8:3000'
     : 'https://play.newordergame.com';
 
 // ================================================================================================
@@ -33,7 +44,7 @@ const auth = io.of('/auth');
 auth.on('connection', (socket) => {
   console.log('Auth connected');
   const sessionId = socket.handshake.auth.sessionId;
-  const session = sessionStore.findSession(sessionId);
+  const session = sessionStore.get(sessionId);
   if (session) {
     socket.emit('get-username', { username: session.username });
     console.log(`Sent username to ${session.username}`);
@@ -46,205 +57,349 @@ auth.on('connection', (socket) => {
 
 const world = io.of('/world');
 
-world.use((socket, next) => {
-  const sessionId = socket.handshake.auth.sessionId;
-  if (sessionId) {
-    const session = sessionStore.findSession(sessionId);
-    if (session) {
-      socket.data.sessionId = sessionId;
-      socket.data.userId = session.userId;
-      socket.data.username = session.username;
-      socket.data.coordinates = session.coordinates;
-      console.log(`Found existing session for ${session.username}`);
-      return next();
-    }
-  }
-
-  const username = socket.handshake.auth.username;
-  if (!username) {
-    return next(new Error('Invalid username'));
-  }
-  socket.data.sessionId = nanoid();
-  socket.data.userId = nanoid();
-  socket.data.username = username;
-  socket.data.coordinates = DEFAULT_COORDINATES;
-  console.log(`Created new session for ${username}`);
-  return next();
-});
-
 world.on('connection', (socket) => {
-  console.log('Connect', socket.id, socket.data.username);
-  sessionStore.saveSession(socket.data.sessionId, {
-    sessionId: socket.data.sessionId,
-    userId: socket.data.userId,
-    username: socket.data.username,
-    connected: true,
-    coordinates: socket.data.coordinates
-  });
+  const sessionId = socket.handshake.auth.sessionId;
+  // TODO: send UserID instead of Username, use Cognito
+  const username = socket.handshake.auth.username;
+  let session: Session;
 
-  const character = characterStore.getCharacter(socket.data.userId);
+  if (sessionId) {
+    session = sessionStore.get(sessionId);
+    if (session) {
+      console.log(`Found existing session for ${session.username}`);
+      socket.data.sessionId = sessionId;
+      session.connected = true;
+      sessionStore.set(sessionId, session);
+    } else {
+      return errorWithLogout('Invalid session ID', socket);
+    }
+  } else if (username) {
+    const sessionId = nanoid();
+    const userId = nanoid();
+    socket.data.sessionId = sessionId;
+    session = {
+      sessionId,
+      userId,
+      username,
+      coordinates: DEFAULT_COORDINATES,
+      connected: true,
+      page: 'world'
+    };
+    sessionStore.set(sessionId, session);
+    console.log(`Created new session for ${username}`);
+  } else {
+    return errorWithLogout('No SessionID, no Username.', socket);
+  }
+  console.log('Connected', socket.id, session.username);
+
+  let character: Character = characterStore.get(session.userId);
 
   if (!character) {
-    console.log(`Created new character for ${socket.data.username}`);
-    characterStore.setCharacter(socket.data.userId, {
-      sessionId: socket.data.sessionId,
-      userId: socket.data.userId,
-      username: socket.data.username,
-      coordinates: socket.data.coordinates,
+    character = {
+      sessionId: session.sessionId,
+      userId: session.userId,
+      username: session.username,
+      coordinates: session.coordinates,
       movesTo: null,
-      sightDistance: 100,
+      sightRange: 100,
       speed: 30,
-      charactersInSight: []
-    });
+      encountersInSight: [],
+      encounterSightFlag: false,
+      charactersInSight: [],
+      characterSightFlag: false,
+      socket: socket
+    };
+    characterStore.set(session.userId, character);
+    console.log(`Created new character for ${character.username}`);
   }
 
   socket.emit('session', {
-    sessionId: socket.data.sessionId,
-    username: socket.data.username,
-    userId: socket.data.userId,
-    coordinates: socket.data.coordinates
+    sessionId: session.sessionId,
+    username: session.username,
+    userId: session.userId,
+    coordinates: session.coordinates,
+    page: session.page
   });
 
-  socket.join(socket.data.userId);
+  socket.join(session.userId);
 
   socket.on('disconnect', async () => {
-    console.log('Disconnect', socket.id, socket.data.username);
-    const matchingSockets = await world.in(socket.data.userId).allSockets();
+    const session = sessionStore.get(socket.data.sessionId);
+    console.log('Disconnect', socket.id);
+    const matchingSockets = await world.in(session.userId).allSockets();
     const isDisconnected = matchingSockets.size === 0;
     if (isDisconnected) {
-      sessionStore.saveSession(socket.data.sessionId, {
-        sessionId: socket.data.sessionId,
-        userId: socket.data.userId,
-        username: socket.data.username,
-        connected: false,
-        coordinates: socket.data.coordinates
+      sessionStore.set(session.sessionId, {
+        ...session,
+        connected: false
       });
-
-      characterStore.deleteCharacter(socket.data.userId);
+      characterStore.delete(session.userId);
     }
   });
 
   socket.on('move', (coordinates: { lat: number; lng: number }) => {
+    const session = sessionStore.get(socket.data.sessionId);
+
+    console.log(JSON.stringify(session));
+
     console.log(
-      `Move ${socket.data.username} to lat: ${coordinates.lat}, lng: ${coordinates.lng}.`
+      `Move ${session.username} to lat: ${coordinates.lat}, lng: ${coordinates.lng}.`
     );
-    const character = characterStore.getCharacter(socket.data.userId);
+    const userId = session.userId;
+    const character = characterStore.get(userId);
 
     if (!character) {
-      throw new Error('Character should exist.');
+      return errorWithLogout('Character should exist.', socket);
     }
 
-    characterStore.setCharacter(socket.data.userId, {
+    characterStore.set(userId, {
       ...character,
       movesTo: coordinates
     });
 
     const distance = computeDistance(
       {
-        latitude: socket.data.coordinates.lat,
-        longitude: socket.data.coordinates.lng
+        latitude: character.coordinates.lat,
+        longitude: character.coordinates.lng
       },
       { latitude: coordinates.lat, longitude: coordinates.lng },
-      0.001
+      DISTANCE_ACCURACY
     );
 
     const duration = distance / character.speed;
 
-    world
-      .to(socket.data.userId)
-      .emit('move', { coordinates, duration, distance });
+    world.to(userId).emit('move', { coordinates, duration, distance });
   });
 });
 
+// ================================================================================================
+
+const encounter = io.of('/encounter');
+
+encounter.on('connection', (socket) => {
+  const sessionId = socket.handshake.auth.sessionId;
+  // TODO: send UserID instead of Username, use Cognito
+  const username = socket.handshake.auth.username;
+  let session: Session;
+
+  if (sessionId) {
+    session = sessionStore.get(sessionId);
+    if (session) {
+      console.log(`Found existing session for ${session.username}`);
+      socket.data.sessionId = sessionId;
+      session.connected = true;
+      sessionStore.set(sessionId, session);
+    } else {
+      return errorWithLogout('Invalid session ID', socket);
+    }
+  } else if (username) {
+    const sessionId = nanoid();
+    const userId = nanoid();
+    socket.data.sessionId = sessionId;
+    session = {
+      sessionId,
+      userId,
+      username,
+      coordinates: DEFAULT_COORDINATES,
+      connected: true,
+      page: 'encounter'
+    };
+    sessionStore.set(sessionId, session);
+    console.log(`Created new session for ${username}`);
+  } else {
+    return errorWithLogout('No SessionID, no Username.', socket);
+  }
+  console.log('Connected', socket.id, session.username);
+
+  socket.emit('session', {
+    sessionId: session.sessionId,
+    username: session.username,
+    userId: session.userId,
+    coordinates: session.coordinates,
+    page: session.page
+  });
+
+  socket.join(session.userId);
+
+  socket.on('disconnect', async () => {
+    const session = sessionStore.get(socket.data.sessionId);
+    console.log('Disconnect', socket.id);
+    const matchingSockets = await world.in(session.userId).allSockets();
+    const isDisconnected = matchingSockets.size === 0;
+    if (isDisconnected) {
+      sessionStore.set(session.sessionId, {
+        ...session,
+        connected: false
+      });
+      characterStore.delete(session.userId);
+    }
+  });
+});
+
+// ================================================================================================
 setInterval(() => {
-  characterStore.forEach((characterX, userIdX) => {
+  characterStore.forEach((characterA, userIdA) => {
     const charactersInSight: CharacterInSight[] = [];
-    // comparison and setting
-    characterStore.forEach((characterY, userIdY) => {
-      if (userIdX !== userIdY) {
+    const encountersInSight: EncounterInSight[] = [];
+
+    encounterStore.forEach((encounter, encounterId) => {
+      const distance = computeDistance(
+        {
+          latitude: characterA.coordinates.lat,
+          longitude: characterA.coordinates.lng
+        },
+        {
+          latitude: encounter.coordinates.lat,
+          longitude: encounter.coordinates.lng
+        },
+        DISTANCE_ACCURACY
+      );
+
+      if (distance < characterA.sightRange) {
+        encountersInSight.push({
+          encounterId: encounter.encounterId,
+          coordinates: encounter.coordinates,
+          participants: encounter.participants,
+          distance
+        });
+
+        characterA.encounterSightFlag = true;
+        characterStore.set(characterA.userId, {
+          ...characterA
+        });
+      }
+    });
+
+    characterStore.forEach((characterB, userIdB) => {
+      if (userIdA !== userIdB) {
         const distance = computeDistance(
           {
-            latitude: characterX.coordinates.lat,
-            longitude: characterX.coordinates.lng
+            latitude: characterA.coordinates.lat,
+            longitude: characterA.coordinates.lng
           },
           {
-            latitude: characterY.coordinates.lat,
-            longitude: characterY.coordinates.lng
+            latitude: characterB.coordinates.lat,
+            longitude: characterB.coordinates.lng
           },
-          0.001
+          DISTANCE_ACCURACY
         );
-        if (distance <= characterX.sightDistance) {
+        if (distance <= characterA.sightRange) {
           charactersInSight.push({
-            coordinates: characterY.coordinates,
-            userId: characterY.userId,
-            username: characterY.username,
+            coordinates: characterB.coordinates,
+            userId: characterB.userId,
+            username: characterB.username,
             distance
           });
+
+          characterA.characterSightFlag = true;
+          characterStore.set(characterA.userId, {
+            ...characterA
+          });
+        }
+
+        if (distance <= ENCOUNTER_DISTANCE) {
+          const encounterId = nanoid();
+          const center = getCenter([
+            characterA.coordinates,
+            characterB.coordinates
+          ]);
+
+          if (center) {
+            encounterStore.set(encounterId, {
+              coordinates: { lat: center.latitude, lng: center.longitude },
+              encounterId: encounterId,
+              participants: [
+                { userId: characterA.userId, username: characterA.username },
+                { userId: characterB.userId, username: characterB.username }
+              ]
+            });
+
+            world.to(characterA.userId).emit('encounter', {
+              encounterId,
+              username: characterB.username
+            });
+
+            world.to(characterB.userId).emit('encounter', {
+              encounterId,
+              username: characterA.username
+            });
+
+            characterA.socket.disconnect();
+            characterB.socket.disconnect();
+
+            characterStore.delete(characterA.userId);
+            characterStore.delete(characterB.userId);
+          } else {
+            console.error(new Error(''));
+          }
         }
       }
     });
 
     // emit stage
-    if (characterX.movesTo) {
-      const socket = Array.from(world.sockets.values()).find((socket) => {
-        return socket.data?.userId === characterX.userId;
-      });
-
+    if (characterA.movesTo) {
       const distance = computeDistance(
-        {
-          latitude: characterX.coordinates.lat,
-          longitude: characterX.coordinates.lng
-        },
-        {
-          latitude: characterX.movesTo.lat,
-          longitude: characterX.movesTo.lng
-        },
-        0.001
+        characterA.coordinates,
+        characterA.movesTo,
+        DISTANCE_ACCURACY
       );
 
-      if (distance < characterX.speed / SPEED_MULTIPLIER) {
-        socket.data.coordinates = characterX.movesTo;
-
-        characterStore.setCharacter(characterX.userId, {
-          ...characterX,
-          coordinates: characterX.movesTo,
-          movesTo: null
+      if (distance < characterA.speed / SPEED_MULTIPLIER) {
+        characterA.coordinates = characterA.movesTo;
+        characterA.movesTo = null;
+        characterStore.set(characterA.userId, {
+          ...characterA
         });
+        const sessionId = characterA.socket.data.sessionId;
+        const session = sessionStore.get(sessionId);
+        session.coordinates = characterA.coordinates;
+        sessionStore.set(sessionId, session);
       } else {
         const bearing = computeBearing(
-          {
-            latitude: characterX.coordinates.lat,
-            longitude: characterX.coordinates.lng
-          },
-          {
-            latitude: characterX.movesTo.lat,
-            longitude: characterX.movesTo.lng
-          }
+          characterA.coordinates,
+          characterA.movesTo
         );
 
         const destination = computeDestination(
-          {
-            latitude: characterX.coordinates.lat,
-            longitude: characterX.coordinates.lng
-          },
-          characterX.speed / SPEED_MULTIPLIER,
+          characterA.coordinates,
+          characterA.speed / SPEED_MULTIPLIER,
           bearing
         );
 
-        const coordinates: { lat: number; lng: number } = {
+        characterA.coordinates = {
           lat: destination.latitude,
           lng: destination.longitude
         };
-
-        socket.data.coordinates = coordinates;
-
-        characterStore.setCharacter(characterX.userId, {
-          ...characterX,
-          coordinates
+        characterStore.set(characterA.userId, {
+          ...characterA
         });
       }
     }
 
-    world.to(characterX.userId).emit('characters-in-sight', charactersInSight);
+    if (characterA.encounterSightFlag) {
+      world
+        .to(characterA.userId)
+        .emit('encounters-in-sight', encountersInSight);
+
+      if (!encountersInSight.length) {
+        characterA.encounterSightFlag = false;
+        characterStore.set(characterA.userId, {
+          ...characterA
+        });
+      }
+    }
+
+    if (characterA.characterSightFlag) {
+      world
+        .to(characterA.userId)
+        .emit('characters-in-sight', charactersInSight);
+
+      if (!charactersInSight.length) {
+        characterA.characterSightFlag = false;
+        characterStore.set(characterA.userId, {
+          ...characterA
+        });
+      }
+    }
   });
 }, 1000 / SPEED_MULTIPLIER);

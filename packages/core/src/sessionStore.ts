@@ -1,35 +1,18 @@
-interface Session {
-  sessionId: string;
-  userId: string;
-  username: string;
-  connected: boolean;
-  coordinates: { lat: number; lng: number };
-}
+import { Session } from '@newordergame/common';
 
-class SessionStore {
-  findSession(id: string) {}
-  saveSession(id: string, session: Session) {}
-  findAllSessions() {}
-}
-
-export class InMemorySessionStore extends SessionStore {
+export class InMemorySessionStore {
   private _sessions: Map<string, Session>;
 
   constructor() {
-    super();
     this._sessions = new Map<string, Session>();
   }
 
-  findSession(id: string) {
+  get(id: string) {
     return this._sessions.get(id);
   }
 
-  saveSession(id: string, session: Session) {
+  set(id: string, session: Session) {
     this._sessions.set(id, session);
-  }
-
-  findAllSessions(): Session[] {
-    return [...this._sessions.values()];
   }
 }
 

@@ -5,6 +5,7 @@ import { useAuth } from '../utils/auth';
 import core from '../utils/core';
 
 export function LoginPage() {
+  console.log('Login Page');
   const navigate = useNavigate();
   const auth = useAuth();
 
@@ -12,13 +13,12 @@ export function LoginPage() {
     const sessionId = window.localStorage.getItem('sessionId');
     if (sessionId) {
       core.auth.auth = { sessionId };
+      console.log('Connecting to Auth');
       core.auth.connect();
 
-      core.auth.on('get-username', ({ username }) => {
-        if (username) {
-          auth.logIn({ username }, () => {
-            navigate('/world', { replace: true });
-          });
+      core.auth.on('get-username', ({ username, page }) => {
+        if (username && page) {
+          auth.logIn({ username, page });
         } else {
           window.localStorage.removeItem('sessionId');
           window.localStorage.removeItem('userId');
@@ -27,7 +27,6 @@ export function LoginPage() {
       });
     }
     return () => {
-      core.auth.off('connect');
       core.auth.off('get-username');
     };
   }, [auth, navigate]);
@@ -38,8 +37,8 @@ export function LoginPage() {
     const formData = new FormData(event.currentTarget);
     const username = formData.get('username') as string;
 
-    auth.logIn({ username }, () => {
-      navigate('/world', { replace: true });
+    auth.logIn({ username, page: 'world' }, () => {
+      navigate(`/world`)
     });
   }
 

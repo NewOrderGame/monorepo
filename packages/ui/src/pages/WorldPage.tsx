@@ -12,7 +12,7 @@ import 'leaflet/dist/leaflet.css';
 import { useAuth } from '../utils/auth';
 import core from '../utils/core';
 import { useNavigate } from 'react-router-dom';
-import { CharacterInSight } from '@newordergame/common';
+import { CharacterInSight, EncounterInSight } from '@newordergame/common';
 
 const MAPBOX_URL =
   'https://api.mapbox.com/styles/v1/devlysh/cl10ns92r000814pon7kefjjt/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZGV2bHlzaCIsImEiOiJjanB5Y3dzeGgwMDA0NDhwa3M5eGtlOXBqIn0.0t-lPs1RNPM85YTIyLLbzA';
@@ -24,6 +24,7 @@ const zoomPanOptions: ZoomPanOptions = {
 };
 
 export function WorldPage() {
+  console.log('World Page');
   const auth = useAuth();
   const navigate = useNavigate();
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -41,6 +42,7 @@ export function WorldPage() {
   useEffect(() => {
     if (auth.user) {
       const sessionId = window.localStorage.getItem('sessionId');
+      console.log(`Connecting to World`);
       if (sessionId) {
         core.world.auth = { sessionId };
         core.world.connect();
@@ -51,15 +53,19 @@ export function WorldPage() {
 
       core.world.on(
         'session',
-        ({ sessionId, userId, username, coordinates }) => {
+        ({ sessionId, userId, username, coordinates, page }) => {
           core.world.auth = { sessionId };
           localStorage.setItem('sessionId', sessionId);
           localStorage.setItem('userId', userId);
           localStorage.setItem('username', username);
           setFirstCoordinates(coordinates);
-          auth.logIn({ username });
+          auth.logIn({ username, page });
         }
       );
+
+      core.world.on('logout', () => {
+        navigate('/logout');
+      });
 
       core.world.on('connect_error', (error) => {
         if (error.message === 'Invalid username') {
@@ -72,6 +78,7 @@ export function WorldPage() {
         core.world.off('disconnecting');
         core.world.off('disconnect');
         core.world.off('session');
+        core.world.off('logout');
         core.world.off('connect_error');
       };
     }
@@ -132,17 +139,21 @@ export function WorldPage() {
   );
 }
 
-var greenIcon = icon({
-  iconUrl: 'character.png',
-  iconSize: [32, 32] // size of the icon
+var otherCharacterIcon = icon({
+  iconUrl: 'other-character.png',
+  iconSize: [62, 62] // size of the icon
+});
+
+var encounterIcon = icon({
+  iconUrl: 'encounter.png',
+  iconSize: [44, 40] // size of the icon
 });
 
 function Map() {
   const map = useMap();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    let charactersInSight: (CharacterInSight & { marker: L.Marker })[] = [];
-
     core.world.on(
       'move',
       ({
@@ -158,23 +169,48 @@ function Map() {
       }
     );
 
+    let charactersInSight: (CharacterInSight & { marker: L.Marker })[] = [];
     core.world.on('characters-in-sight', (characters: CharacterInSight[]) => {
       charactersInSight.forEach((character) => {
         character.marker.remove();
       });
-
       charactersInSight = [];
-
       characters.forEach((character) => {
         charactersInSight.push({
           ...character,
-          marker: marker(character.coordinates, { icon: greenIcon }).addTo(map)
+          marker: marker(character.coordinates, {
+            icon: otherCharacterIcon
+          }).addTo(map)
         });
       });
     });
+
+    let encountersInSight: (EncounterInSight & { marker: L.Marker })[] = [];
+    core.world.on('encounters-in-sight', (encounters: EncounterInSight[]) => {
+      encountersInSight.forEach((character) => {
+        character.marker.remove();
+      });
+      encountersInSight = [];
+      encounters.forEach((character) => {
+        encountersInSight.push({
+          ...character,
+          marker: marker(character.coordinates, {
+            icon: encounterIcon
+          }).addTo(map)
+        });
+      });
+    });
+
+    core.world.on('encounter', (encounter) => {
+      navigate('/encounter', {
+        state: encounter
+      });
+    });
+
     return () => {
       core.world.off('move');
       core.world.off('characters-in-sight');
+      core.world.off('encounter');
     };
   }, [map]);
 

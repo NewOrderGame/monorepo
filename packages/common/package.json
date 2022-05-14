@@ -1,6 +1,6 @@
 {
   "name": "@newordergame/common",
-  "version": "1.0.19",
+  "version": "1.0.22",
   "description": "",
   "main": "index.js",
   "module": "index.js",
@@ -18,5 +18,6 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
+    "@types/socket.io": "^3.0.2"
   }
 }

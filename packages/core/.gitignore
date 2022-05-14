@@ -1,2 +1,4 @@
 build
 coverage
+*.d.ts
+*.js

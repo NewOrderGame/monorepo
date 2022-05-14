@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push && npm run cdk:deploy",
     "cdk:deploy": "cd aws && cdk deploy; cd ..",
+    "cdk:destroy": "cd aws && cdk destroy; cd ..",
     "cdk:diff": "cd aws && cdk diff; cd ..",
     "cdk:synth": "cd aws && cdk synth; cd ..",
     "docker:build": "docker build -t core-service .",
@@ -16,13 +17,13 @@
     "docker:push": "docker push $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "webpack:build": "webpack --mode=production --node-env=production",
     "webpack:watch": "webpack --watch",
-    "update-common": "npm i -S @newordergame/common",
+    "update-common": "npm i -S @newordergame/common@latest",
     "prettier": "npx prettier --write ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "^1.0.19",
+    "@newordergame/common": "file:../common",
     "@turf/turf": "^6.5.0",
     "geolib": "^3.3.3",
     "install": "^0.13.0",
