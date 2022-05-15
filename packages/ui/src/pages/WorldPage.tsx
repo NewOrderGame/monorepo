@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { MapContainer, TileLayer, useMap, useMapEvents } from 'react-leaflet';
 import {
   icon,
@@ -31,63 +31,61 @@ export function WorldPage() {
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
   const [firstCoordinates, setFirstCoordinates] = useState(null);
 
+  const handleResize = useCallback(() => {
+    setWindowWidth(window.innerWidth);
+    setWindowHeight(window.innerHeight);
+  }, [window.innerWidth, window.innerHeight]);
+
   useEffect(() => {
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [handleResize]);
 
   useEffect(() => {
-    if (auth.user) {
-      const sessionId = window.localStorage.getItem('sessionId');
-      console.log(`Connecting to World`);
-      if (sessionId) {
-        core.world.auth = { sessionId };
-        core.world.connect();
-      } else {
-        core.world.auth = { username: auth.user?.username };
-        core.world.connect();
-      }
-
-      core.world.on(
-        'session',
-        ({ sessionId, userId, username, coordinates, page }) => {
-          core.world.auth = { sessionId };
-          localStorage.setItem('sessionId', sessionId);
-          localStorage.setItem('userId', userId);
-          localStorage.setItem('username', username);
-          setFirstCoordinates(coordinates);
-          auth.logIn({ username, page });
-        }
-      );
-
-      core.world.on('logout', () => {
-        navigate('/logout');
-      });
-
-      core.world.on('connect_error', (error) => {
-        if (error.message === 'Invalid username') {
-          navigate('/logout');
-        }
-      });
-
-      return () => {
-        core.world.off('connect');
-        core.world.off('disconnecting');
-        core.world.off('disconnect');
-        core.world.off('session');
-        core.world.off('logout');
-        core.world.off('connect_error');
-      };
+    const sessionId = window.localStorage.getItem('sessionId');
+    console.log(`Connecting to World`);
+    if (sessionId) {
+      core.world.auth = { sessionId };
+      core.world.connect();
+    } else {
+      core.world.auth = { username: auth.user?.username };
+      core.world.connect();
     }
-  }, []);
 
-  function handleResize() {
-    setWindowWidth(window.innerWidth);
-    setWindowHeight(window.innerHeight);
-  }
+    core.world.on(
+      'session',
+      ({ sessionId, userId, username, coordinates, page }) => {
+        core.world.auth = { sessionId };
+        localStorage.setItem('sessionId', sessionId);
+        localStorage.setItem('userId', userId);
+        localStorage.setItem('username', username);
+        setFirstCoordinates(coordinates);
+        auth.logIn({ username, page });
+      }
+    );
+
+    core.world.on('logout', () => {
+      navigate('/logout');
+    });
+
+    core.world.on('connect_error', (error) => {
+      if (error.message === 'Invalid username') {
+        navigate('/logout');
+      }
+    });
+
+    return () => {
+      core.world.off('connect');
+      core.world.off('disconnecting');
+      core.world.off('disconnect');
+      core.world.off('session');
+      core.world.off('logout');
+      core.world.off('connect_error');
+    };
+  }, []);
 
   return firstCoordinates ? (
     <>

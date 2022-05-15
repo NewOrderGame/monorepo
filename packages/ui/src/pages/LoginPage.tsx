@@ -38,7 +38,7 @@ export function LoginPage() {
     const username = formData.get('username') as string;
 
     auth.logIn({ username, page: 'world' }, () => {
-      navigate(`/world`)
+      navigate('/world')
     });
   }
 

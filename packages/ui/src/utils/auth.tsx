@@ -44,6 +44,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const setPage = (page: string) => {
+    setUser({ ...user, page } as User);
+  };
+
   const value = { user, logIn, logOut };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
