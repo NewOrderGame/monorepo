@@ -77,8 +77,8 @@ const Character = styled.img`
   height: 43px;
   top: 50%;
   left: 50%;
-  margin-top: -31px;
-  margin-left: -31px;
+  margin-top: -21.5px;
+  margin-left: -21.5px;
   z-index: 500;
   pointer-events: none;
 `;
