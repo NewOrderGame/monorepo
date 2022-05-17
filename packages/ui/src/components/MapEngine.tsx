@@ -26,7 +26,7 @@ const zoomPanOptions: ZoomPanOptions = {
   easeLinearity: 1
 };
 
-export function Map() {
+export function MapEngine() {
   const map = useMap();
 
   useEffect(() => {

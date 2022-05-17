@@ -18,28 +18,6 @@ body,
   display: none;
 }
 
-.character {
-  position: fixed;
-  width: 43px;
-  height: 43px;
-  top: 50%;
-  left: 50%;
-  margin-top: -31px;
-  margin-left: -31px;
-  z-index: 500;
-  pointer-events: none;
-}
-
-.fog-of-war {
-  z-index: 500;
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  pointer-events: none;
-}
-
-.leflet-marker-icon {
+.leaflet-marker-icon {
   pointer-events: none;
 }
