@@ -8,26 +8,27 @@ import sessionStore from '../store/sessionStore';
 import { createCharacter } from '../utils/character';
 import cognito from '../utils/cognito';
 import { createSession } from '../utils/session';
-import { handleDisconnect } from '../utils';
+import { handleDisconnect } from '../utils/handleDisconnect';
+import logger from '../utils/logger';
 
 let worldNamespace: Namespace;
 
 function handleWorldConnection(socket: Socket) {
-  console.log('World connected', socket.id);
+  logger.info('World connected', { socketId: socket.id });
   const accessToken = socket.handshake.auth.accessToken;
 
   socket.on('init', () => {
-    console.log('World init', socket.id);
+    logger.info('World init', { socketId: socket.id });
     cognito.getUser(
       {
         AccessToken: accessToken
       },
       (error, response) => {
         if (error) {
-          return console.error(error);
+          return logger.error(error);
         }
         if (!response) {
-          return console.error(new Error('There should be a response'));
+          return logger.error('There should be a response');
         }
         const username = response?.Username;
         const nickname: string = response?.UserAttributes.find(
@@ -38,7 +39,7 @@ function handleWorldConnection(socket: Socket) {
 
         let session = sessionStore.get(username);
         if (!session) {
-          session = createSession({ sessionId: username, nickname });
+          session = createSession({ sessionId: username });
         }
 
         if (session.page === Page.WORLD) {
@@ -46,22 +47,29 @@ function handleWorldConnection(socket: Socket) {
           if (!character) {
             character = createCharacter({ session, socket });
             characterStore.set(session.sessionId, character);
-            console.log(`Created new character for ${character.nickname}`);
+            logger.info('Created new character', {
+              nickname: character.nickname
+            });
           }
           socket.emit('init', {
             coordinates: session.coordinates
           });
+          sessionStore.set(session.sessionId, { ...session, connected: true });
           socket.join(session.sessionId);
         }
       }
     );
   });
 
-  socket.on('destroy', () => {
-    if (!socket.data.sessionId) {
-      console.error(new Error('There should be session ID'));
+  socket.on('destroy', async () => {
+    const session = sessionStore.get(socket.data.sesssionId);
+    if (session) {
+      characterStore.delete(socket.data.sessionId);
+      logger.info('Deleted character', {
+        socketId: socket.id,
+        sessionId: socket.data.sessionId
+      });
     }
-    characterStore.delete(socket.data.sessionId);
   });
 
   socket.on('disconnect', async () => {
@@ -72,11 +80,9 @@ function handleWorldConnection(socket: Socket) {
   socket.on('move', (coordinates: { lat: number; lng: number }) => {
     const session = sessionStore.get(socket.data.sessionId);
     if (!session) {
-      return console.error(new Error('Session should exist'));
+      return logger.error('Session should exist');
     }
-    console.log(
-      `Move ${session.nickname} to lat: ${coordinates.lat}, lng: ${coordinates.lng}.`
-    );
+    logger.info('Move', { nickname: session.nickname, coordinates });
     const characterId = session.sessionId;
     const character = characterStore.get(characterId);
 
@@ -105,7 +111,7 @@ function handleWorldConnection(socket: Socket) {
 }
 
 export function initWorld() {
-  console.log('Init World');
+  logger.info('Init World');
   worldNamespace = io.of('/world');
   worldNamespace.on('connection', handleWorldConnection);
 }

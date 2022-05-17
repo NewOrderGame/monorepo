@@ -1,10 +1,11 @@
 import { Encounter } from '@newordergame/common';
+import logger from "../utils/logger";
 
 export class InMemoryEncounterStore {
   private _encounters: Map<string, Encounter>;
 
   constructor() {
-    console.log('Creating Encounter Store');
+    logger.info('Creating Encounter Store');
     this._encounters = new Map<string, Encounter>();
   }
 

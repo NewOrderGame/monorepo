@@ -1,10 +1,11 @@
 import { Session } from '@newordergame/common';
+import logger from '../utils/logger';
 
 export class InMemorySessionStore {
   private _sessions: Map<string, Session>;
 
   constructor() {
-    console.log('Creating Session Store');
+    logger.info('Creating Session Store');
     this._sessions = new Map<string, Session>();
   }
 

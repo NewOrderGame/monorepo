@@ -3,12 +3,13 @@ import sessionStore from '../store/sessionStore';
 import { Namespace, Socket } from 'socket.io';
 import { createSession, determinePage } from '../utils/session';
 import cognito from '../utils/cognito';
-import { handleDisconnect } from "../utils";
+import { handleDisconnect } from '../utils/handleDisconnect';
+import logger from '../utils/logger';
 
 let authNamespace: Namespace;
 
 function handleAuthConnection(socket: Socket) {
-  console.log('Auth connected', socket.id);
+  logger.info('Auth connected', { socketId: socket.id });
   const accessToken = socket.handshake.auth.accessToken;
 
   cognito.getUser(
@@ -17,40 +18,50 @@ function handleAuthConnection(socket: Socket) {
     },
     (error, response) => {
       if (error) {
-        return console.error(error);
+        return logger.error(error);
       }
       if (!response) {
-        return console.error(new Error('There should be a response'));
+        return logger.error('There should be a response');
       }
       const username = response.Username;
       const nickname: string = response.UserAttributes.find(
         (a) => a.Name === 'nickname'
       )?.Value;
-      if (error) return console.error(error);
+      if (error) return logger.error(error);
 
       let session = sessionStore.get(username);
       if (!session) {
         session = createSession({
-          sessionId: username,
-          nickname
+          sessionId: username
         });
       }
 
       session.page = determinePage(session);
-      sessionStore.set(session.sessionId, { ...session });
+      sessionStore.set(session.sessionId, {
+        ...session,
+        nickname,
+        connected: true
+      });
+      socket.join(session.sessionId);
 
       socket.emit('redirect', {
         page: session.page
       });
-      console.log(`Auth sent redirect to ${session.page} to ${session.nickname}`);
+      logger.info('Auth sent redirect', {
+        page: session.page,
+        nickname: session.nickname
+      });
     }
   );
 
-  socket.on('disconnect', async () => await handleDisconnect('Auth', socket, authNamespace));
+  socket.on(
+    'disconnect',
+    async () => await handleDisconnect('Auth', socket, authNamespace)
+  );
 }
 
 export function initAuth() {
-  console.log('Init Auth');
+  logger.info('Init Auth');
   authNamespace = io.of('/auth');
   authNamespace.on('connection', handleAuthConnection);
 }

@@ -1,15 +1,18 @@
 import { Namespace, Socket } from 'socket.io';
 import sessionStore from '../store/sessionStore';
+import logger from './logger';
 
 export async function handleDisconnect(
   namespaceName: string,
   socket: Socket,
   namespace: Namespace
 ) {
-  console.log(namespaceName, 'disconnected', socket.id, '\r');
+  logger.info('Disconnected', { namespaceName, socketId: socket.id });
   const session = sessionStore.get(socket.data.sessionId);
   if (session) {
-    console.log(namespaceName, 'disconnected socket with session:', session.sessionId);
+    logger.info('Disconnected with session ID', {
+      sessionId: session.sessionId
+    });
     const matchingSockets = await namespace.in(session.sessionId).allSockets();
     const isDisconnected = matchingSockets.size === 0;
     if (isDisconnected) {
@@ -19,6 +22,6 @@ export async function handleDisconnect(
       });
     }
   } else {
-    console.log(namespaceName, 'disconnected socket without session');
+    logger.info('Disconnected without session ID');
   }
 }

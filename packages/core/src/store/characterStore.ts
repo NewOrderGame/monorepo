@@ -1,10 +1,13 @@
 import { Character } from '@newordergame/common';
+import logger from '../utils/logger';
 
 export class InMemoryCharacterStore {
   private _characters: Map<string, Character>;
 
   constructor() {
-    console.log('Creating Character Store');
+    logger.info(
+      'Creating character store',
+    );
     this._characters = new Map<string, Character>();
   }
 

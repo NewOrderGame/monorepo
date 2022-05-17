@@ -16,6 +16,7 @@ import characterStore from '../store/characterStore';
 import encounterStore from '../store/encounterStore';
 import sessionStore from '../store/sessionStore';
 import * as moment from 'moment';
+import logger from '../utils/logger';
 
 export function runWorld() {
   setInterval(() => {
@@ -96,8 +97,18 @@ export function runWorld() {
           }
 
           if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
-            console.log(
-              `Encounter: ${characterA.characterId} and ${characterB.characterId} (${characterA.nickname} and ${characterB.nickname})}`
+            logger.info(
+              'Encounter: (${characterA.nickname} and ${characterB.nickname})}',
+              {
+                characterA: {
+                  characterId: characterA.characterId,
+                  nickname: characterA.nickname
+                },
+                characterB: {
+                  characterId: characterB.characterId,
+                  nickname: characterB.nickname
+                }
+              }
             );
             const center = getCenter([
               characterA.coordinates,
@@ -150,7 +161,7 @@ export function runWorld() {
                 .to(characterB.characterId)
                 .emit('redirect', { page: Page.ENCOUNTER });
             } else {
-              console.error(new Error('Something is wrong with a center'));
+              logger.error('Something is wrong with a center');
             }
           }
         }

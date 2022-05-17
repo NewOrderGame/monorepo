@@ -1,19 +1,14 @@
 import { DEFAULT_COORDINATES, Page, Session } from '@newordergame/common';
 import sessionStore from '../store/sessionStore';
+import logger from './logger';
 
-export function createSession({
-  sessionId,
-  nickname
-}: {
-  sessionId: string;
-  nickname: string;
-}): Session {
+export function createSession({ sessionId }: { sessionId: string }): Session {
   const session: Session = {
     sessionId,
-    nickname,
+    nickname: '',
     coordinates: DEFAULT_COORDINATES,
     connected: true,
-    encounterId: '',
+    encounterId: null,
     encounterEndTime: null,
     page: Page.LOGIN
   };
@@ -24,8 +19,6 @@ export function createSession({
 export function determinePage(session: Session): Page {
   // TODO: this method should always check what page user is on
   const page = session.encounterId ? Page.ENCOUNTER : Page.WORLD;
-
-  console.log('Determine page:', page);
-
+  logger.info('Determine page', { page });
   return page;
 }

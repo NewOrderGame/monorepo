@@ -6,26 +6,28 @@ import { Namespace, Socket } from 'socket.io';
 import cognito from '../utils/cognito';
 import { createSession } from '../utils/session';
 import * as moment from 'moment';
-import { handleDisconnect } from '../utils';
+import { handleDisconnect } from '../utils/handleDisconnect';
+import logger from '../utils/logger';
 
 let encounterNamespace: Namespace;
 
 function handleEncounterConnection(socket: Socket) {
-  console.log('Encounter connected', socket.id);
+  logger.info('Encounter connected', { socketId: socket.id });
+
   const accessToken = socket.handshake.auth.accessToken;
 
   socket.on('init', () => {
-    console.log('Encounter init', socket.id);
+    logger.info('Encounter init', { socketId: socket.id });
     cognito.getUser(
       {
         AccessToken: accessToken
       },
       (error, response) => {
         if (error) {
-          return console.error(error);
+          return logger.error(error);
         }
         if (!response) {
-          return console.error(new Error('There should be a response'));
+          return logger.error('There should be a response');
         }
         const username = response?.Username;
         const nickname: string = response?.UserAttributes.find(
@@ -36,7 +38,7 @@ function handleEncounterConnection(socket: Socket) {
 
         let session = sessionStore.get(username);
         if (!session) {
-          session = createSession({ sessionId: username, nickname });
+          session = createSession({ sessionId: username });
         }
 
         if (session.page === Page.ENCOUNTER) {
@@ -45,11 +47,9 @@ function handleEncounterConnection(socket: Socket) {
             socket.emit('init', {
               participants: encounter.participants
             });
-
-            socket.join(session.sessionId);
           }
         }
-
+        sessionStore.set(session.sessionId, { ...session, connected: true });
         socket.join(session.sessionId);
       }
     );
@@ -57,12 +57,12 @@ function handleEncounterConnection(socket: Socket) {
 
   socket.on('exit', () => {
     if (!socket.data.sessionId) {
-      console.error(new Error('There should be session ID'));
+      logger.error('There should be session ID');
     }
     const session = sessionStore.get(socket.data.sessionId);
     const encounter = encounterStore.get(session.encounterId);
     if (!encounter) {
-      return console.error(new Error('There should be an encounter'));
+      return logger.error('There should be an encounter');
     }
     const sessionB = sessionStore.get(
       encounter.participants.find((p) => p.characterId !== session.sessionId)
@@ -103,7 +103,7 @@ function handleEncounterConnection(socket: Socket) {
 }
 
 export function initEncounter() {
-  console.log('Init Encounter');
+  logger.info('Init Encounter');
   encounterNamespace = io.of('/encounter');
   encounterNamespace.on('connection', handleEncounterConnection);
 }
