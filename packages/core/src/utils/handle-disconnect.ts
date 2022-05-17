@@ -1,5 +1,5 @@
 import { Namespace, Socket } from 'socket.io';
-import sessionStore from '../store/sessionStore';
+import sessionStore from '../store/session-store';
 import logger from './logger';
 
 export async function handleDisconnect(

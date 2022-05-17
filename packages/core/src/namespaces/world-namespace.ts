@@ -3,12 +3,12 @@ import { getDistance as computeDistance } from 'geolib';
 import { io } from '../io';
 import { DISTANCE_ACCURACY } from '../utils/constants';
 import { Namespace, Socket } from 'socket.io';
-import characterStore from '../store/characterStore';
-import sessionStore from '../store/sessionStore';
+import characterStore from '../store/character-store';
+import sessionStore from '../store/session-store';
 import { createCharacter } from '../utils/character';
 import cognito from '../utils/cognito';
 import { createSession } from '../utils/session';
-import { handleDisconnect } from '../utils/handleDisconnect';
+import { handleDisconnect } from '../utils/handle-disconnect';
 import logger from '../utils/logger';
 
 let worldNamespace: Namespace;

@@ -1,9 +1,9 @@
 import { io } from '../io';
-import sessionStore from '../store/sessionStore';
+import sessionStore from '../store/session-store';
 import { Namespace, Socket } from 'socket.io';
 import { createSession, determinePage } from '../utils/session';
 import cognito from '../utils/cognito';
-import { handleDisconnect } from '../utils/handleDisconnect';
+import { handleDisconnect } from '../utils/handle-disconnect';
 import logger from '../utils/logger';
 
 let authNamespace: Namespace;

@@ -1,5 +1,5 @@
 import { DEFAULT_COORDINATES, Page, Session } from '@newordergame/common';
-import sessionStore from '../store/sessionStore';
+import sessionStore from '../store/session-store';
 import logger from './logger';
 
 export function createSession({ sessionId }: { sessionId: string }): Session {

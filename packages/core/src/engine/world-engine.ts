@@ -6,15 +6,15 @@ import {
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { getWorld } from '../namespaces/worldNamespace';
+import { getWorld } from '../namespaces/world-namespace';
 import {
   DISTANCE_ACCURACY,
   ENCOUNTER_DISTANCE,
   SPEED_MULTIPLIER
 } from '../utils/constants';
-import characterStore from '../store/characterStore';
-import encounterStore from '../store/encounterStore';
-import sessionStore from '../store/sessionStore';
+import characterStore from '../store/character-store';
+import encounterStore from '../store/encounter-store';
+import sessionStore from '../store/session-store';
 import * as moment from 'moment';
 import logger from '../utils/logger';
 

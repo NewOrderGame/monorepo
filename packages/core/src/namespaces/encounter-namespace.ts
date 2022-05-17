@@ -1,12 +1,12 @@
 import { Encounter, Page } from '@newordergame/common';
-import encounterStore from '../store/encounterStore';
-import sessionStore from '../store/sessionStore';
+import encounterStore from '../store/encounter-store';
+import sessionStore from '../store/session-store';
 import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
 import cognito from '../utils/cognito';
 import { createSession } from '../utils/session';
 import * as moment from 'moment';
-import { handleDisconnect } from '../utils/handleDisconnect';
+import { handleDisconnect } from '../utils/handle-disconnect';
 import logger from '../utils/logger';
 
 let encounterNamespace: Namespace;
