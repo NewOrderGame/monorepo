@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Page } from '../../../common';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,6 +15,13 @@ export type ConnectionContextType = {
 export const ConnectionContext = React.createContext<ConnectionContextType>(
   {} as ConnectionContextType
 );
+
+enum NogNamespace {
+  AUTH = 'auth',
+  WORLD = 'world',
+  ENCOUNTER = 'encounter'
+}
+const connectedNamespaces: Set<NogNamespace> = new Set();
 
 export function ConnectionProvider({
   children
@@ -39,10 +46,15 @@ export function ConnectionProvider({
 
     core.auth.on('connect', () => {
       console.log('Connected to Auth');
+      connectedNamespaces.add(NogNamespace.AUTH);
     });
 
     core.auth.on('disconnect', () => {
       console.log('Disconnected from Auth');
+      connectedNamespaces.delete(NogNamespace.AUTH);
+      if (connectedNamespaces.size === 0) {
+        navigate(`/`);
+      }
     });
 
     core.auth.on('redirect', ({ page }: { page: Page }) => {
@@ -58,10 +70,15 @@ export function ConnectionProvider({
 
     core.world.on('connect', () => {
       console.log('Connected to World');
+      connectedNamespaces.add(NogNamespace.WORLD);
     });
 
     core.world.on('disconnect', () => {
       console.log('Disconnected from World');
+      connectedNamespaces.delete(NogNamespace.WORLD);
+      if (connectedNamespaces.size === 0) {
+        navigate(`/`);
+      }
     });
 
     core.world.on('redirect', ({ page }: { page: Page }) => {
@@ -77,10 +94,13 @@ export function ConnectionProvider({
 
     core.encounter.on('connect', () => {
       console.log('Connected to Encounter');
+      connectedNamespaces.add(NogNamespace.ENCOUNTER);
     });
 
     core.encounter.on('disconnect', () => {
       console.log('Disconnected from Encounter');
+      connectedNamespaces.delete(NogNamespace.ENCOUNTER);
+      navigate(`/`);
     });
 
     core.encounter.on('redirect', ({ page }: { page: Page }) => {
