@@ -1,5 +1,8 @@
+import * as React from 'react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Content } from '../components/Content';
+import { Loader } from '../components/Loader';
 
 export function RootPage() {
   console.log('Root Page');
@@ -13,5 +16,9 @@ export function RootPage() {
     };
   }, [navigate]);
 
-  return null;
+  return (
+    <Content>
+      <Loader />
+    </Content>
+  );
 }

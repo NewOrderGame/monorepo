@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import core from '../utils/core';
 import { EncounterParticipant } from '@newordergame/common';
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import { Loader } from '../components/Loader';
+import { Content } from '../components/Content';
 
 export function EncounterPage() {
   console.log('Encounter Page');
@@ -40,19 +42,24 @@ export function EncounterPage() {
     (participant) => participant.characterId !== authenticator.user.username
   );
 
-  return others ? (
-    <div>
-      <h1>
-        You got hit by{' '}
-        {others
-          ?.map((other: EncounterParticipant) => other.nickname)
-          .join(', ')}
-      </h1>
-      <form onSubmit={handleSubmit}>
-        <button type="submit">LET ME OUT!</button>
-      </form>
-    </div>
-  ) : (
-    <div>Loading...</div>
+  return (
+    <Content>
+      {others ? (
+        <>
+          <h1>
+            You have met{' '}
+            {others
+              ?.map((other: EncounterParticipant) => other.nickname)
+              .join(', ')}
+            .
+          </h1>
+          <form onSubmit={handleSubmit}>
+            <button type="submit">Move on</button>
+          </form>
+        </>
+      ) : (
+        <Loader />
+      )}
+    </Content>
   );
 }

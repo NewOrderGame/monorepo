@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { MapContainer, TileLayer } from 'react-leaflet';
 import core from '../utils/core';
 import { useNavigate } from 'react-router-dom';
-import 'leaflet/dist/leaflet.css';
-import { WorldMapEngine } from '../components/WorldMapEngine';
-import { MAPBOX_URL } from '../utils/constants';
 import styled from 'styled-components';
 import { FogOfWar } from '../components/FogOfWar';
+import { Loader } from '../components/Loader';
+import { Content } from '../components/Content';
+import { LatLng } from 'leaflet';
+import { Map } from '../components/Map';
 
 export function WorldPage() {
   console.log('World Page');
@@ -15,7 +15,7 @@ export function WorldPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-  const [firstCoordinates, setFirstCoordinates] = useState(null);
+  const [firstCoordinates, setFirstCoordinates] = useState<LatLng | null>(null);
 
   useEffect(() => {
     console.log('World Page init');
@@ -49,25 +49,14 @@ export function WorldPage() {
 
   return !loading && firstCoordinates ? (
     <>
-      <MapContainer
-        center={firstCoordinates}
-        zoom={18}
-        scrollWheelZoom={false}
-        dragging={false}
-        keyboard={false}
-        zoomControl={false}
-        touchZoom={false}
-        boxZoom={false}
-        doubleClickZoom={false}
-      >
-        <TileLayer url={MAPBOX_URL} />
-        <WorldMapEngine />
-      </MapContainer>
+      <Map firstCoordinates={firstCoordinates} />
       <Character src="/character.png" />
       <FogOfWar width={windowWidth} height={windowHeight} />
     </>
   ) : (
-    <div>Loading...</div>
+    <Content>
+      <Loader />
+    </Content>
   );
 }
 
