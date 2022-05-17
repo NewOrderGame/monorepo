@@ -4,10 +4,11 @@ export class InMemoryCharacterStore {
   private _characters: Map<string, Character>;
 
   constructor() {
+    console.log('Creating Character Store');
     this._characters = new Map<string, Character>();
   }
 
-  get(id: string) {
+  get(id: string): Character {
     return this._characters.get(id);
   }
 
@@ -23,7 +24,7 @@ export class InMemoryCharacterStore {
     return [...this._characters.values()];
   }
 
-  size() {
+  size(): number {
     return this._characters.size;
   }
 
@@ -32,4 +33,5 @@ export class InMemoryCharacterStore {
   }
 }
 
-export default new InMemoryCharacterStore();
+const store = new InMemoryCharacterStore();
+export default store;

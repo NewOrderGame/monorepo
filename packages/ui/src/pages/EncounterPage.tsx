@@ -1,69 +1,58 @@
 import * as React from 'react';
-import { useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import core from '../utils/core';
-import { useAuth } from '../utils/auth';
+import { EncounterParticipant } from '@newordergame/common';
+import { useAuthenticator } from '@aws-amplify/ui-react';
 
 export function EncounterPage() {
   console.log('Encounter Page');
-  const location = useLocation();
-  const auth = useAuth();
   const navigate = useNavigate();
-  const state = location.state as { encounterId: string; username: string };
-
-  console.log(location.state);
+  const authenticator = useAuthenticator();
+  const [participants, setParticipants] = useState<EncounterParticipant[]>();
 
   useEffect(() => {
-    if (auth.user) {
-      const sessionId = window.localStorage.getItem('sessionId');
-      console.log(`Connecting to Encounter`);
-      if (sessionId) {
-        core.encounter.auth = { sessionId };
-        core.encounter.connect();
-      } else {
-        core.encounter.auth = { username: auth.user?.username };
-        core.encounter.connect();
-      }
+    console.log('Encounter Page init');
 
-      core.encounter.on('session', ({ sessionId, userId, username, page }) => {
-        core.encounter.auth = { sessionId };
-        localStorage.setItem('sessionId', sessionId);
-        localStorage.setItem('userId', userId);
-        localStorage.setItem('username', username);
-        auth.logIn({ username, page });
-      });
+    core.encounter.emit('init');
 
-      core.encounter.on('logout', () => {
-        navigate('/logout');
-      });
+    core.encounter.on('init', ({ participants }) => {
+      setParticipants(participants);
+    });
 
-      core.encounter.on('connect_error', (error) => {
-        if (error.message === 'Invalid username') {
-          navigate('/logout');
-        }
-      });
+    core.encounter.on('redirect', ({ page }) => {
+      navigate(`/${page}`);
+    });
 
-      return () => {
-        core.encounter.off('connect');
-        core.encounter.off('disconnecting');
-        core.encounter.off('disconnect');
-        core.encounter.off('session');
-        core.encounter.off('logout');
-        core.encounter.off('connect_error');
-      };
-    }
-  }, []);
+    return () => {
+      console.log('Encounter Page destroy');
+      core.encounter.off('init');
+      core.encounter.off('redirect');
+    };
+  }, [navigate]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    console.log('let me out!');
+    event.preventDefault();
+    core.encounter.emit('exit');
   }
 
-  return (
+  const others = participants?.filter(
+    (participant) => participant.characterId !== authenticator.user.username
+  );
+
+  return others ? (
     <div>
-      <h1>You got hit by {state.username}</h1>
+      <h1>
+        You got hit by{' '}
+        {others
+          ?.map((other: EncounterParticipant) => other.nickname)
+          .join(', ')}
+      </h1>
       <form onSubmit={handleSubmit}>
-        <button type="submit">LET ME BACK!</button>
+        <button type="submit">LET ME OUT!</button>
       </form>
     </div>
+  ) : (
+    <div>Loading...</div>
   );
 }

@@ -1,7 +1,7 @@
-import { initAuth } from './namespaces/auth';
-import { initWorld } from './namespaces/world';
-import { initEncounter } from './namespaces/encounter';
-import { runWorld } from './engine/worldEngine';
+import { initAuth } from './namespaces/authNamespace';
+import { initWorld } from './namespaces/worldNamespace';
+import { initEncounter } from './namespaces/encounterNamespace';
+import { runWorld } from './engine/world-engine';
 
 initAuth();
 initWorld();

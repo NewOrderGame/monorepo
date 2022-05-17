@@ -4,10 +4,11 @@ export class InMemorySessionStore {
   private _sessions: Map<string, Session>;
 
   constructor() {
+    console.log('Creating Session Store');
     this._sessions = new Map<string, Session>();
   }
 
-  get(id: string) {
+  get(id: string): Session {
     return this._sessions.get(id);
   }
 
@@ -16,4 +17,5 @@ export class InMemorySessionStore {
   }
 }
 
-export default new InMemorySessionStore();
+const store = new InMemorySessionStore();
+export default store;

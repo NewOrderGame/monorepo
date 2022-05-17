@@ -1,19 +1,20 @@
-import { useAuth } from '../utils/auth';
-import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import { useAuthenticator } from '@aws-amplify/ui-react';
+import { useNavigate } from 'react-router-dom';
 
 export function LogoutPage() {
   console.log('Logout Page');
-  const auth = useAuth();
   const navigate = useNavigate();
-  useEffect(() => {
-    window.localStorage.removeItem('sessionId');
-    window.localStorage.removeItem('userId');
-    window.localStorage.removeItem('username');
+  const authenticator = useAuthenticator();
 
-    auth.logOut(() => {
-      navigate('/');
-    });
+  useEffect(() => {
+    console.log('Logout Page init');
+    authenticator.signOut();
+    navigate('/');
+
+    return () => {
+      console.log('Login Page destroy');
+    };
   }, []);
   return null;
 }

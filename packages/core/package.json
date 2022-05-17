@@ -23,10 +23,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "file:../common",
-    "@turf/turf": "^6.5.0",
+    "@newordergame/common": "^1.0.24",
+    "aws-sdk": "^2.1136.0",
+    "cognito-user-pool": "^0.1.13",
     "geolib": "^3.3.3",
     "install": "^0.13.0",
+    "moment": "^2.29.3",
     "nanoid": "^3.3.4",
     "npm": "^8.9.0",
     "socket.io": "^4.5.0"

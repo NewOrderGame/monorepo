@@ -2,19 +2,25 @@ import { Socket } from 'socket.io';
 
 export type Coordinates = { lat: number; lng: number };
 
+export enum Page {
+  LOGIN = '',
+  WORLD = 'world',
+  ENCOUNTER = 'encounter'
+}
+
 export interface Session {
   sessionId: string;
-  userId: string;
-  username: string;
+  nickname: string;
   connected: boolean;
   coordinates: Coordinates;
-  page: string;
+  encounterId: string | null;
+  encounterEndTime: number | null;
+  page: Page;
 }
 
 export interface Character {
-  userId: string;
-  username: string;
-  sessionId: string;
+  characterId: string;
+  nickname: string;
   coordinates: Coordinates;
   movesTo: Coordinates | null;
   sightRange: number; // m
@@ -26,9 +32,9 @@ export interface Character {
   socket: Socket;
 }
 
-type EncounterParticipant = {
-  userId: string;
-  username: string;
+export type EncounterParticipant = {
+  characterId: string;
+  nickname: string;
 };
 
 export interface Encounter {
@@ -45,9 +51,9 @@ export type EncounterInSight = {
 };
 
 export type CharacterInSight = {
+  characterId: string;
   coordinates: Coordinates;
-  username: string;
-  userId: string;
+  nickname: string;
   distance: number;
 };
 
@@ -55,11 +61,3 @@ export const DEFAULT_COORDINATES: Coordinates = {
   lat: 46.47705630400258,
   lng: 30.730369681615272
 };
-
-export function errorWithLogout(message: string, socket: Socket): Error {
-  const error = new Error(message);
-  socket.emit('logout');
-  socket.disconnect();
-  console.error(error);
-  return Error();
-}

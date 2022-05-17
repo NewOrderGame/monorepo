@@ -3,18 +3,23 @@ export declare type Coordinates = {
     lat: number;
     lng: number;
 };
+export declare enum Page {
+    LOGIN = "",
+    WORLD = "world",
+    ENCOUNTER = "encounter"
+}
 export interface Session {
     sessionId: string;
-    userId: string;
-    username: string;
+    nickname: string;
     connected: boolean;
     coordinates: Coordinates;
-    page: string;
+    encounterId: string | null;
+    encounterEndTime: number | null;
+    page: Page;
 }
 export interface Character {
-    userId: string;
-    username: string;
-    sessionId: string;
+    characterId: string;
+    nickname: string;
     coordinates: Coordinates;
     movesTo: Coordinates | null;
     sightRange: number;
@@ -25,9 +30,9 @@ export interface Character {
     encounterSightFlag: boolean;
     socket: Socket;
 }
-declare type EncounterParticipant = {
-    userId: string;
-    username: string;
+export declare type EncounterParticipant = {
+    characterId: string;
+    nickname: string;
 };
 export interface Encounter {
     encounterId: string;
@@ -41,11 +46,9 @@ export declare type EncounterInSight = {
     distance: number;
 };
 export declare type CharacterInSight = {
+    characterId: string;
     coordinates: Coordinates;
-    username: string;
-    userId: string;
+    nickname: string;
     distance: number;
 };
 export declare const DEFAULT_COORDINATES: Coordinates;
-export declare function errorWithLogout(message: string, socket: Socket): Error;
-export {};

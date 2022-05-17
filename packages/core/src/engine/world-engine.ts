@@ -1,24 +1,29 @@
 import { nanoid } from 'nanoid';
-import { CharacterInSight, EncounterInSight } from '@newordergame/common';
+import { CharacterInSight, EncounterInSight, Page } from '@newordergame/common';
 import {
   computeDestinationPoint as computeDestination,
   getCenter,
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { getWorld } from '../namespaces/world';
-import { DISTANCE_ACCURACY, ENCOUNTER_DISTANCE, SPEED_MULTIPLIER } from '../utils/constants';
+import { getWorld } from '../namespaces/worldNamespace';
+import {
+  DISTANCE_ACCURACY,
+  ENCOUNTER_DISTANCE,
+  SPEED_MULTIPLIER
+} from '../utils/constants';
 import characterStore from '../store/characterStore';
 import encounterStore from '../store/encounterStore';
 import sessionStore from '../store/sessionStore';
+import * as moment from 'moment';
 
 export function runWorld() {
   setInterval(() => {
-    characterStore.forEach((characterA, userIdA) => {
+    characterStore.forEach((characterA, characterIdA) => {
       const charactersInSight: CharacterInSight[] = [];
       const encountersInSight: EncounterInSight[] = [];
 
-      encounterStore.forEach((encounter, encounterId) => {
+      encounterStore.forEach((encounter) => {
         const distance = computeDistance(
           {
             latitude: characterA.coordinates.lat,
@@ -40,14 +45,14 @@ export function runWorld() {
           });
 
           characterA.encounterSightFlag = true;
-          characterStore.set(characterA.userId, {
+          characterStore.set(characterA.characterId, {
             ...characterA
           });
         }
       });
 
-      characterStore.forEach((characterB, userIdB) => {
-        if (userIdA !== userIdB) {
+      characterStore.forEach((characterB, characterIdB) => {
+        if (characterIdA !== characterIdB) {
           const distance = computeDistance(
             {
               latitude: characterA.coordinates.lat,
@@ -62,49 +67,88 @@ export function runWorld() {
           if (distance <= characterA.sightRange) {
             charactersInSight.push({
               coordinates: characterB.coordinates,
-              userId: characterB.userId,
-              username: characterB.username,
+              characterId: characterB.characterId,
+              nickname: characterB.nickname,
               distance
             });
 
             characterA.characterSightFlag = true;
-            characterStore.set(characterA.userId, {
+            characterStore.set(characterA.characterId, {
               ...characterA
             });
           }
 
-          if (distance <= ENCOUNTER_DISTANCE) {
-            const encounterId = nanoid();
+          const session = sessionStore.get(characterA.characterId);
+          let canEncounter: boolean = true;
+
+          if (session.encounterEndTime) {
+            const now = moment().valueOf();
+            canEncounter =
+              session.encounterEndTime &&
+              moment(session.encounterEndTime).add(5, 'second').diff(now) <= 0;
+          }
+
+          if (canEncounter && session.encounterEndTime) {
+            session.encounterEndTime = null;
+            sessionStore.set(session.sessionId, {
+              ...session
+            });
+          }
+
+          if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
+            console.log(
+              `Encounter: ${characterA.characterId} and ${characterB.characterId} (${characterA.nickname} and ${characterB.nickname})}`
+            );
             const center = getCenter([
               characterA.coordinates,
               characterB.coordinates
             ]);
 
             if (center) {
+              const encounterId = nanoid();
+              const centerCoordinates = {
+                lat: center.latitude,
+                lng: center.longitude
+              };
+
+              const sessionIdA = characterA.socket.data.sessionId;
+              const sessionA = sessionStore.get(sessionIdA);
+              sessionA.page = Page.ENCOUNTER;
+              sessionA.encounterId = encounterId;
+              sessionA.coordinates = centerCoordinates;
+              sessionStore.set(sessionIdA, { ...sessionA });
+
+              const sessionIdB = characterB.socket.data.sessionId;
+              const sessionB = sessionStore.get(sessionIdB);
+              sessionB.page = Page.ENCOUNTER;
+              sessionB.encounterId = encounterId;
+              sessionB.coordinates = centerCoordinates;
+              sessionStore.set(sessionIdB, { ...sessionB });
+
+              characterStore.delete(characterA.characterId);
+              characterStore.delete(characterB.characterId);
+
               encounterStore.set(encounterId, {
-                coordinates: { lat: center.latitude, lng: center.longitude },
-                encounterId: encounterId,
+                encounterId,
+                coordinates: centerCoordinates,
                 participants: [
-                  { userId: characterA.userId, username: characterA.username },
-                  { userId: characterB.userId, username: characterB.username }
+                  {
+                    characterId: characterA.characterId,
+                    nickname: characterA.nickname
+                  },
+                  {
+                    characterId: characterB.characterId,
+                    nickname: characterB.nickname
+                  }
                 ]
               });
+              getWorld()
+                .to(characterA.characterId)
+                .emit('redirect', { page: Page.ENCOUNTER });
 
-              getWorld().to(characterA.userId).emit('encounter', {
-                encounterId,
-                username: characterB.username
-              });
-
-              getWorld().to(characterB.userId).emit('encounter', {
-                encounterId,
-                username: characterA.username
-              });
-
-              characterA.socket.disconnect();
-              characterB.socket.disconnect();
-
-              characterStore.delete(characterA.userId);
-              characterStore.delete(characterB.userId);
+              getWorld()
+                .to(characterB.characterId)
+                .emit('redirect', { page: Page.ENCOUNTER });
             } else {
               console.error(new Error('Something is wrong with a center'));
             }
@@ -122,7 +166,7 @@ export function runWorld() {
         if (distance < characterA.speed / SPEED_MULTIPLIER) {
           characterA.coordinates = characterA.movesTo;
           characterA.movesTo = null;
-          characterStore.set(characterA.userId, {
+          characterStore.set(characterA.characterId, {
             ...characterA
           });
           const sessionId = characterA.socket.data.sessionId;
@@ -145,7 +189,7 @@ export function runWorld() {
             lat: destination.latitude,
             lng: destination.longitude
           };
-          characterStore.set(characterA.userId, {
+          characterStore.set(characterA.characterId, {
             ...characterA
           });
         }
@@ -153,12 +197,12 @@ export function runWorld() {
 
       if (characterA.encounterSightFlag) {
         getWorld()
-          .to(characterA.userId)
+          .to(characterA.characterId)
           .emit('encounters-in-sight', encountersInSight);
 
         if (!encountersInSight.length) {
           characterA.encounterSightFlag = false;
-          characterStore.set(characterA.userId, {
+          characterStore.set(characterA.characterId, {
             ...characterA
           });
         }
@@ -166,12 +210,12 @@ export function runWorld() {
 
       if (characterA.characterSightFlag) {
         getWorld()
-          .to(characterA.userId)
+          .to(characterA.characterId)
           .emit('characters-in-sight', charactersInSight);
 
         if (!charactersInSight.length) {
           characterA.characterSightFlag = false;
-          characterStore.set(characterA.userId, {
+          characterStore.set(characterA.characterId, {
             ...characterA
           });
         }

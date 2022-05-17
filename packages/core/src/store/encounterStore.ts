@@ -4,10 +4,11 @@ export class InMemoryEncounterStore {
   private _encounters: Map<string, Encounter>;
 
   constructor() {
+    console.log('Creating Encounter Store');
     this._encounters = new Map<string, Encounter>();
   }
 
-  get(id: string) {
+  get(id: string): Encounter {
     return this._encounters.get(id);
   }
 
@@ -23,7 +24,7 @@ export class InMemoryEncounterStore {
     return [...this._encounters.values()];
   }
 
-  size() {
+  size(): number {
     return this._encounters.size;
   }
 
@@ -32,4 +33,5 @@ export class InMemoryEncounterStore {
   }
 }
 
-export default new InMemoryEncounterStore();
+const store = new InMemoryEncounterStore();
+export default store;
