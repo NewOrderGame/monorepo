@@ -8,6 +8,7 @@ import Amplify from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
 import { Authenticator } from '@aws-amplify/ui-react';
 import { ConnectionProvider } from './utils/connection';
+import styled from 'styled-components';
 
 if (!process.env.REACT_APP_NOG_USER_POOL_ID) {
   throw new Error('Environment variable REACT_APP_NOG_USER_POOL_ID is missing');
@@ -37,16 +38,27 @@ console.log('Index');
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const Cover = styled.div`
+  width: 100%;
+  height: 100%;
+  background-image: url('cover.jpg');
+  background-size: cover;
+  background-position: center;
+`;
+
 root.render(
-  <React.StrictMode>
+  <Cover>
     <Authenticator loginMechanisms={['email']} signUpAttributes={['nickname']}>
       <BrowserRouter>
         <ConnectionProvider>
-          <App />
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
         </ConnectionProvider>
       </BrowserRouter>
     </Authenticator>
-  </React.StrictMode>
+  </Cover>
 );
 
 // If you want to start measuring performance in your app, pass a function

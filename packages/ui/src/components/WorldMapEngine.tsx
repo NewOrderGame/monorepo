@@ -10,7 +10,7 @@ import { useEffect } from 'react';
 import core from '../utils/core';
 import { CharacterInSight, EncounterInSight } from '../../../common';
 
-export function MapEngine() {
+export function WorldMapEngine() {
   const map = useMap();
 
   useEffect(() => {
@@ -72,6 +72,7 @@ export function MapEngine() {
 
   useMapEvents({
     click(event: LeafletMouseEvent) {
+      console.log('Move', event.latlng);
       core.world.emit('move', event.latlng);
     }
   });
@@ -93,4 +94,3 @@ const zoomPanOptions: ZoomPanOptions = {
   duration: 1,
   easeLinearity: 1
 };
-

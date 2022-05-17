@@ -4,7 +4,7 @@ import { MapContainer, TileLayer } from 'react-leaflet';
 import core from '../utils/core';
 import { useNavigate } from 'react-router-dom';
 import 'leaflet/dist/leaflet.css';
-import { MapEngine } from '../components/MapEngine';
+import { WorldMapEngine } from '../components/WorldMapEngine';
 import { MAPBOX_URL } from '../utils/constants';
 import styled from 'styled-components';
 import { FogOfWar } from '../components/FogOfWar';
@@ -61,7 +61,7 @@ export function WorldPage() {
         doubleClickZoom={false}
       >
         <TileLayer url={MAPBOX_URL} />
-        <MapEngine />
+        <WorldMapEngine />
       </MapContainer>
       <Character src="/character.png" />
       <FogOfWar width={windowWidth} height={windowHeight} />
