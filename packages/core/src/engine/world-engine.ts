@@ -20,6 +20,8 @@ import logger from '../utils/logger';
 
 export function runWorld() {
   setInterval(() => {
+    const currentTick = moment().valueOf();
+
     characterStore.forEach((characterA, characterIdA) => {
       const charactersInSight: CharacterInSight[] = [];
       const encountersInSight: EncounterInSight[] = [];
@@ -79,20 +81,23 @@ export function runWorld() {
             });
           }
 
-          const session = sessionStore.get(characterA.characterId);
-          let canEncounter: boolean = true;
+          const sessionA = sessionStore.get(characterA.characterId);
+          const sessionB = sessionStore.get(characterB.characterId);
+          let canEncounter: boolean =
+            (!sessionA.encounterStartTime && !sessionB.encounterStartTime) ||
+            sessionB.encounterStartTime === currentTick;
 
-          if (session.encounterEndTime) {
+          if (sessionA.encounterEndTime) {
             const now = moment().valueOf();
             canEncounter =
-              session.encounterEndTime &&
-              moment(session.encounterEndTime).add(5, 'second').diff(now) <= 0;
+              canEncounter &&
+              moment(sessionA.encounterEndTime).add(5, 'second').diff(now) <= 0;
           }
 
-          if (canEncounter && session.encounterEndTime) {
-            session.encounterEndTime = null;
-            sessionStore.set(session.sessionId, {
-              ...session
+          if (canEncounter && sessionA.encounterEndTime) {
+            sessionA.encounterEndTime = null;
+            sessionStore.set(sessionA.sessionId, {
+              ...sessionA
             });
           }
 
@@ -127,6 +132,7 @@ export function runWorld() {
               sessionA.page = Page.ENCOUNTER;
               sessionA.encounterId = encounterId;
               sessionA.coordinates = centerCoordinates;
+              sessionA.encounterStartTime = currentTick;
               sessionStore.set(sessionIdA, { ...sessionA });
 
               const sessionIdB = characterB.socket.data.sessionId;
@@ -134,6 +140,7 @@ export function runWorld() {
               sessionB.page = Page.ENCOUNTER;
               sessionB.encounterId = encounterId;
               sessionB.coordinates = centerCoordinates;
+              sessionB.encounterStartTime = currentTick;
               sessionStore.set(sessionIdB, { ...sessionB });
 
               characterStore.delete(characterA.characterId);
@@ -141,6 +148,7 @@ export function runWorld() {
 
               encounterStore.set(encounterId, {
                 encounterId,
+                encounterStartTime: currentTick,
                 coordinates: centerCoordinates,
                 participants: [
                   {

@@ -72,6 +72,7 @@ function handleEncounterConnection(socket: Socket) {
     session.encounterId = null;
     session.page = Page.WORLD;
     session.encounterEndTime = moment().valueOf();
+    session.encounterStartTime = null;
     session.coordinates = encounter.coordinates;
     sessionStore.set(session.sessionId, {
       ...session
@@ -80,6 +81,7 @@ function handleEncounterConnection(socket: Socket) {
     sessionB.encounterId = null;
     sessionB.page = Page.WORLD;
     sessionB.encounterEndTime = moment().valueOf();
+    sessionB.encounterStartTime = null;
     sessionB.coordinates = encounter.coordinates;
     sessionStore.set(sessionB.sessionId, {
       ...sessionB

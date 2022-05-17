@@ -15,6 +15,7 @@ export interface Session {
     coordinates: Coordinates;
     encounterId: string | null;
     encounterEndTime: number | null;
+    encounterStartTime: number | null;
     page: Page;
 }
 export interface Character {
@@ -38,6 +39,7 @@ export interface Encounter {
     encounterId: string;
     participants: EncounterParticipant[];
     coordinates: Coordinates;
+    encounterStartTime: number | null;
 }
 export declare type EncounterInSight = {
     coordinates: Coordinates;

@@ -10,6 +10,7 @@ export function createSession({ sessionId }: { sessionId: string }): Session {
     connected: true,
     encounterId: null,
     encounterEndTime: null,
+    encounterStartTime: null,
     page: Page.LOGIN
   };
   sessionStore.set(sessionId, session);
