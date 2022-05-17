@@ -10,22 +10,6 @@ import { useEffect } from 'react';
 import core from '../utils/core';
 import { CharacterInSight, EncounterInSight } from '../../../common';
 
-const otherCharacterIcon = icon({
-  iconUrl: 'other-character.png',
-  iconSize: [62, 62] // size of the icon
-});
-
-const encounterIcon = icon({
-  iconUrl: 'encounter.png',
-  iconSize: [44, 40] // size of the icon
-});
-
-const zoomPanOptions: ZoomPanOptions = {
-  animate: true,
-  duration: 1,
-  easeLinearity: 1
-};
-
 export function MapEngine() {
   const map = useMap();
 
@@ -93,3 +77,20 @@ export function MapEngine() {
   });
   return null;
 }
+
+const otherCharacterIcon = icon({
+  iconUrl: 'other-character.png',
+  iconSize: [62, 62] // size of the icon
+});
+
+const encounterIcon = icon({
+  iconUrl: 'encounter.png',
+  iconSize: [44, 40] // size of the icon
+});
+
+const zoomPanOptions: ZoomPanOptions = {
+  animate: true,
+  duration: 1,
+  easeLinearity: 1
+};
+
