@@ -70,4 +70,5 @@ const Character = styled.img`
   margin-left: -21.5px;
   z-index: 500;
   pointer-events: none;
+  user-select: none;
 `;
