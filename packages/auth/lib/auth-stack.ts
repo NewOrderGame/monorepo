@@ -35,7 +35,7 @@ export class AuthStack extends Stack {
       },
       accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
       // TODO: Change to RETAIN when Beta Test starts
-      removalPolicy: RemovalPolicy.DESTROY,
+      removalPolicy: RemovalPolicy.RETAIN,
     });
 
     // 👇 User Pool Client attributes
