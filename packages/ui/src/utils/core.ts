@@ -3,7 +3,7 @@ import { io, Socket } from 'socket.io-client';
 export const CORE_URL =
   process.env.NODE_ENV === 'development'
     ? 'ws://10.108.1.8:5000'
-    : 'wss://core.newordergame.com';
+    : 'wss://core.newordergame.hochburg.devlysh.com';
 
 function core() {
   const auth: Socket = io(`${CORE_URL}/auth`, {
