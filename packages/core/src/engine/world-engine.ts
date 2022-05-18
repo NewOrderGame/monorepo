@@ -103,7 +103,7 @@ export function runWorld() {
 
           if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
             logger.info(
-              'Encounter: (${characterA.nickname} and ${characterB.nickname})}',
+              'Encounter',
               {
                 characterA: {
                   characterId: characterA.characterId,
