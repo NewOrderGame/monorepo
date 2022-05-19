@@ -1,20 +1,22 @@
-import {
-  icon,
-  LatLng,
-  LeafletMouseEvent,
-  marker,
-  ZoomPanOptions
-} from 'leaflet';
+import { icon, LatLng, LeafletMouseEvent, marker, Marker, ZoomPanOptions } from 'leaflet';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useEffect } from 'react';
-import core from '../utils/core';
 import { CharacterInSight, EncounterInSight } from '../../../common';
+import { useConnection } from '../utils/connection';
 
 export function WorldMapEngine() {
   const map = useMap();
+  const connection = useConnection();
+
+  useMapEvents({
+    click(event: LeafletMouseEvent) {
+      console.log('Move', event.latlng);
+      connection.world.emit('move', event.latlng);
+    }
+  });
 
   useEffect(() => {
-    core.world.on(
+    connection.world.on(
       'move',
       ({
         coordinates,
@@ -30,52 +32,52 @@ export function WorldMapEngine() {
       }
     );
 
-    let charactersInSight: (CharacterInSight & { marker: L.Marker })[] = [];
-    core.world.on('characters-in-sight', (characters: CharacterInSight[]) => {
-      charactersInSight.forEach((character) => {
-        character.marker.remove();
-      });
-      charactersInSight = [];
-      characters.forEach((character) => {
-        charactersInSight.push({
-          ...character,
-          marker: marker(character.coordinates, {
-            icon: otherCharacterIcon
-          }).addTo(map)
+    let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];
+    connection.world.on(
+      'characters-in-sight',
+      (characters: CharacterInSight[]) => {
+        charactersInSight.forEach((character) => {
+          character.marker.remove();
         });
-      });
-    });
+        charactersInSight = [];
+        characters.forEach((character) => {
+          charactersInSight.push({
+            ...character,
+            marker: marker(character.coordinates, {
+              icon: otherCharacterIcon
+            }).addTo(map)
+          });
+        });
+      }
+    );
 
-    let encountersInSight: (EncounterInSight & { marker: L.Marker })[] = [];
-    core.world.on('encounters-in-sight', (encounters: EncounterInSight[]) => {
-      encountersInSight.forEach((character) => {
-        character.marker.remove();
-      });
-      encountersInSight = [];
-      encounters.forEach((character) => {
-        encountersInSight.push({
-          ...character,
-          marker: marker(character.coordinates, {
-            icon: encounterIcon
-          }).addTo(map)
+    let encountersInSight: (EncounterInSight & { marker: Marker })[] = [];
+    connection.world.on(
+      'encounters-in-sight',
+      (encounters: EncounterInSight[]) => {
+        encountersInSight.forEach((character) => {
+          character.marker.remove();
         });
-      });
-    });
+        encountersInSight = [];
+        encounters.forEach((character) => {
+          encountersInSight.push({
+            ...character,
+            marker: marker(character.coordinates, {
+              icon: encounterIcon
+            }).addTo(map)
+          });
+        });
+      }
+    );
 
     return () => {
-      core.world.emit('destroy');
-      core.world.off('move');
-      core.world.off('characters-in-sight');
-      core.world.off('encounters-in-sight');
+      connection.world.emit('destroy');
+      connection.world.off('move');
+      connection.world.off('characters-in-sight');
+      connection.world.off('encounters-in-sight');
     };
   }, [map]);
 
-  useMapEvents({
-    click(event: LeafletMouseEvent) {
-      console.log('Move', event.latlng);
-      core.world.emit('move', event.latlng);
-    }
-  });
   return null;
 }
 

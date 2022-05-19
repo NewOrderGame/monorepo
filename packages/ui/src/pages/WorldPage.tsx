@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import core from '../utils/core';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FogOfWar } from '../components/FogOfWar';
@@ -8,9 +7,11 @@ import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
 import { LatLng } from 'leaflet';
 import { Map } from '../components/Map';
+import { useConnection } from '../utils/connection';
 
 export function WorldPage() {
   console.log('World Page');
+  const connection = useConnection();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -20,17 +21,17 @@ export function WorldPage() {
   useEffect(() => {
     console.log('World Page init');
 
-    core.world.emit('init');
+    connection.world.emit('init');
 
-    core.world.on('init', ({ coordinates }) => {
+    connection.world.on('init', ({ coordinates }) => {
       setFirstCoordinates(coordinates);
       setLoading(false);
     });
 
     return () => {
       console.log('World Page destroy');
-      core.world.emit('destroy');
-      core.world.off('init');
+      connection.world.emit('destroy');
+      connection.world.off('init');
     };
   }, [navigate]);
 

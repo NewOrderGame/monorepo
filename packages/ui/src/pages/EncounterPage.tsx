@@ -1,14 +1,15 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import core from '../utils/core';
 import { EncounterParticipant } from '@newordergame/common';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
+import { useConnection } from '../utils/connection';
 
 export function EncounterPage() {
   console.log('Encounter Page');
+  const connection = useConnection();
   const navigate = useNavigate();
   const authenticator = useAuthenticator();
   const [participants, setParticipants] = useState<EncounterParticipant[]>();
@@ -16,26 +17,26 @@ export function EncounterPage() {
   useEffect(() => {
     console.log('Encounter Page init');
 
-    core.encounter.emit('init');
+    connection.encounter.emit('init');
 
-    core.encounter.on('init', ({ participants }) => {
+    connection.encounter.on('init', ({ participants }) => {
       setParticipants(participants);
     });
 
-    core.encounter.on('redirect', ({ page }) => {
+    connection.encounter.on('redirect', ({ page }) => {
       navigate(`/${page}`);
     });
 
     return () => {
       console.log('Encounter Page destroy');
-      core.encounter.off('init');
-      core.encounter.off('redirect');
+      connection.encounter.off('init');
+      connection.encounter.off('redirect');
     };
   }, [navigate]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    core.encounter.emit('exit');
+    connection.encounter.emit('exit');
   }
 
   const others = participants?.filter(
