@@ -4,7 +4,7 @@
   "description": "My webpack project",
   "main": "src/index.ts",
   "scripts": {
-    "start": "NODE_ENV=development nodemon",
+    "start": "cp environment/.env.development .env && nodemon",
     "test": "echo \"Error: no test specified\" && exit 1",
     "deploy": "npm run citadel:deploy",
     "citadel:deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push && npm run citadel:restart",
@@ -24,8 +24,8 @@
     "aws:docker:tag": "docker tag core-service $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "aws:docker:login": "aws ecr get-login-password | docker login --username AWS --password-stdin $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com",
     "aws:docker:push": "docker push $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
-    "webpack:build": "webpack --mode=production --node-env=production",
-    "webpack:watch": "webpack --watch",
+    "webpack:build": "cp environment/.env.production .env && webpack --mode=production --node-env=production",
+    "webpack:watch": "cp environment/.env.development .env && webpack --watch",
     "update-common": "npm i -S @newordergame/common@latest",
     "prettier": "npx prettier --write ."
   },
@@ -47,6 +47,8 @@
   "devDependencies": {
     "@types/geolib": "^2.0.23",
     "@types/leaflet": "^1.7.9",
+    "dotenv": "^16.0.1",
+    "dotenv-webpack": "^7.1.0",
     "nodemon": "^2.0.16",
     "prettier": "^2.6.2",
     "ts-loader": "^9.3.0",

@@ -3,7 +3,8 @@ RUN mkdir -p /usr/app
 WORKDIR /usr/app
 COPY package.json ./
 RUN npm install
-COPY webpack.config.js tsconfig.json ./
+COPY webpack.config.js tsconfig.json  ./
+COPY  environment/.env.production ./environment/
 COPY src ./src
 RUN npm run webpack:build
 EXPOSE 5000

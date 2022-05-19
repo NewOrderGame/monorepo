@@ -1,8 +1,8 @@
 import * as React from 'react';
+import { useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
-import { useEffect, useState } from 'react';
 import { Page } from '../../../common';
 import { useNavigate } from 'react-router-dom';
 

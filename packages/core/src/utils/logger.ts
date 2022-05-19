@@ -1,16 +1,15 @@
 import { transports, createLogger, format } from 'winston';
 
-const logger = createLogger({
-  level: 'info',
-  format: format.json(),
-  transports: [
-    new transports.Console({ level: 'debug', format: format.simple() })
-  ]
-});
+const logger = createLogger();
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'production') {
+  logger.add(
+    new transports.Console({ level: 'info', format: format.simple() })
+  );
+} else {
   logger.add(
     new transports.Console({
+      level: 'debug',
       format: format.simple()
     })
   );

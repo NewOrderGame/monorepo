@@ -1,14 +1,14 @@
 import { Server } from 'socket.io';
+import logger from './utils/logger';
 
-const UI_ORIGIN =
-  process.env.NODE_ENV === 'development'
-    ? 'http://10.108.1.8:3000'
-    : 'https://play.newordergame.com';
+if (!process.env.UI_ORIGIN) {
+  throw logger.error('Environment variable UI_ORIGIN is missing');
+}
 
 const PORT = 5000;
 export const io = new Server({
   cors: {
-    origin: UI_ORIGIN
+    origin: process.env.UI_ORIGIN
   }
 });
 

@@ -6,7 +6,7 @@ export class InMemoryCharacterStore {
 
   constructor() {
     logger.info(
-      'Creating character store',
+      'Creating Character store',
     );
     this._characters = new Map<string, Character>();
   }
