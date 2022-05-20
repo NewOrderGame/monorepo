@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
-import { Page } from '../../../common';
+import { Page, NogNamespace } from '@newordergame/common';
 import { useNavigate } from 'react-router-dom';
 
-export type ConnectionContextType = {
+type ConnectionContextType = {
   auth: Socket;
   world: Socket;
   encounter: Socket;
@@ -14,16 +14,11 @@ export type ConnectionContextType = {
   size: () => number;
 };
 
+const connectedNamespaces: Set<NogNamespace> = new Set();
+
 export const ConnectionContext = React.createContext<ConnectionContextType>(
   {} as ConnectionContextType
 );
-
-enum NogNamespace {
-  AUTH = 'auth',
-  WORLD = 'world',
-  ENCOUNTER = 'encounter'
-}
-const connectedNamespaces: Set<NogNamespace> = new Set();
 
 export function ConnectionProvider({
   children
@@ -124,8 +119,8 @@ export function ConnectionProvider({
         core.auth.off('connect');
         core.auth.off('disconnect');
         core.world.off('connect');
-        core.world.off('connect');
-        core.encounter.off('disconnect');
+        core.world.off('disconnect');
+        core.encounter.off('connect');
         core.encounter.off('disconnect');
       };
     }
