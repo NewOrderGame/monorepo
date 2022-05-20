@@ -32,7 +32,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "^1.0.26",
+    "@newordergame/common": "^1.0.28",
     "@types/winston": "^2.4.4",
     "aws-sdk": "^2.1136.0",
     "cognito-user-pool": "^0.1.13",

@@ -11,7 +11,7 @@ export function createSession({ sessionId }: { sessionId: string }): Session {
     encounterId: null,
     encounterEndTime: null,
     encounterStartTime: null,
-    page: Page.LOGIN
+    page: Page.ROOT
   };
   sessionStore.set(sessionId, session);
   return session;

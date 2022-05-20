@@ -3,9 +3,28 @@ import { Socket } from 'socket.io';
 export type Coordinates = { lat: number; lng: number };
 
 export enum Page {
-  LOGIN = '',
+  ROOT = '',
   WORLD = 'world',
   ENCOUNTER = 'encounter'
+}
+
+export enum NogNamespace {
+  AUTH = 'auth',
+  WORLD = 'world',
+  ENCOUNTER = 'encounter'
+}
+
+export enum NogEvent {
+  CONNECTION = 'connection',
+  CONNECT = 'connect',
+  DISCONNECT = 'disconnect',
+  INIT = 'init',
+  DESTROY = 'destroy',
+  REDIRECT = 'redirect',
+  MOVE = 'move',
+  EXIT = 'exit',
+  ENCOUNTERS_IN_SIGHT = 'encounters-in-sight',
+  CHARACTERS_IN_SIGHT = 'characters-in-sight'
 }
 
 export interface Session {
@@ -33,17 +52,17 @@ export interface Character {
   socket: Socket;
 }
 
-export type EncounterParticipant = {
-  characterId: string;
-  nickname: string;
-};
-
 export interface Encounter {
   encounterId: string;
   participants: EncounterParticipant[];
   coordinates: Coordinates;
   encounterStartTime: number | null;
 }
+
+export type EncounterParticipant = {
+  characterId: string;
+  nickname: string;
+};
 
 export type EncounterInSight = {
   coordinates: Coordinates;

@@ -8,6 +8,7 @@ import { Content } from '../components/Content';
 import { LatLng } from 'leaflet';
 import { Map } from '../components/Map';
 import { useConnection } from '../utils/connection';
+import { NogEvent } from '@newordergame/common';
 
 export function WorldPage() {
   console.log('World Page');
@@ -21,17 +22,17 @@ export function WorldPage() {
   useEffect(() => {
     console.log('World Page init');
 
-    connection.world.emit('init');
+    connection.world.emit(NogEvent.INIT);
 
-    connection.world.on('init', ({ coordinates }) => {
+    connection.world.on(NogEvent.INIT, ({ coordinates }) => {
       setFirstCoordinates(coordinates);
       setLoading(false);
     });
 
     return () => {
       console.log('World Page destroy');
-      connection.world.emit('destroy');
-      connection.world.off('init');
+      connection.world.emit(NogEvent.DESTROY);
+      connection.world.off(NogEvent.INIT);
     };
   }, [navigate]);
 

@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
-import { Page, NogNamespace } from '@newordergame/common';
+import { Page, NogNamespace, NogEvent } from '@newordergame/common';
 import { useNavigate } from 'react-router-dom';
 
 type ConnectionContextType = {
@@ -48,12 +48,12 @@ export function ConnectionProvider({
       console.log('Connecting to Auth...');
       core.auth.connect();
 
-      core.auth.on('connect', () => {
+      core.auth.on(NogEvent.CONNECT, () => {
         console.log('Connected to Auth');
         connectedNamespaces.add(NogNamespace.AUTH);
       });
 
-      core.auth.on('disconnect', () => {
+      core.auth.on(NogEvent.DISCONNECT, () => {
         console.log('Disconnected from Auth');
         connectedNamespaces.delete(NogNamespace.AUTH);
         if (connectedNamespaces.size === 0) {
@@ -61,7 +61,7 @@ export function ConnectionProvider({
         }
       });
 
-      core.auth.on('redirect', ({ page }: { page: Page }) => {
+      core.auth.on(NogEvent.REDIRECT, ({ page }: { page: Page }) => {
         navigate(`/${page}`);
       });
 
@@ -74,12 +74,12 @@ export function ConnectionProvider({
       };
       core.world.connect();
 
-      core.world.on('connect', () => {
+      core.world.on(NogEvent.CONNECT, () => {
         console.log('Connected to World');
         connectedNamespaces.add(NogNamespace.WORLD);
       });
 
-      core.world.on('disconnect', () => {
+      core.world.on(NogEvent.DISCONNECT, () => {
         console.log('Disconnected from World');
         connectedNamespaces.delete(NogNamespace.WORLD);
         if (connectedNamespaces.size === 0) {
@@ -87,7 +87,7 @@ export function ConnectionProvider({
         }
       });
 
-      core.world.on('redirect', ({ page }: { page: Page }) => {
+      core.world.on(NogEvent.REDIRECT, ({ page }: { page: Page }) => {
         navigate(`/${page}`);
       });
 
@@ -100,28 +100,28 @@ export function ConnectionProvider({
       };
       core.encounter.connect();
 
-      core.encounter.on('connect', () => {
+      core.encounter.on(NogEvent.CONNECT, () => {
         console.log('Connected to Encounter');
         connectedNamespaces.add(NogNamespace.ENCOUNTER);
       });
 
-      core.encounter.on('disconnect', () => {
+      core.encounter.on(NogEvent.DISCONNECT, () => {
         console.log('Disconnected from Encounter');
         connectedNamespaces.delete(NogNamespace.ENCOUNTER);
         navigate(`/`);
       });
 
-      core.encounter.on('redirect', ({ page }: { page: Page }) => {
+      core.encounter.on(NogEvent.REDIRECT, ({ page }: { page: Page }) => {
         navigate(`/${page}`);
       });
 
       return () => {
-        core.auth.off('connect');
-        core.auth.off('disconnect');
-        core.world.off('connect');
-        core.world.off('disconnect');
-        core.encounter.off('connect');
-        core.encounter.off('disconnect');
+        core.auth.off(NogEvent.CONNECT);
+        core.auth.off(NogEvent.DISCONNECT);
+        core.world.off(NogEvent.CONNECT);
+        core.world.off(NogEvent.DISCONNECT);
+        core.encounter.off(NogEvent.CONNECT);
+        core.encounter.off(NogEvent.DISCONNECT);
       };
     }
   }

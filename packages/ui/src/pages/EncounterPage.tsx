@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { EncounterParticipant } from '@newordergame/common';
+import { EncounterParticipant, NogEvent } from '@newordergame/common';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
@@ -17,26 +17,26 @@ export function EncounterPage() {
   useEffect(() => {
     console.log('Encounter Page init');
 
-    connection.encounter.emit('init');
+    connection.encounter.emit(NogEvent.INIT);
 
-    connection.encounter.on('init', ({ participants }) => {
+    connection.encounter.on(NogEvent.INIT, ({ participants }) => {
       setParticipants(participants);
     });
 
-    connection.encounter.on('redirect', ({ page }) => {
+    connection.encounter.on(NogEvent.REDIRECT, ({ page }) => {
       navigate(`/${page}`);
     });
 
     return () => {
       console.log('Encounter Page destroy');
-      connection.encounter.off('init');
-      connection.encounter.off('redirect');
+      connection.encounter.off(NogEvent.INIT);
+      connection.encounter.off(NogEvent.REDIRECT);
     };
   }, [navigate]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    connection.encounter.emit('exit');
+    connection.encounter.emit(NogEvent.EXIT);
   }
 
   const others = participants?.filter(

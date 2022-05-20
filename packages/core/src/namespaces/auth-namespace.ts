@@ -5,6 +5,7 @@ import { createSession, determinePage } from '../utils/session';
 import cognito from '../utils/cognito';
 import { handleDisconnect } from '../utils/handle-disconnect';
 import logger from '../utils/logger';
+import { NogEvent } from '@newordergame/common';
 
 let authNamespace: Namespace;
 
@@ -27,7 +28,8 @@ function handleAuthConnection(socket: Socket) {
       const nickname: string = response.UserAttributes.find(
         (a) => a.Name === 'nickname'
       )?.Value;
-      if (error) return logger.error(error);
+
+      socket.data.sessionId = username;
 
       let session = sessionStore.get(username);
       if (!session) {
@@ -44,7 +46,7 @@ function handleAuthConnection(socket: Socket) {
       });
       socket.join(session.sessionId);
 
-      socket.emit('redirect', {
+      socket.emit(NogEvent.REDIRECT, {
         page: session.page
       });
       logger.info('Auth sent redirect', {
@@ -55,7 +57,7 @@ function handleAuthConnection(socket: Socket) {
   );
 
   socket.on(
-    'disconnect',
+    NogEvent.DISCONNECT,
     async () => await handleDisconnect('Auth', socket, authNamespace)
   );
 }
@@ -63,7 +65,7 @@ function handleAuthConnection(socket: Socket) {
 export function initAuth() {
   logger.info('Init Auth');
   authNamespace = io.of('/auth');
-  authNamespace.on('connection', handleAuthConnection);
+  authNamespace.on(NogEvent.CONNECTION, handleAuthConnection);
 }
 
 export function getAuth(): Namespace {

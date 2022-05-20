@@ -1,8 +1,16 @@
-import { icon, LatLng, LeafletMouseEvent, marker, Marker, ZoomPanOptions } from 'leaflet';
+import {
+  icon,
+  LatLng,
+  LeafletMouseEvent,
+  marker,
+  Marker,
+  ZoomPanOptions
+} from 'leaflet';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useEffect } from 'react';
 import { CharacterInSight, EncounterInSight } from '../../../common';
 import { useConnection } from '../utils/connection';
+import { NogEvent } from '@newordergame/common';
 
 export function WorldMapEngine() {
   const map = useMap();
@@ -11,7 +19,7 @@ export function WorldMapEngine() {
   useMapEvents({
     click(event: LeafletMouseEvent) {
       console.log('Move', event.latlng);
-      connection.world.emit('move', event.latlng);
+      connection.world.emit(NogEvent.MOVE, event.latlng);
     }
   });
 
@@ -34,7 +42,7 @@ export function WorldMapEngine() {
 
     let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];
     connection.world.on(
-      'characters-in-sight',
+      NogEvent.CHARACTERS_IN_SIGHT,
       (characters: CharacterInSight[]) => {
         charactersInSight.forEach((character) => {
           character.marker.remove();
@@ -53,7 +61,7 @@ export function WorldMapEngine() {
 
     let encountersInSight: (EncounterInSight & { marker: Marker })[] = [];
     connection.world.on(
-      'encounters-in-sight',
+      NogEvent.ENCOUNTERS_IN_SIGHT,
       (encounters: EncounterInSight[]) => {
         encountersInSight.forEach((character) => {
           character.marker.remove();
@@ -71,12 +79,12 @@ export function WorldMapEngine() {
     );
 
     return () => {
-      connection.world.emit('destroy');
-      connection.world.off('move');
-      connection.world.off('characters-in-sight');
-      connection.world.off('encounters-in-sight');
+      connection.world.emit(NogEvent.DESTROY);
+      connection.world.off(NogEvent.MOVE);
+      connection.world.off(NogEvent.CHARACTERS_IN_SIGHT);
+      connection.world.off(NogEvent.ENCOUNTERS_IN_SIGHT);
     };
-  }, [map]);
+  }, [connection.world, map]);
 
   return null;
 }

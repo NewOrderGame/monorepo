@@ -1,5 +1,10 @@
 import { nanoid } from 'nanoid';
-import { CharacterInSight, EncounterInSight, Page } from '@newordergame/common';
+import {
+  CharacterInSight,
+  EncounterInSight,
+  NogEvent,
+  Page
+} from '@newordergame/common';
 import {
   computeDestinationPoint as computeDestination,
   getCenter,
@@ -102,19 +107,16 @@ export function runWorld() {
           }
 
           if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
-            logger.info(
-              'Encounter',
-              {
-                characterA: {
-                  characterId: characterA.characterId,
-                  nickname: characterA.nickname
-                },
-                characterB: {
-                  characterId: characterB.characterId,
-                  nickname: characterB.nickname
-                }
+            logger.info('Encounter', {
+              characterA: {
+                characterId: characterA.characterId,
+                nickname: characterA.nickname
+              },
+              characterB: {
+                characterId: characterB.characterId,
+                nickname: characterB.nickname
               }
-            );
+            });
             const center = getCenter([
               characterA.coordinates,
               characterB.coordinates
@@ -163,11 +165,11 @@ export function runWorld() {
               });
               getWorld()
                 .to(characterA.characterId)
-                .emit('redirect', { page: Page.ENCOUNTER });
+                .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
 
               getWorld()
                 .to(characterB.characterId)
-                .emit('redirect', { page: Page.ENCOUNTER });
+                .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
             } else {
               logger.error('Something is wrong with a center');
             }
@@ -217,7 +219,7 @@ export function runWorld() {
       if (characterA.encounterSightFlag) {
         getWorld()
           .to(characterA.characterId)
-          .emit('encounters-in-sight', encountersInSight);
+          .emit(NogEvent.ENCOUNTERS_IN_SIGHT, encountersInSight);
 
         if (!encountersInSight.length) {
           characterA.encounterSightFlag = false;
@@ -230,7 +232,7 @@ export function runWorld() {
       if (characterA.characterSightFlag) {
         getWorld()
           .to(characterA.characterId)
-          .emit('characters-in-sight', charactersInSight);
+          .emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
 
         if (!charactersInSight.length) {
           characterA.characterSightFlag = false;

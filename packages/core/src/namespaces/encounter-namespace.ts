@@ -1,4 +1,4 @@
-import { Encounter, Page } from '@newordergame/common';
+import { Encounter, NogEvent, Page } from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
 import sessionStore from '../store/session-store';
 import { io } from '../io';
@@ -16,7 +16,7 @@ function handleEncounterConnection(socket: Socket) {
 
   const accessToken = socket.handshake.auth.accessToken;
 
-  socket.on('init', () => {
+  socket.on(NogEvent.INIT, () => {
     logger.info('Encounter init', { socketId: socket.id });
     cognito.getUser(
       {
@@ -30,9 +30,6 @@ function handleEncounterConnection(socket: Socket) {
           return logger.error('There should be a response');
         }
         const username = response?.Username;
-        const nickname: string = response?.UserAttributes.find(
-          (a) => a.Name === 'nickname'
-        )?.Value;
 
         socket.data.sessionId = username;
 
@@ -44,7 +41,7 @@ function handleEncounterConnection(socket: Socket) {
         if (session.page === Page.ENCOUNTER) {
           const encounter: Encounter = encounterStore.get(session.encounterId);
           if (encounter) {
-            socket.emit('init', {
+            socket.emit(NogEvent.INIT, {
               participants: encounter.participants
             });
           }
@@ -55,7 +52,7 @@ function handleEncounterConnection(socket: Socket) {
     );
   });
 
-  socket.on('exit', () => {
+  socket.on(NogEvent.EXIT, () => {
     if (!socket.data.sessionId) {
       logger.error('There should be session ID');
     }
@@ -89,17 +86,17 @@ function handleEncounterConnection(socket: Socket) {
 
     encounterStore.delete(encounter.encounterId);
 
-    getEncounter().to(session.sessionId).emit('redirect', {
+    getEncounter().to(session.sessionId).emit(NogEvent.REDIRECT, {
       page: Page.WORLD
     });
 
-    getEncounter().to(sessionB.sessionId).emit('redirect', {
+    getEncounter().to(sessionB.sessionId).emit(NogEvent.REDIRECT, {
       page: Page.WORLD
     });
   });
 
   socket.on(
-    'disconnect',
+    NogEvent.DISCONNECT,
     async () => await handleDisconnect('Encounter', socket, encounterNamespace)
   );
 }
@@ -107,7 +104,7 @@ function handleEncounterConnection(socket: Socket) {
 export function initEncounter() {
   logger.info('Init Encounter');
   encounterNamespace = io.of('/encounter');
-  encounterNamespace.on('connection', handleEncounterConnection);
+  encounterNamespace.on(NogEvent.CONNECTION, handleEncounterConnection);
 }
 
 export function getEncounter() {

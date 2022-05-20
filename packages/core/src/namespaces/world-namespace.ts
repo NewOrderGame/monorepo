@@ -1,4 +1,4 @@
-import { Character, Page } from '@newordergame/common';
+import { Character, NogEvent, Page } from '@newordergame/common';
 import { getDistance as computeDistance } from 'geolib';
 import { io } from '../io';
 import { DISTANCE_ACCURACY } from '../utils/constants';
@@ -17,7 +17,7 @@ function handleWorldConnection(socket: Socket) {
   logger.info('World connected', { socketId: socket.id });
   const accessToken = socket.handshake.auth.accessToken;
 
-  socket.on('init', () => {
+  socket.on(NogEvent.INIT, () => {
     logger.info('World init', { socketId: socket.id });
     cognito.getUser(
       {
@@ -48,10 +48,10 @@ function handleWorldConnection(socket: Socket) {
             character = createCharacter({ session, socket });
             characterStore.set(session.sessionId, character);
             logger.info('Created new character', {
-              nickname: character.nickname
+              nickname: nickname
             });
           }
-          socket.emit('init', {
+          socket.emit(NogEvent.INIT, {
             coordinates: session.coordinates
           });
           sessionStore.set(session.sessionId, { ...session, connected: true });
@@ -61,7 +61,7 @@ function handleWorldConnection(socket: Socket) {
     );
   });
 
-  socket.on('destroy', async () => {
+  socket.on(NogEvent.DESTROY, async () => {
     const session = sessionStore.get(socket.data.sesssionId);
     if (session) {
       characterStore.delete(socket.data.sessionId);
@@ -72,12 +72,12 @@ function handleWorldConnection(socket: Socket) {
     }
   });
 
-  socket.on('disconnect', async () => {
+  socket.on(NogEvent.DISCONNECT, async () => {
     characterStore.delete(socket.data.sessionId);
     await handleDisconnect('World', socket, worldNamespace);
   });
 
-  socket.on('move', (coordinates: { lat: number; lng: number }) => {
+  socket.on(NogEvent.MOVE, (coordinates: { lat: number; lng: number }) => {
     const session = sessionStore.get(socket.data.sessionId);
     if (!session) {
       return logger.error('Session should exist');
@@ -106,14 +106,14 @@ function handleWorldConnection(socket: Socket) {
 
     const duration = distance / character.speed;
 
-    socket.emit('move', { coordinates, duration, distance });
+    socket.emit(NogEvent.MOVE, { coordinates, duration, distance });
   });
 }
 
 export function initWorld() {
   logger.info('Init World');
   worldNamespace = io.of('/world');
-  worldNamespace.on('connection', handleWorldConnection);
+  worldNamespace.on(NogEvent.CONNECTION, handleWorldConnection);
 }
 
 export function getWorld(): Namespace {
