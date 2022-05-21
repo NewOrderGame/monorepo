@@ -12,8 +12,10 @@ import {
 } from './visibility';
 import { handleCharactersEncounter } from './encounter';
 
+let timer: NodeJS.Timer;
+
 export function runWorld() {
-  setInterval(() => {
+  timer = setInterval(() => {
     const currentTick = moment().valueOf();
 
     characterStore.forEach((characterA, characterIdA) => {
@@ -31,17 +33,15 @@ export function runWorld() {
         }
       });
 
-      if (characterA.movesTo) {
-        moveCharacter(characterA);
-      }
+      moveCharacter(characterA);
 
-      if (characterA.characterSightFlag) {
-        sendCharactersInSight(characterA, charactersInSight);
-      }
+      sendCharactersInSight(characterA, charactersInSight);
 
-      if (characterA.encounterSightFlag) {
-        sendEncountersInSight(characterA, encountersInSight);
-      }
+      sendEncountersInSight(characterA, encountersInSight);
     });
   }, 1000 / SPEED_MULTIPLIER);
+}
+
+export function stopWorld() {
+  clearInterval(timer);
 }

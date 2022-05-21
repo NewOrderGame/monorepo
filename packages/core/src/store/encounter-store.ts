@@ -1,5 +1,5 @@
 import { Encounter } from '@newordergame/common';
-import logger from "../utils/logger";
+import logger from '../utils/logger';
 
 export class InMemoryEncounterStore {
   private _encounters: Map<string, Encounter>;
@@ -31,6 +31,10 @@ export class InMemoryEncounterStore {
 
   forEach(callback: (value: Encounter, key: string) => void) {
     return this._encounters.forEach.call(this._encounters, callback);
+  }
+
+  clear() {
+    return this._encounters.clear();
   }
 }
 

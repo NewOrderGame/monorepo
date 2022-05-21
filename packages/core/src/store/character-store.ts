@@ -5,9 +5,7 @@ export class InMemoryCharacterStore {
   private _characters: Map<string, Character>;
 
   constructor() {
-    logger.info(
-      'Creating Character store',
-    );
+    logger.info('Creating Character store');
     this._characters = new Map<string, Character>();
   }
 
@@ -33,6 +31,10 @@ export class InMemoryCharacterStore {
 
   forEach(callback: (value: Character, key: string) => void) {
     return this._characters.forEach.call(this._characters, callback);
+  }
+
+  clear() {
+    this._characters.clear();
   }
 }
 

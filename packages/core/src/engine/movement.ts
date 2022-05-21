@@ -16,6 +16,9 @@ export function moveCharacter(character: Character) {
     character.movesTo,
     DISTANCE_ACCURACY
   );
+  if (!character.movesTo) {
+    return;
+  }
 
   if (distance < character.speed / SPEED_MULTIPLIER) {
     character.coordinates = character.movesTo;

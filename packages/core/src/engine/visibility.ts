@@ -8,7 +8,6 @@ import {
   EncounterInSight,
   NogEvent
 } from '@newordergame/common';
-import { getWorld } from '../namespaces/world-namespace';
 
 export function checkCharacterVisibility(
   characterA: Character,
@@ -46,9 +45,9 @@ export function sendCharactersInSight(
   character: Character,
   charactersInSight: CharacterInSight[]
 ) {
-  getWorld()
-    .to(character.characterId)
-    .emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
+  if (character.characterSightFlag) {
+  character.socket.emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
+  }
 
   if (!charactersInSight.length) {
     character.characterSightFlag = false;
@@ -94,9 +93,9 @@ export function sendEncountersInSight(
   character: Character,
   encountersInSight: EncounterInSight[]
 ) {
-  getWorld()
-    .to(character.characterId)
-    .emit(NogEvent.ENCOUNTERS_IN_SIGHT, encountersInSight);
+  if (character.encounterSightFlag) {
+    character.socket.emit(NogEvent.ENCOUNTERS_IN_SIGHT, encountersInSight);
+  }
 
   if (!encountersInSight.length) {
     character.encounterSightFlag = false;
