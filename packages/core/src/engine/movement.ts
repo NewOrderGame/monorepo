@@ -11,14 +11,15 @@ import { Character, NogEvent } from '@newordergame/common';
 import { Socket } from 'socket.io';
 
 export function moveCharacter(character: Character) {
+  if (!character.movesTo) {
+    return;
+  }
+
   const distance = computeDistance(
     character.coordinates,
     character.movesTo,
     DISTANCE_ACCURACY
   );
-  if (!character.movesTo) {
-    return;
-  }
 
   if (distance < character.speed / SPEED_MULTIPLIER) {
     character.coordinates = character.movesTo;

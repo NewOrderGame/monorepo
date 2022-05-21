@@ -74,6 +74,12 @@ describe('Visibility module', () => {
           (participant) => participant.characterId === characterB.characterId
         );
 
+        expect(sessionA.encounterId).toBe(encounter.encounterId);
+        expect(sessionB.encounterId).toBe(encounter.encounterId);
+
+        expect(sessionA.encounterStartTime).toBe(currentTick);
+        expect(sessionB.encounterStartTime).toBe(currentTick);
+
         expect(participantA).toEqual(
           expect.objectContaining({ characterId: characterA.characterId })
         );
