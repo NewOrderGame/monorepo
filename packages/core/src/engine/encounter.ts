@@ -14,6 +14,10 @@ export function handleCharactersEncounter(
   characterB: Character,
   currentTick: number
 ) {
+  if (characterA.characterId === characterB.characterId) {
+    return;
+  }
+
   const distance = computeDistance(
     {
       latitude: characterA.coordinates.lat,

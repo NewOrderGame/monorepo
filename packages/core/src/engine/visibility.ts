@@ -14,6 +14,10 @@ export function checkCharacterVisibility(
   characterB: Character,
   charactersInSight: CharacterInSight[]
 ) {
+  if (characterA.characterId === characterB.characterId) {
+    return;
+  }
+
   const distance = computeDistance(
     {
       latitude: characterA.coordinates.lat,
@@ -46,7 +50,7 @@ export function sendCharactersInSight(
   charactersInSight: CharacterInSight[]
 ) {
   if (character.characterSightFlag) {
-  character.socket.emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
+    character.socket.emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
   }
 
   if (!charactersInSight.length) {

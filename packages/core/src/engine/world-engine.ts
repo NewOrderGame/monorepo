@@ -18,7 +18,7 @@ export function runWorld() {
   timer = setInterval(() => {
     const currentTick = moment().valueOf();
 
-    characterStore.forEach((characterA, characterIdA) => {
+    characterStore.forEach((characterA) => {
       const charactersInSight: CharacterInSight[] = [];
       const encountersInSight: EncounterInSight[] = [];
 
@@ -26,17 +26,13 @@ export function runWorld() {
         checkEncounterVisibility(characterA, encounter, encountersInSight);
       });
 
-      characterStore.forEach((characterB, characterIdB) => {
-        if (characterIdA !== characterIdB) {
-          checkCharacterVisibility(characterA, characterB, charactersInSight);
-          handleCharactersEncounter(characterA, characterB, currentTick);
-        }
+      characterStore.forEach((characterB) => {
+        checkCharacterVisibility(characterA, characterB, charactersInSight);
+        handleCharactersEncounter(characterA, characterB, currentTick);
       });
 
       moveCharacter(characterA);
-
       sendCharactersInSight(characterA, charactersInSight);
-
       sendEncountersInSight(characterA, encountersInSight);
     });
   }, 1000 / SPEED_MULTIPLIER);
