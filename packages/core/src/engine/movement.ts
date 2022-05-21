@@ -21,16 +21,18 @@ export function moveCharacter(character: Character) {
     DISTANCE_ACCURACY
   );
 
+  const sessionId = character.socket.data.sessionId;
+  const session = sessionStore.get(sessionId);
+
   if (distance < character.speed / SPEED_MULTIPLIER) {
+    session.coordinates = character.coordinates;
+    sessionStore.set(sessionId, { ...session });
+
     character.coordinates = character.movesTo;
     character.movesTo = null;
     characterStore.set(character.characterId, {
       ...character
     });
-    const sessionId = character.socket.data.sessionId;
-    const session = sessionStore.get(sessionId);
-    session.coordinates = character.coordinates;
-    sessionStore.set(sessionId, session);
   } else {
     const bearing = computeBearing(character.coordinates, character.movesTo);
 
@@ -40,10 +42,15 @@ export function moveCharacter(character: Character) {
       bearing
     );
 
-    character.coordinates = {
+    const coordinates = {
       lat: destination.latitude,
       lng: destination.longitude
     };
+
+    session.coordinates = coordinates;
+    sessionStore.set(sessionId, { ...session });
+
+    character.coordinates = coordinates;
     characterStore.set(character.characterId, {
       ...character
     });
@@ -66,9 +73,9 @@ export function handleMoveEvent(
     return new Error('Character should exist.');
   }
 
+  character.movesTo = coordinates;
   characterStore.set(characterId, {
-    ...character,
-    movesTo: coordinates
+    ...character
   });
 
   const distance = computeDistance(

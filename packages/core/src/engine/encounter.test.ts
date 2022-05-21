@@ -43,8 +43,6 @@ describe('Visibility module', () => {
           session: sessionA,
           socket: getFakeSocket()
         }),
-        charactersInSight: [],
-        encountersInSight: []
       } as Character;
 
       characterA.socket.data.sessionId = sessionA.sessionId;
@@ -54,8 +52,6 @@ describe('Visibility module', () => {
           session: sessionB,
           socket: getFakeSocket()
         }),
-        charactersInSight: [],
-        encountersInSight: []
       } as Character;
 
       characterB.socket.data.sessionId = sessionB.sessionId;
