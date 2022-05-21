@@ -7,25 +7,14 @@ import {
   Character,
   CharacterInSight,
   Encounter,
-  EncounterInSight
+  EncounterInSight,
+  Session
 } from '@newordergame/common';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
 import { nanoid } from 'nanoid';
-
-const DEFAULT_CHARACTER = {
-  characterId: '',
-  nickname: '',
-  charactersInSight: [],
-  encountersInSight: [] as EncounterInSight[],
-  coordinates: { lat: 0, lng: 0 },
-  socket: {},
-  movesTo: null,
-  encounterSightFlag: false,
-  sightRange: 50,
-  characterSightFlag: false,
-  speed: 30
-} as Character;
+import { createCharacter } from '../utils/character';
+import { Socket } from 'socket.io';
 
 const DEFAULT_ENCOUNTER = {
   encounterId: nanoid(),
@@ -33,16 +22,26 @@ const DEFAULT_ENCOUNTER = {
   encounterStartTime: null,
   participants: [
     {
-      ...DEFAULT_CHARACTER,
-      characterId: nanoid(),
-      nickname: 'A',
+      ...createCharacter({
+        session: {
+          sessionId: nanoid(),
+          nickname: 'A',
+          coordinates: { lat: 0, lng: 0 }
+        } as Session,
+        socket: {} as Socket
+      }),
       charactersInSight: [],
       encountersInSight: []
     } as Character,
     {
-      ...DEFAULT_CHARACTER,
-      characterId: nanoid(),
-      nickname: 'B',
+      ...createCharacter({
+        session: {
+          sessionId: nanoid(),
+          nickname: 'B',
+          coordinates: { lat: 0, lng: 0 }
+        } as Session,
+        socket: {} as Socket
+      }),
       charactersInSight: [],
       encountersInSight: []
     } as Character
@@ -55,47 +54,62 @@ describe('Visibility module', () => {
       const charactersInSight: CharacterInSight[] = [];
 
       const characterA = {
-        ...DEFAULT_CHARACTER,
-        characterId: nanoid(),
-        nickname: 'A',
-        coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+        ...createCharacter({
+          session: {
+            sessionId: nanoid(),
+            nickname: 'A',
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+          } as Session,
+          socket: {} as Socket
+        }),
         charactersInSight,
         encountersInSight: []
       } as Character;
 
       const characterB = {
-        ...DEFAULT_CHARACTER,
-        characterId: nanoid(),
-        nickname: 'B',
-        coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+        ...createCharacter({
+          session: {
+            sessionId: nanoid(),
+            nickname: 'B',
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+          } as Session,
+          socket: {} as Socket
+        }),
         charactersInSight: [],
         encountersInSight: []
       } as Character;
 
-      characterStore.set(characterA.characterId, characterA);
-      characterStore.set(characterB.characterId, characterB);
-
       checkCharacterVisibility(characterA, characterB, charactersInSight);
 
       expect(charactersInSight.length).toBe(1);
+      expect(characterA.characterSightFlag).toBe(true);
+      expect(characterStore.get(characterA.characterId).characterSightFlag).toBe(true);
     });
 
     test('Character A should not see Character B', () => {
       const charactersInSight: CharacterInSight[] = [];
 
       const characterA = {
-        ...DEFAULT_CHARACTER,
-        characterId: nanoid(),
-        nickname: 'A',
-        coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+        ...createCharacter({
+          session: {
+            sessionId: nanoid(),
+            nickname: 'A',
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+          } as Session,
+          socket: {} as Socket
+        }),
         charactersInSight
       };
 
       const characterB = {
-        ...DEFAULT_CHARACTER,
-        characterId: nanoid(),
-        nickname: 'B',
-        coordinates: { lat: 46.47651581453476, lng: 30.73301374912262 }
+        ...createCharacter({
+          session: {
+            sessionId: nanoid(),
+            nickname: 'B',
+            coordinates: { lat: 46.47651581453476, lng: 30.73301374912262 }
+          } as Session,
+          socket: {} as Socket
+        })
       } as Character;
 
       characterStore.set(characterA.characterId, characterA);
@@ -104,17 +118,24 @@ describe('Visibility module', () => {
       checkCharacterVisibility(characterA, characterB, charactersInSight);
 
       expect(charactersInSight.length).toBe(0);
+      expect(characterA.characterSightFlag).toBe(false);
+      expect(characterStore.get(characterA.characterId).characterSightFlag).toBe(false);
     });
   });
+
   describe('checkEncounterVisibility. Determines whether character sees encounter', () => {
     test('Character should see Encounter', () => {
       const encountersInSight: EncounterInSight[] = [];
 
       const character = {
-        ...DEFAULT_CHARACTER,
-        characterId: nanoid(),
-        nickname: 'A',
-        coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+        ...createCharacter({
+          session: {
+            sessionId: nanoid(),
+            nickname: 'A',
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+          } as Session,
+          socket: {} as Socket
+        }),
         charactersInSight: [],
         encountersInSight: encountersInSight
       } as Character;
@@ -131,16 +152,22 @@ describe('Visibility module', () => {
       checkEncounterVisibility(character, encounter, encountersInSight);
 
       expect(encountersInSight.length).toBe(1);
+      expect(character.encounterSightFlag).toBe(true);
+      expect(characterStore.get(character.characterId).encounterSightFlag).toBe(true);
     });
 
     test('Character should not see Encounter', () => {
       const encountersInSight: EncounterInSight[] = [];
 
       const character = {
-        ...DEFAULT_CHARACTER,
-        characterId: nanoid(),
-        nickname: 'A',
-        coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+        ...createCharacter({
+          session: {
+            sessionId: nanoid(),
+            nickname: 'A',
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+          } as Session,
+          socket: {} as Socket
+        }),
         charactersInSight: [],
         encountersInSight: encountersInSight
       } as Character;
@@ -157,6 +184,8 @@ describe('Visibility module', () => {
       checkEncounterVisibility(character, encounter, encountersInSight);
 
       expect(encountersInSight.length).toBe(0);
+      expect(character.encounterSightFlag).toBe(false);
+      expect(characterStore.get(character.characterId).encounterSightFlag).toBe(false);
     });
   });
 });
