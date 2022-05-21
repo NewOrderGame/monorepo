@@ -21,10 +21,6 @@ export class InMemoryCharacterStore {
     this._characters.delete(id);
   }
 
-  findAll(): Character[] {
-    return [...this._characters.values()];
-  }
-
   size(): number {
     return this._characters.size;
   }

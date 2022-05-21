@@ -16,6 +16,10 @@ export class InMemorySessionStore {
   set(id: string, session: Session) {
     this._sessions.set(id, session);
   }
+
+  clear() {
+    this._sessions.clear();
+  }
 }
 
 const store = new InMemorySessionStore();

@@ -7,7 +7,6 @@ import { nanoid } from 'nanoid';
 import { Character, NogEvent, Page } from '@newordergame/common';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
-import { getWorld } from '../namespaces/world-namespace';
 
 export function handleCharactersEncounter(
   characterA: Character,
@@ -106,13 +105,8 @@ export function handleCharactersEncounter(
         ]
       });
 
-      getWorld()
-        .to(characterA.characterId)
-        .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
-
-      getWorld()
-        .to(characterB.characterId)
-        .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
+      characterA.socket.emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
+      characterB.socket.emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
     } else {
       logger.error('Something is wrong with a center');
     }

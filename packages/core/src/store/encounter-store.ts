@@ -21,10 +21,6 @@ export class InMemoryEncounterStore {
     this._encounters.delete(id);
   }
 
-  findAll(): Encounter[] {
-    return [...this._encounters.values()];
-  }
-
   size(): number {
     return this._encounters.size;
   }
