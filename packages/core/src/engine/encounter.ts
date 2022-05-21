@@ -1,5 +1,5 @@
 import { getCenter, getDistance as computeDistance } from 'geolib';
-import { DISTANCE_ACCURACY, ENCOUNTER_DISTANCE } from '../utils/constants';
+import { DISTANCE_ACCURACY, ENCOUNTER_COOL_DOWN_TIME, ENCOUNTER_DISTANCE } from '../utils/constants';
 import sessionStore from '../store/session-store';
 import * as moment from 'moment';
 import logger from '../utils/logger';
@@ -40,7 +40,7 @@ export function handleCharactersEncounter(
     const now = moment().valueOf();
     canEncounter =
       canEncounter &&
-      moment(sessionA.encounterEndTime).add(5, 'second').diff(now) <= 0;
+      moment(sessionA.encounterEndTime).add(ENCOUNTER_COOL_DOWN_TIME, 'second').diff(now) <= 0;
   }
 
   if (canEncounter && sessionA.encounterEndTime) {
