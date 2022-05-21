@@ -18,7 +18,7 @@ export function WorldMapEngine() {
 
   useMapEvents({
     click(event: LeafletMouseEvent) {
-      console.log('Move', event.latlng);
+      console.log('Request movement', event.latlng);
       connection.world.emit(NogEvent.MOVE, event.latlng);
     }
   });
@@ -35,7 +35,7 @@ export function WorldMapEngine() {
         duration: number;
         distance: number;
       }) => {
-        console.log('Move to', coordinates, '. Distance: ', distance, 'meters');
+        console.log('Commit movement', coordinates, '. Distance: ', distance, 'meters');
         map.flyTo(coordinates, 18, { ...zoomPanOptions, duration });
       }
     );
