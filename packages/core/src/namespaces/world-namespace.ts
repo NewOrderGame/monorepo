@@ -1,7 +1,5 @@
 import { Character, NogEvent, Page } from '@newordergame/common';
-import { getDistance as computeDistance } from 'geolib';
 import { io } from '../io';
-import { DISTANCE_ACCURACY } from '../utils/constants';
 import { Namespace, Socket } from 'socket.io';
 import characterStore from '../store/character-store';
 import sessionStore from '../store/session-store';
@@ -10,6 +8,7 @@ import cognito from '../utils/cognito';
 import { createSession } from '../utils/session';
 import { handleDisconnect } from '../utils/handle-disconnect';
 import logger from '../utils/logger';
+import { handleMoveEvent } from '../engine/movement';
 
 let worldNamespace: Namespace;
 
@@ -65,7 +64,7 @@ function handleWorldConnection(socket: Socket) {
     const session = sessionStore.get(socket.data.sesssionId);
     if (session) {
       characterStore.delete(socket.data.sessionId);
-      logger.info('Deleted character', {
+      logger.info('Removed character from world', {
         socketId: socket.id,
         sessionId: socket.data.sessionId
       });
@@ -77,37 +76,9 @@ function handleWorldConnection(socket: Socket) {
     await handleDisconnect('World', socket, worldNamespace);
   });
 
-  socket.on(NogEvent.MOVE, (coordinates: { lat: number; lng: number }) => {
-    const session = sessionStore.get(socket.data.sessionId);
-    if (!session) {
-      return logger.error('Session should exist');
-    }
-    logger.info('Move', { nickname: session.nickname, coordinates });
-    const characterId = session.sessionId;
-    const character = characterStore.get(characterId);
-
-    if (!character) {
-      return new Error('Character should exist.');
-    }
-
-    characterStore.set(characterId, {
-      ...character,
-      movesTo: coordinates
-    });
-
-    const distance = computeDistance(
-      {
-        latitude: character.coordinates.lat,
-        longitude: character.coordinates.lng
-      },
-      { latitude: coordinates.lat, longitude: coordinates.lng },
-      DISTANCE_ACCURACY
-    );
-
-    const duration = distance / character.speed;
-
-    socket.emit(NogEvent.MOVE, { coordinates, duration, distance });
-  });
+  socket.on(NogEvent.MOVE, (coordinates: { lat: number; lng: number }) =>
+    handleMoveEvent(socket, coordinates)
+  );
 }
 
 export function initWorld() {

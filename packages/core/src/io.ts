@@ -12,4 +12,6 @@ export const io = new Server({
   }
 });
 
-io.listen(PORT);
+export function listen() {
+  io.listen(PORT);
+}
