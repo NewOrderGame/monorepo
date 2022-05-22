@@ -1,0 +1,10 @@
+{
+  "integrationFolder": "cypress/integration/user2",
+  "testFiles": "**/user2.test.ts",
+  "viewportWidth": 1000,
+  "viewportHeight": 660,
+  "defaultCommandTimeout": 15000,
+  "videosFolder": "cypress/videos/user2",
+  "screenshotsFolder": "cypress/screenshots/user2",
+  "experimentalStudio": true
+}
