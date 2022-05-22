@@ -25,7 +25,7 @@ export function moveCharacter(character: Character) {
   const session = sessionStore.get(sessionId);
 
   if (distance < character.speed / SPEED_MULTIPLIER) {
-    session.coordinates = character.coordinates;
+    session.coordinates = character.movesTo;
     sessionStore.set(sessionId, { ...session });
 
     character.coordinates = character.movesTo;
