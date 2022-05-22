@@ -48,7 +48,7 @@ export function EncounterPage() {
       {others ? (
         <>
           <h1>
-            You have met{' '}
+            You met{' '}
             {others
               ?.map((other: EncounterParticipant) => other.nickname)
               .join(', ')}
