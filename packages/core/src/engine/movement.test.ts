@@ -52,7 +52,7 @@ describe('Movement module', () => {
       const sessionBefore = { ...session };
       const characterBefore = { ...character };
 
-      moveCharacter(character);
+      moveCharacter(character.characterId);
 
       expect(session).toEqual(sessionBefore);
       expect(character).toEqual(characterBefore);
@@ -80,7 +80,7 @@ describe('Movement module', () => {
       const sessionBefore = { ...session };
       const characterBefore = { ...character };
 
-      moveCharacter(character);
+      moveCharacter(character.characterId);
 
       expect(session).not.toEqual(sessionBefore);
       expect(character).not.toEqual(characterBefore);
@@ -120,7 +120,7 @@ describe('Movement module', () => {
         }
       });
 
-      moveCharacter(character);
+      moveCharacter(character.characterId);
 
       expect(session.coordinates).not.toEqual(movesTo);
       expect(character.coordinates).not.toEqual(movesTo);
@@ -138,7 +138,7 @@ describe('Movement module', () => {
       } as Session;
       sessionStore.set(session.sessionId, { ...session });
 
-      const character = {
+      const characterBefore = {
         ...createCharacter({
           session: session,
           socket: getFakeSocket()
@@ -148,23 +148,23 @@ describe('Movement module', () => {
 
       const destination = computeDestinationPoint(
         startCoordinates,
-        character.speed / SPEED_MULTIPLIER + 100,
+        (characterBefore.speed / SPEED_MULTIPLIER) + 100,
         0
       );
       const movesTo = { lat: destination.latitude, lng: destination.longitude };
 
-      character.movesTo = movesTo;
-      character.socket.data.sessionId = session.sessionId;
-      characterStore.set(character.characterId, {
-        ...character,
+      characterBefore.movesTo = movesTo;
+      characterBefore.socket.data.sessionId = session.sessionId;
+      characterStore.set(characterBefore.characterId, {
+        ...characterBefore,
         movesTo
       });
 
-      const bearing = computeBearing(character.coordinates, character.movesTo);
+      const bearing = computeBearing(characterBefore.coordinates, characterBefore.movesTo);
 
       const intermediateDestination = computeDestination(
-        character.coordinates,
-        character.speed / SPEED_MULTIPLIER,
+        characterBefore.coordinates,
+        characterBefore.speed / SPEED_MULTIPLIER,
         bearing
       );
 
@@ -173,64 +173,68 @@ describe('Movement module', () => {
         lng: intermediateDestination.longitude
       };
 
-      moveCharacter(character);
+      moveCharacter(characterBefore.characterId);
 
-      expect(character.coordinates).toEqual(intermediateCoordinates);
+      const characterAfter = characterStore.get(characterBefore.characterId);
+
+      expect(characterAfter.coordinates).toEqual(intermediateCoordinates);
       expect(sessionStore.get(session.sessionId).coordinates).toEqual(
         intermediateCoordinates
       );
-      expect(characterStore.get(character.characterId).coordinates).toEqual(
+      expect(characterStore.get(characterAfter.characterId).coordinates).toEqual(
         intermediateCoordinates
       );
     });
   });
 
   describe('handleMoveEvent. Handles the movement request', () => {
-    const startCoordinates = {
-      lat: 46.47684829298625,
-      lng: 30.730953812599186
-    };
-    const movesTo = { lat: 46.47736917180925, lng: 30.7302188873291 };
-    const socket = getFakeSocket();
+    test(`Handles character's movement`, () => {
+      const startCoordinates = {
+        lat: 46.47684829298625,
+        lng: 30.730953812599186
+      };
+      const movesTo = { lat: 46.47736917180925, lng: 30.7302188873291 };
+      const socket = getFakeSocket();
 
-    const session = {
-      ...createSession({ sessionId: nanoid() }),
-      coordinates: startCoordinates
-    } as Session;
-    sessionStore.set(session.sessionId, { ...session });
+      const session = {
+        ...createSession({ sessionId: nanoid() }),
+        coordinates: startCoordinates
+      } as Session;
+      sessionStore.set(session.sessionId, { ...session });
 
-    socket.data.sessionId = session.sessionId;
+      socket.data.sessionId = session.sessionId;
 
-    const character = {
-      ...createCharacter({
-        session: session,
-        socket
-      }),
-      coordinates: startCoordinates
-    } as Character;
-    characterStore.set(character.characterId, { ...character });
+      const character = {
+        ...createCharacter({
+          session: session,
+          socket
+        }),
+        coordinates: startCoordinates
+      } as Character;
+      characterStore.set(character.characterId, { ...character });
 
-    const distance = computeDistance(
-      {
-        latitude: character.coordinates.lat,
-        longitude: character.coordinates.lng
-      },
-      {
-        latitude: movesTo.lat,
-        longitude: movesTo.lng
-      },
-      DISTANCE_ACCURACY
-    );
+      const distance = computeDistance(
+        {
+          latitude: character.coordinates.lat,
+          longitude: character.coordinates.lng
+        },
+        {
+          latitude: movesTo.lat,
+          longitude: movesTo.lng
+        },
+        DISTANCE_ACCURACY
+      );
 
-    const duration = distance / character.speed;
+      const duration = distance / character.speed;
 
-    handleMoveEvent(socket, movesTo);
+      handleMoveEvent(socket, movesTo);
 
-    expect(characterStore.get(character.characterId).movesTo).toEqual(movesTo);
-    expect(socket.emit).toHaveBeenCalledWith(NogEvent.MOVE, {
-      coordinates: movesTo,
-      duration,
-      distance
+      expect(characterStore.get(character.characterId).movesTo).toEqual(movesTo);
+      expect(socket.emit).toHaveBeenCalledWith(NogEvent.MOVE, {
+        coordinates: movesTo,
+        duration,
+        distance
+      });
     });
   });
 });

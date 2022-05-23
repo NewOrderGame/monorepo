@@ -64,7 +64,8 @@ describe('Visibility module', () => {
 
   describe('checkCharacterVisibility. Determines whether characterB is visible for characterA and changes characterSightFlag', () => {
     test('Character A should see Character B', () => {
-      const charactersInSight: CharacterInSight[] = [];
+      const charactersInSightA: CharacterInSight[] = [];
+      const charactersInSightB: CharacterInSight[] = [];
 
       const characterA = {
         ...createCharacter({
@@ -75,7 +76,7 @@ describe('Visibility module', () => {
           } as Session,
           socket: {} as Socket
         }),
-        charactersInSight,
+        charactersInSight: charactersInSightA,
         encountersInSight: []
       } as Character;
 
@@ -87,17 +88,20 @@ describe('Visibility module', () => {
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
           } as Session,
           socket: {} as Socket
-        }),
-        charactersInSight: [],
-        encountersInSight: []
+        })
       } as Character;
 
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
 
-      checkCharacterVisibility(characterA, characterB, charactersInSight);
+      checkCharacterVisibility(
+        characterA.characterId,
+        characterB.characterId,
+        charactersInSightA,
+        charactersInSightB
+      );
 
-      expect(charactersInSight.length).toBe(1);
+      expect(charactersInSightA.length).toBe(1);
       expect(characterA.characterSightFlag).toBe(true);
       expect(
         characterStore.get(characterA.characterId).characterSightFlag
@@ -105,7 +109,8 @@ describe('Visibility module', () => {
     });
 
     test('Character A should not see Character B', () => {
-      const charactersInSight: CharacterInSight[] = [];
+      const charactersInSightA: CharacterInSight[] = [];
+      const charactersInSightB: CharacterInSight[] = [];
 
       const characterA = {
         ...createCharacter({
@@ -116,7 +121,7 @@ describe('Visibility module', () => {
           } as Session,
           socket: {} as Socket
         }),
-        charactersInSight
+        charactersInSight: charactersInSightA
       };
 
       const characterB = {
@@ -133,9 +138,14 @@ describe('Visibility module', () => {
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
 
-      checkCharacterVisibility(characterA, characterB, charactersInSight);
+      checkCharacterVisibility(
+        characterA.characterId,
+        characterB.characterId,
+        charactersInSightA,
+        charactersInSightB
+      );
 
-      expect(charactersInSight.length).toBe(0);
+      expect(charactersInSightA.length).toBe(0);
       expect(characterA.characterSightFlag).toBe(false);
       expect(
         characterStore.get(characterA.characterId).characterSightFlag
@@ -157,14 +167,14 @@ describe('Visibility module', () => {
           } as Session,
           socket
         }),
-        charactersInSight
+        charactersInSight: charactersInSight
       };
 
       character.characterSightFlag = true;
 
       characterStore.set(character.characterId, character);
 
-      sendCharactersInSight(character, charactersInSight);
+      sendCharactersInSight(character.characterId, charactersInSight);
 
       expect(character.characterSightFlag).toBe(false);
       expect(characterStore.get(character.characterId).characterSightFlag).toBe(
@@ -196,7 +206,7 @@ describe('Visibility module', () => {
 
       characterStore.set(character.characterId, character);
 
-      sendCharactersInSight(character, charactersInSight);
+      sendCharactersInSight(character.characterId, charactersInSight);
 
       expect(character.characterSightFlag).toBe(false);
       expect(charactersInSight.length).toBe(0);
@@ -233,7 +243,11 @@ describe('Visibility module', () => {
       characterStore.set(character.characterId, character);
       encounterStore.set(encounter.encounterId, encounter);
 
-      checkEncounterVisibility(character, encounter, encountersInSight);
+      checkEncounterVisibility(
+        character.characterId,
+        encounter.encounterId,
+        encountersInSight
+      );
 
       expect(encountersInSight.length).toBe(1);
       expect(character.encounterSightFlag).toBe(true);
@@ -267,7 +281,11 @@ describe('Visibility module', () => {
       characterStore.set(character.characterId, character);
       encounterStore.set(encounter.encounterId, encounter);
 
-      checkEncounterVisibility(character, encounter, encountersInSight);
+      checkEncounterVisibility(
+        character.characterId,
+        encounter.encounterId,
+        encountersInSight
+      );
 
       expect(encountersInSight.length).toBe(0);
       expect(character.encounterSightFlag).toBe(false);
@@ -299,7 +317,7 @@ describe('Visibility module', () => {
 
       characterStore.set(character.characterId, character);
 
-      sendEncountersInSight(character, encountersInSight);
+      sendEncountersInSight(character.characterId, encountersInSight);
 
       expect(encountersInSight.length).toBe(0);
       expect(character.encounterSightFlag).toBe(false);
@@ -333,7 +351,7 @@ describe('Visibility module', () => {
 
       characterStore.set(character.characterId, character);
 
-      sendEncountersInSight(character, encountersInSight);
+      sendEncountersInSight(character.characterId, encountersInSight);
 
       expect(encountersInSight.length).toBe(0);
       expect(character.encounterSightFlag).toBe(false);

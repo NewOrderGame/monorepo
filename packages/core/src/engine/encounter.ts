@@ -1,5 +1,9 @@
-import { getCenter, getDistance as computeDistance } from 'geolib';
-import { DISTANCE_ACCURACY, ENCOUNTER_COOL_DOWN_TIME, ENCOUNTER_DISTANCE } from '../utils/constants';
+import { getCenter as computeCenter, getDistance as getDistance } from 'geolib';
+import {
+  DISTANCE_ACCURACY,
+  ENCOUNTER_COOL_DOWN_TIME,
+  ENCOUNTER_DISTANCE
+} from '../utils/constants';
 import sessionStore from '../store/session-store';
 import * as moment from 'moment';
 import logger from '../utils/logger';
@@ -9,15 +13,21 @@ import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
 
 export function handleCharactersEncounter(
-  characterA: Character,
-  characterB: Character,
-  currentTick: number
+  characterIdA: string,
+  characterIdB: string
 ) {
+  const characterA = characterStore.get(characterIdA);
+  const characterB = characterStore.get(characterIdB);
+
+  if (!characterA || !characterB) {
+    return;
+  }
+
   if (characterA.characterId === characterB.characterId) {
     return;
   }
 
-  const distance = computeDistance(
+  const distance = getDistance(
     {
       latitude: characterA.coordinates.lat,
       longitude: characterA.coordinates.lng
@@ -33,14 +43,15 @@ export function handleCharactersEncounter(
   const sessionB = sessionStore.get(characterB.characterId);
 
   let canEncounter: boolean =
-    (!sessionA.encounterStartTime && !sessionB.encounterStartTime) ||
-    sessionB.encounterStartTime === currentTick;
+    !sessionA.encounterStartTime && !sessionB.encounterStartTime;
 
   if (sessionA.encounterEndTime) {
     const now = moment().valueOf();
     canEncounter =
       canEncounter &&
-      moment(sessionA.encounterEndTime).add(ENCOUNTER_COOL_DOWN_TIME, 'second').diff(now) <= 0;
+      moment(sessionA.encounterEndTime)
+        .add(ENCOUNTER_COOL_DOWN_TIME, 'second')
+        .diff(now) <= 0;
   }
 
   if (canEncounter && sessionA.encounterEndTime) {
@@ -61,7 +72,10 @@ export function handleCharactersEncounter(
         nickname: characterB.nickname
       }
     });
-    const center = getCenter([characterA.coordinates, characterB.coordinates]);
+    const center = computeCenter([
+      characterA.coordinates,
+      characterB.coordinates
+    ]);
 
     if (center) {
       const encounterId = nanoid();
@@ -70,28 +84,26 @@ export function handleCharactersEncounter(
         lng: center.longitude
       };
 
-      const sessionIdA = characterA.socket.data.sessionId;
-      const sessionA = sessionStore.get(sessionIdA);
+      const encounterStartTime = moment().valueOf();
+
       sessionA.page = Page.ENCOUNTER;
       sessionA.encounterId = encounterId;
       sessionA.coordinates = centerCoordinates;
-      sessionA.encounterStartTime = currentTick;
-      sessionStore.set(sessionIdA, { ...sessionA });
+      sessionA.encounterStartTime = encounterStartTime;
+      sessionStore.set(sessionA.sessionId, { ...sessionA });
 
-      const sessionIdB = characterB.socket.data.sessionId;
-      const sessionB = sessionStore.get(sessionIdB);
       sessionB.page = Page.ENCOUNTER;
       sessionB.encounterId = encounterId;
       sessionB.coordinates = centerCoordinates;
-      sessionB.encounterStartTime = currentTick;
-      sessionStore.set(sessionIdB, { ...sessionB });
+      sessionB.encounterStartTime = encounterStartTime;
+      sessionStore.set(sessionB.sessionId, { ...sessionB });
 
       characterStore.delete(characterA.characterId);
       characterStore.delete(characterB.characterId);
 
       encounterStore.set(encounterId, {
         encounterId,
-        encounterStartTime: currentTick,
+        encounterStartTime: encounterStartTime,
         coordinates: centerCoordinates,
         participants: [
           {

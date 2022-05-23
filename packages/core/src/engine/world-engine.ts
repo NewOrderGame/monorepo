@@ -1,8 +1,12 @@
-import { CharacterInSight, EncounterInSight } from '@newordergame/common';
+import {
+  Character,
+  CharacterInSight,
+  Encounter,
+  EncounterInSight
+} from '@newordergame/common';
 import { SPEED_MULTIPLIER } from '../utils/constants';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
-import * as moment from 'moment';
 import { moveCharacter } from './movement';
 import {
   checkCharacterVisibility,
@@ -12,30 +16,72 @@ import {
 } from './visibility';
 import { handleCharactersEncounter } from './encounter';
 
+function doNextGameTick() {
+  const characters: Character[] = characterStore.getAll();
+  const encounters: Encounter[] = encounterStore.getAll();
+
+  const charactersInSight: Map<string, CharacterInSight[]> = new Map();
+  const encountersInSight: Map<string, EncounterInSight[]> = new Map();
+
+  for (let cA = 0; cA < characters.length; cA += 1) {
+    const characterA = characters[cA];
+
+    /** Encounter visibility */
+    encountersInSight.set(characterA.characterId, []);
+
+    for (let e = 0; e < encounters.length; e += 1) {
+      const encounter = encounters[e];
+
+      checkEncounterVisibility(
+        characterA.characterId,
+        encounter.encounterId,
+        encountersInSight.get(characterA.characterId)
+      );
+    }
+    /** */
+
+    /** Character visibility and encounter */
+    if (!charactersInSight.has(characterA.characterId)) {
+      charactersInSight.set(characterA.characterId, []);
+    }
+
+    for (let cB = cA + 1; cB < characters.length; cB += 1) {
+      const characterB = characters[cB];
+
+      if (!charactersInSight.has(characterB.characterId)) {
+        charactersInSight.set(characterB.characterId, []);
+      }
+      checkCharacterVisibility(
+        characterA.characterId,
+        characterB.characterId,
+        charactersInSight.get(characterA.characterId),
+        charactersInSight.get(characterB.characterId)
+      );
+      handleCharactersEncounter(characterA.characterId, characterB.characterId);
+    }
+    /** */
+
+    /** Movement */
+    moveCharacter(characterA.characterId);
+    /** */
+
+    /** Send visible objects */
+    sendCharactersInSight(
+      characterA.characterId,
+      charactersInSight.get(characterA.characterId)
+    );
+    sendEncountersInSight(
+      characterA.characterId,
+      encountersInSight.get(characterA.characterId)
+    );
+    /** */
+  }
+}
+
 let timer: NodeJS.Timer;
 
 export function runWorld() {
-  timer = setInterval(() => {
-    const currentTick = moment().valueOf();
-
-    characterStore.forEach((characterA) => {
-      const charactersInSight: CharacterInSight[] = [];
-      const encountersInSight: EncounterInSight[] = [];
-
-      encounterStore.forEach((encounter) => {
-        checkEncounterVisibility(characterA, encounter, encountersInSight);
-      });
-
-      characterStore.forEach((characterB) => {
-        checkCharacterVisibility(characterA, characterB, charactersInSight);
-        handleCharactersEncounter(characterA, characterB, currentTick);
-      });
-
-      moveCharacter(characterA);
-      sendCharactersInSight(characterA, charactersInSight);
-      sendEncountersInSight(characterA, encountersInSight);
-    });
-  }, 1000 / SPEED_MULTIPLIER);
+  timer = setInterval(doNextGameTick, 1000 / SPEED_MULTIPLIER);
 }
 
 export function stopWorld() {

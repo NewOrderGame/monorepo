@@ -32,6 +32,10 @@ export class InMemoryCharacterStore {
   clear() {
     this._characters.clear();
   }
+
+  getAll(): Character[] {
+    return Array.from(this._characters.values());
+  }
 }
 
 const store = new InMemoryCharacterStore();

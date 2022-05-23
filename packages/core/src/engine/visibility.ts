@@ -8,13 +8,18 @@ import {
   EncounterInSight,
   NogEvent
 } from '@newordergame/common';
+import encounterStore from "../store/encounter-store";
 
 export function checkCharacterVisibility(
-  characterA: Character,
-  characterB: Character,
-  charactersInSight: CharacterInSight[]
+  characterIdA: string,
+  characterIdB: string,
+  charactersInSightA: CharacterInSight[],
+  charactersInSightB: CharacterInSight[]
 ) {
-  if (characterA.characterId === characterB.characterId) {
+  const characterA = characterStore.get(characterIdA);
+  const characterB = characterStore.get(characterIdB);
+
+  if (!characterA || !characterB) {
     return;
   }
 
@@ -31,7 +36,7 @@ export function checkCharacterVisibility(
   );
 
   if (distance <= characterA.sightRange) {
-    charactersInSight.push({
+    charactersInSightA.push({
       coordinates: characterB.coordinates,
       characterId: characterB.characterId,
       nickname: characterB.nickname,
@@ -43,12 +48,31 @@ export function checkCharacterVisibility(
       ...characterA
     });
   }
+
+  if (distance <= characterB.sightRange) {
+    charactersInSightB.push({
+      coordinates: characterA.coordinates,
+      characterId: characterA.characterId,
+      nickname: characterA.nickname,
+      distance
+    });
+
+    characterB.characterSightFlag = true;
+    characterStore.set(characterB.characterId, {
+      ...characterB
+    });
+  }
 }
 
 export function sendCharactersInSight(
-  character: Character,
+  characterId: string,
   charactersInSight: CharacterInSight[]
 ) {
+  const character = characterStore.get(characterId);
+  if (!character) {
+    return;
+  }
+
   if (character.characterSightFlag) {
     character.socket.emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
   }
@@ -62,10 +86,18 @@ export function sendCharactersInSight(
 }
 
 export function checkEncounterVisibility(
-  character: Character,
-  encounter: Encounter,
+  characterId: string,
+  encounterId: string,
   encountersInSight: EncounterInSight[]
 ) {
+  const character = characterStore.get(characterId);
+
+  if (!character) {
+    return;
+  }
+
+  const encounter = encounterStore.get(encounterId);
+
   const distance = computeDistance(
     {
       latitude: character.coordinates.lat,
@@ -94,9 +126,15 @@ export function checkEncounterVisibility(
 }
 
 export function sendEncountersInSight(
-  character: Character,
+  characterId: string,
   encountersInSight: EncounterInSight[]
 ) {
+  const character = characterStore.get(characterId);
+
+  if (!character) {
+    return;
+  }
+
   if (character.encounterSightFlag) {
     character.socket.emit(NogEvent.ENCOUNTERS_IN_SIGHT, encountersInSight);
   }

@@ -7,10 +7,16 @@ import {
   getGreatCircleBearing as computeBearing
 } from 'geolib';
 import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../utils/constants';
-import { Character, NogEvent } from '@newordergame/common';
+import { NogEvent } from '@newordergame/common';
 import { Socket } from 'socket.io';
 
-export function moveCharacter(character: Character) {
+export function moveCharacter(characterId: string) {
+  const character = characterStore.get(characterId);
+
+  if (!character) {
+    return;
+  }
+
   if (!character.movesTo) {
     return;
   }

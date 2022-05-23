@@ -32,6 +32,10 @@ export class InMemoryEncounterStore {
   clear() {
     return this._encounters.clear();
   }
+
+  getAll(): Encounter[] {
+    return Array.from(this._encounters.values());
+  }
 }
 
 const store = new InMemoryEncounterStore();
