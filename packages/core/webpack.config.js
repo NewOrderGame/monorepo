@@ -8,7 +8,10 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
   target: 'node',
-  entry: { main: './src/index.ts', 'stats-reader': './src/stats/reader.ts' },
+  entry: {
+    main: './src/index.ts',
+    'stats-reader': './src/stats/reader/index.ts'
+  },
   output: {
     path: path.resolve(__dirname, 'build')
   },
@@ -21,7 +24,7 @@ const config = {
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
     new Dotenv(),
     new CopyPlugin({
-      patterns: [{ from: './src/stats/public', to: './public' }]
+      patterns: [{ from: './src/stats/reader/public', to: './public' }]
     })
   ],
   module: {

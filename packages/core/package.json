@@ -11,7 +11,7 @@
     "citadel:restart": "npm run citadel:stop; npm run citadel:rm; npm run citadel:pull && npm run citadel:start",
     "citadel:start": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker run -d -p 5000:5000 -p 5050:5050 --name newordergame-core devlysh/newordergame-core",
     "citadel:stop": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker stop newordergame-core",
-    "citadel:rm": "ssh devlysh@$CITADEL_IP_ADDRESS docker rm newordergame-core",
+    "citadel:rm": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker rm newordergame-core",
     "citadel:login": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker login",
     "citadel:pull": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker pull devlysh/newordergame-core",
     "docker:login": "docker login",
@@ -31,7 +31,7 @@
     "webpack:watch": "cp environment/.env.development .env && webpack --watch",
     "update-common": "npm i -S @newordergame/common@latest",
     "prettier": "npx prettier --write .",
-    "stats-reader:start": "ts-node ./src/stats/reader.ts"
+    "stats-reader:start": "ts-node ./src/stats/reader"
   },
   "author": "",
   "license": "ISC",

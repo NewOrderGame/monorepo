@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Core Stats</title>
+  </head>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.3/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+  <body>
+    <canvas id="characters-timeline"></canvas>
+    <canvas id="encounters-timeline"></canvas>
+    <canvas id="execution-time-timeline"></canvas>
+    <canvas id="characters-chart"></canvas>
+    <canvas id="encounters-chart"></canvas>
+    <script>
+      const minColor = '#F09502';
+      const avgColor = '#A36502';
+      const maxColor = '#704601';
+
+      const charactersTimelineCtx = document
+        .getElementById('characters-timeline')
+        .getContext('2d');
+      const encountersTimelineCtx = document
+        .getElementById('encounters-timeline')
+        .getContext('2d');
+      const executionTimeTimelineCtx = document
+        .getElementById('execution-time-timeline')
+        .getContext('2d');
+      const charactersChartCtx = document
+              .getElementById('characters-chart')
+              .getContext('2d');
+      const encountersChartCtx = document
+              .getElementById('encounters-chart')
+              .getContext('2d');
+
+      fetch('/stats')
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+
+          return response.json();
+        })
+        .then((stats) => {
+          new Chart(charactersTimelineCtx, {
+            type: 'line',
+            data: {
+              labels: stats.timeline.map((stat) =>
+                moment(stat.timestamp).format('YYYY-MM-DD HH:mm')
+              ),
+              datasets: [
+                {
+                  label: 'Min',
+                  data: stats.timeline.map((stat) => stat.charactersMin),
+                  borderColor: minColor,
+                  backgroundColor: minColor
+                },
+                {
+                  label: 'Average',
+                  data: stats.timeline.map((stat) => stat.charactersAvg),
+                  borderColor: avgColor,
+                  backgroundColor: avgColor
+                },
+                {
+                  label: 'Max',
+                  data: stats.timeline.map((stat) => stat.charactersMax),
+                  borderColor: maxColor,
+                  backgroundColor: maxColor
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              aspectRatio: 10,
+              plugins: {
+                legend: {
+                  position: 'top'
+                }
+              },
+              scales: {
+                x: {
+                  display: true
+                },
+                y: {
+                  display: true,
+                  ticks: {
+                    precision: 0
+                  },
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Characters'
+                  }
+                }
+              }
+            }
+          });
+
+          new Chart(encountersTimelineCtx, {
+            type: 'line',
+            data: {
+              labels: stats.timeline.map((stat) =>
+                moment(stat.timestamp).format('YYYY-MM-DD HH:mm')
+              ),
+              datasets: [
+                {
+                  label: 'Min',
+                  data: stats.timeline.map((stat) => stat.encountersMin),
+                  borderColor: minColor,
+                  backgroundColor: minColor
+                },
+                {
+                  label: 'Average',
+                  data: stats.timeline.map((stat) => stat.encountersAvg),
+                  borderColor: avgColor,
+                  backgroundColor: avgColor
+                },
+                {
+                  label: 'Max',
+                  data: stats.timeline.map((stat) => stat.encountersMax),
+                  borderColor: maxColor,
+                  backgroundColor: maxColor
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              aspectRatio: 10,
+              plugins: {
+                legend: {
+                  display: false
+                }
+              },
+              scales: {
+                x: {
+                  display: true
+                },
+                y: {
+                  display: true,
+                  ticks: {
+                    precision: 0
+                  },
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Encounters'
+                  }
+                }
+              }
+            }
+          });
+
+          new Chart(executionTimeTimelineCtx, {
+            type: 'line',
+            data: {
+              labels: stats.timeline.map((stat) =>
+                moment(stat.timestamp).format('YYYY-MM-DD HH:mm')
+              ),
+              datasets: [
+                {
+                  label: 'Min',
+                  data: stats.timeline.map((stat) => stat.executionTimeMin),
+                  borderColor: minColor,
+                  backgroundColor: minColor
+                },
+                {
+                  label: 'Average',
+                  data: stats.timeline.map((stat) => stat.executionTimeAvg),
+                  borderColor: avgColor,
+                  backgroundColor: avgColor
+                },
+                {
+                  label: 'Max',
+                  data: stats.timeline.map((stat) => stat.executionTimeMax),
+                  borderColor: maxColor,
+                  backgroundColor: maxColor
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              aspectRatio: 5,
+              plugins: {
+                legend: {
+                  display: false
+                }
+              },
+              scales: {
+                x: {
+                  display: true
+                },
+                y: {
+                  display: true,
+                  type: 'logarithmic',
+                  title: {
+                    display: true,
+                    text: 'Execution Time (ms)'
+                  },
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+          new Chart(charactersChartCtx, {
+            type: 'bar',
+            data: {
+              labels: stats.charactersChart.map((stat) => stat.quantity),
+              datasets: [
+                {
+                  label: 'Min',
+                  data: stats.charactersChart.map((stat) => stat.min),
+                  borderColor: minColor,
+                  backgroundColor: minColor
+                },
+                {
+                  label: 'Average',
+                  data: stats.charactersChart.map((stat) => stat.avg),
+                  borderColor: avgColor,
+                  backgroundColor: avgColor
+                },
+                {
+                  label: 'Max',
+                  data: stats.charactersChart.map((stat) => stat.max),
+                  borderColor: maxColor,
+                  backgroundColor: maxColor
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              aspectRatio: 5,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Characters Chart'
+                },
+                legend: {
+                  display: false
+                }
+              },
+              scales: {
+                x: {
+                  stacked: true,
+                  display: true
+                },
+                y: {
+                  type: 'logarithmic',
+                  display: true,
+                  title: {
+                    display: true,
+                    text: 'Execution Time (ms)'
+                  },
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+
+          new Chart(encountersChartCtx, {
+            type: 'bar',
+            data: {
+              labels: stats.encountersChart.map((stat) => stat.quantity),
+              datasets: [
+                {
+                  label: 'Min',
+                  data: stats.encountersChart.map((stat) => stat.min),
+                  borderColor: minColor,
+                  backgroundColor: minColor
+                },
+                {
+                  label: 'Average',
+                  data: stats.encountersChart.map((stat) => stat.avg),
+                  borderColor: avgColor,
+                  backgroundColor: avgColor
+                },
+                {
+                  label: 'Max',
+                  data: stats.encountersChart.map((stat) => stat.max),
+                  borderColor: maxColor,
+                  backgroundColor: maxColor
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              aspectRatio: 5,
+              plugins: {
+                title: {
+                  display: true,
+                  text: 'Encounters Chart'
+                },
+                legend: {
+                  display: false,
+                  position: 'top'
+                }
+              },
+              scales: {
+                x: {
+                  stacked: true,
+                  display: true,
+                },
+                y: {
+                  type: 'logarithmic',
+                  display: true,
+                  title: {
+                    display: true,
+                    text: 'Execution Time (ms)'
+                  },
+                  beginAtZero: true
+                }
+              }
+            }
+          });
+        });
+    </script>
+  </body>
+</html>

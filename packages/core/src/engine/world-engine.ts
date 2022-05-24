@@ -17,6 +17,7 @@ import {
 import { handleCharactersEncounter } from './encounter';
 import { argv } from '../utils/argv';
 import { withStats } from '../stats/writer';
+import { StatsGroups } from '../utils/types';
 
 function doNextTick() {
   const characters: Character[] = characterStore.getAll();
@@ -82,16 +83,16 @@ function doNextTick() {
 
 let worldTimer: NodeJS.Timer;
 
-const doNextTickWrapper = () => {
+const defineDoNextTick = () => {
   if (argv.s || argv.stats) {
-    return withStats(doNextTick);
+    return withStats(doNextTick, StatsGroups.TICK);
   } else {
     return doNextTick;
   }
 };
 
 export function runWorld() {
-  worldTimer = setInterval(doNextTickWrapper(), SECOND / SPEED_MULTIPLIER);
+  worldTimer = setInterval(defineDoNextTick(), SECOND / SPEED_MULTIPLIER);
 }
 
 export function stopWorld() {
