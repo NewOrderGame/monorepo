@@ -7,7 +7,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
   target: 'node',
-  entry: './src/index.ts',
+  entry: { main: './src/index.ts', 'stats-reader': './src/stats/reader.ts' },
   output: {
     path: path.resolve(__dirname, 'build')
   },

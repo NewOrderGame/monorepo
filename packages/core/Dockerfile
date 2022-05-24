@@ -7,5 +7,8 @@ COPY webpack.config.js tsconfig.json  ./
 COPY  environment/.env.production ./environment/
 COPY src ./src
 RUN npm run webpack:build
+RUN rm -rf package.json webpack.config.js tsconfig.json .environment src
 EXPOSE 5000
-CMD [ "node", "build/main.js" ]
+EXPOSE 5050
+RUN npm i -S concurrently
+CMD npx concurrently -n "main,stats-reader" "node build/main.js --stats" "node build/stats-reader.js"

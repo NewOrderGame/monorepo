@@ -4,7 +4,7 @@ import {
   Encounter,
   EncounterInSight
 } from '@newordergame/common';
-import { SPEED_MULTIPLIER } from '../utils/constants';
+import { SECOND, SPEED_MULTIPLIER } from '../utils/constants';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
 import { moveCharacter } from './movement';
@@ -15,8 +15,10 @@ import {
   sendEncountersInSight
 } from './visibility';
 import { handleCharactersEncounter } from './encounter';
+import { argv } from '../utils/argv';
+import { withStats } from '../stats/writer';
 
-function doNextGameTick() {
+function doNextTick() {
   const characters: Character[] = characterStore.getAll();
   const encounters: Encounter[] = encounterStore.getAll();
 
@@ -78,12 +80,20 @@ function doNextGameTick() {
   }
 }
 
-let timer: NodeJS.Timer;
+let worldTimer: NodeJS.Timer;
+
+const doNextTickWrapper = () => {
+  if (argv.s || argv.stats) {
+    return withStats(doNextTick);
+  } else {
+    return doNextTick;
+  }
+};
 
 export function runWorld() {
-  timer = setInterval(doNextGameTick, 1000 / SPEED_MULTIPLIER);
+  worldTimer = setInterval(doNextTickWrapper(), SECOND / SPEED_MULTIPLIER);
 }
 
 export function stopWorld() {
-  clearInterval(timer);
+  clearInterval(worldTimer);
 }

@@ -4,3 +4,5 @@ coverage
 *.js
 .env*
 !.env.example
+stats
+!src/stats
