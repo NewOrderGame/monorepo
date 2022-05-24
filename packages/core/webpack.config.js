@@ -1,6 +1,7 @@
 // Generated using webpack-cli https://github.com/webpack/webpack-cli
 
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 
 const isProduction = process.env.NODE_ENV === 'production';
@@ -18,7 +19,10 @@ const config = {
   plugins: [
     // Add your plugins here
     // Learn more about plugins from https://webpack.js.org/configuration/plugins/
-    new Dotenv()
+    new Dotenv(),
+    new CopyPlugin({
+      patterns: [{ from: './src/stats/public', to: './public' }]
+    })
   ],
   module: {
     rules: [

@@ -3,6 +3,7 @@ import * as moment from 'moment';
 import { readdirSync, readFileSync } from 'fs';
 import { TICK_TIME_STATS_DIR } from '../utils/constants';
 import logger from '../utils/logger';
+import { resolve } from 'path';
 
 const PORT = 5050;
 const app = express();
@@ -14,6 +15,8 @@ type TickStats = {
   avg: number;
   max: number;
 };
+
+app.use(express.static(resolve(__dirname, 'public')));
 
 app.get('/tick-time', (request, response) => {
   const stats = logTickStats();
