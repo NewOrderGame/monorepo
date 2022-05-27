@@ -38,9 +38,12 @@ export function saveTickStats() {
   writeFile(
     `${TICK_TIME_STATS_DIR}/${StatsGroups.TICK}/${Date.now()}`,
     stats[StatsGroups.TICK]
-      .map(
-        (tickStats) =>
-          `${tickStats.executionTime},${tickStats.charactersCount},${tickStats.encountersCount}`
+      .map((tickStats) =>
+        [
+          tickStats.executionTime,
+          tickStats.charactersCount,
+          tickStats.encountersCount
+        ].join(',')
       )
       .join('\n')
   ).catch((error) => console.error(error));
