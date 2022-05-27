@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
-import { NogPage, NogNamespace, NogEvent } from '@newordergame/common';
+import { NogEvent, NogNamespace, NogPage } from '@newordergame/common';
 import { useNavigate } from 'react-router-dom';
 
 type ConnectionContextType = {
@@ -41,6 +41,19 @@ export function ConnectionProvider({
     navigate(`/${page}`);
   }
 
+  const handleConnect = (namespace: NogNamespace) => () => {
+    console.log(`Connected to ${namespace}`);
+    connectedNamespaces.add(namespace);
+  };
+
+  const handleDisconnect = (namespace: NogNamespace) => () => {
+    console.log(`Disconnected from ${namespace}`);
+    connectedNamespaces.delete(namespace);
+    if (connectedNamespaces.size === 0) {
+      navigate(`/`);
+    }
+  };
+
   function connect() {
     if (connectedNamespaces.size === 0) {
       /**
@@ -51,20 +64,8 @@ export function ConnectionProvider({
       };
       console.log('Connecting to Auth...');
       core.auth.connect();
-
-      core.auth.on(NogEvent.CONNECT, () => {
-        console.log('Connected to Auth');
-        connectedNamespaces.add(NogNamespace.AUTH);
-      });
-
-      core.auth.on(NogEvent.DISCONNECT, () => {
-        console.log('Disconnected from Auth');
-        connectedNamespaces.delete(NogNamespace.AUTH);
-        if (connectedNamespaces.size === 0) {
-          navigate(`/`);
-        }
-      });
-
+      core.auth.on(NogEvent.CONNECT, handleConnect(NogNamespace.AUTH));
+      core.auth.on(NogEvent.DISCONNECT, handleDisconnect(NogNamespace.AUTH));
       core.auth.on(NogEvent.REDIRECT, handleRedirect);
 
       /**
@@ -75,20 +76,8 @@ export function ConnectionProvider({
         accessToken
       };
       core.world.connect();
-
-      core.world.on(NogEvent.CONNECT, () => {
-        console.log('Connected to World');
-        connectedNamespaces.add(NogNamespace.WORLD);
-      });
-
-      core.world.on(NogEvent.DISCONNECT, () => {
-        console.log('Disconnected from World');
-        connectedNamespaces.delete(NogNamespace.WORLD);
-        if (connectedNamespaces.size === 0) {
-          navigate(`/`);
-        }
-      });
-
+      core.world.on(NogEvent.CONNECT, handleConnect(NogNamespace.WORLD));
+      core.world.on(NogEvent.DISCONNECT, handleDisconnect(NogNamespace.WORLD));
       core.world.on(NogEvent.REDIRECT, handleRedirect);
 
       /**
@@ -99,18 +88,14 @@ export function ConnectionProvider({
         accessToken
       };
       core.encounter.connect();
-
-      core.encounter.on(NogEvent.CONNECT, () => {
-        console.log('Connected to Encounter');
-        connectedNamespaces.add(NogNamespace.ENCOUNTER);
-      });
-
-      core.encounter.on(NogEvent.DISCONNECT, () => {
-        console.log('Disconnected from Encounter');
-        connectedNamespaces.delete(NogNamespace.ENCOUNTER);
-        navigate(`/`);
-      });
-
+      core.encounter.on(
+        NogEvent.CONNECT,
+        handleConnect(NogNamespace.ENCOUNTER)
+      );
+      core.encounter.on(
+        NogEvent.DISCONNECT,
+        handleDisconnect(NogNamespace.ENCOUNTER)
+      );
       core.encounter.on(NogEvent.REDIRECT, handleRedirect);
 
       return () => {
