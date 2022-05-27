@@ -5,6 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "cp environment/.env.development .env && nodemon",
+    "start:stats-reader": "ts-node ./src/stats/reader",
     "test": "cp environment/.env.development .env && jest --detect-open-handles --collect-coverage",
     "deploy": "npm run citadel:deploy",
     "citadel:deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push && npm run citadel:restart",
@@ -30,13 +31,12 @@
     "webpack:build": "cp environment/.env.production .env && webpack --mode=production --node-env=production",
     "webpack:watch": "cp environment/.env.development .env && webpack --watch",
     "update-common": "npm i -S @newordergame/common@latest",
-    "prettier": "npx prettier --write .",
-    "stats-reader:start": "ts-node ./src/stats/reader"
+    "prettier": "npx prettier --write ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "^1.0.28",
+    "@newordergame/common": "^1.0.30",
     "@types/winston": "^2.4.4",
     "aws-sdk": "^2.1136.0",
     "cognito-user-pool": "^0.1.13",

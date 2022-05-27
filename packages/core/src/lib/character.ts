@@ -1,12 +1,9 @@
 import { Character, Session } from '@newordergame/common';
-import { Socket } from 'socket.io';
 
 export function createCharacter({
   session,
-  socket
 }: {
   session: Session;
-  socket: Socket;
 }): Character {
   return {
     characterId: session.sessionId,
@@ -19,6 +16,5 @@ export function createCharacter({
     encounterSightFlag: false,
     charactersInSight: [],
     characterSightFlag: false,
-    socket
   };
 }

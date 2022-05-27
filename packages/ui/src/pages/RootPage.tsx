@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useEffect } from 'react';
 import { Content } from '../components/Content';
 import { Loader } from '../components/Loader';
-import { useConnection } from '../utils/connection';
+import { useConnection } from '../lib/connection';
 
 export function RootPage() {
   console.log('Root Page');

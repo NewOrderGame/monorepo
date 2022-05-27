@@ -5,7 +5,7 @@ import { EncounterParticipant, NogEvent } from '@newordergame/common';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
-import { useConnection } from '../utils/connection';
+import { useConnection } from '../lib/connection';
 
 export function EncounterPage() {
   console.log('Encounter Page');

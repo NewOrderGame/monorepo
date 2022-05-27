@@ -1,20 +1,19 @@
 import { getCenter as computeCenter, getDistance as getDistance } from 'geolib';
-import {
-  DISTANCE_ACCURACY,
-  ENCOUNTER_COOL_DOWN_TIME,
-  ENCOUNTER_DISTANCE
-} from '../utils/constants';
+import { DISTANCE_ACCURACY, ENCOUNTER_COOL_DOWN_TIME, ENCOUNTER_DISTANCE } from '../lib/constants';
 import sessionStore from '../store/session-store';
 import * as moment from 'moment';
-import logger from '../utils/logger';
+import logger from '../lib/logger';
 import { nanoid } from 'nanoid';
-import { Character, NogEvent, Page } from '@newordergame/common';
+import { NogEvent, Page } from '@newordergame/common';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
+import { getWorld } from '../namespaces/world-namespace';
+import { Namespace } from 'socket.io';
 
 export function handleCharactersEncounter(
   characterIdA: string,
-  characterIdB: string
+  characterIdB: string,
+  world: Namespace
 ) {
   const characterA = characterStore.get(characterIdA);
   const characterB = characterStore.get(characterIdB);
@@ -117,8 +116,12 @@ export function handleCharactersEncounter(
         ]
       });
 
-      characterA.socket.emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
-      characterB.socket.emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
+      world
+        .to(characterA.characterId)
+        .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
+      world
+        .to(characterB.characterId)
+        .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
     } else {
       logger.error('Something is wrong with a center');
     }

@@ -1,20 +1,16 @@
+import sessionStore from '../store/session-store';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
-import { createCharacter } from '../utils/character';
+import { createCharacter } from '../lib/character';
 import { nanoid } from 'nanoid';
-import { Character } from '@newordergame/common';
-import { Socket } from 'socket.io';
 import { handleCharactersEncounter } from './encounter';
-import { createSession } from '../utils/session';
-import sessionStore from '../store/session-store';
+import { createSession } from '../lib/session';
+import { Character } from '@newordergame/common';
+import { ENCOUNTER_COOL_DOWN_TIME } from '../lib/constants';
 import moment = require('moment');
-import { ENCOUNTER_COOL_DOWN_TIME } from '../utils/constants';
+import { getFakeNamespace } from '../test/utils';
 
-const getFakeSocket = () =>
-  ({
-    emit: jest.fn(),
-    data: {}
-  } as unknown as Socket);
+jest.mock('../namespaces/world-namespace');
 
 describe('Visibility module', () => {
   beforeEach(() => {
@@ -26,6 +22,7 @@ describe('Visibility module', () => {
   describe('handleCharactersEncounter. Handles encounter between characters on map', () => {
     test('Creates encounter if characters are closer than ENCOUNTER_DISTANCE', () => {
       const encounterStartTime = moment().valueOf();
+      const world = getFakeNamespace();
 
       const sessionA = {
         ...createSession({ sessionId: nanoid() })
@@ -38,30 +35,24 @@ describe('Visibility module', () => {
       sessionStore.set(sessionA.sessionId, sessionA);
       sessionStore.set(sessionB.sessionId, sessionB);
 
-      const characterA = {
-        ...createCharacter({
-          session: sessionA,
-          socket: getFakeSocket()
-        })
-      } as Character;
+      const characterA = createCharacter({
+        session: sessionA
+      });
 
-      characterA.socket.data.sessionId = sessionA.sessionId;
-
-      const characterB = {
-        ...createCharacter({
-          session: sessionB,
-          socket: getFakeSocket()
-        })
-      } as Character;
-
-      characterB.socket.data.sessionId = sessionB.sessionId;
+      const characterB = createCharacter({
+        session: sessionB
+      });
 
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
 
       expect(encounterStore.size()).toBe(0);
 
-      handleCharactersEncounter(characterA.characterId, characterB.characterId);
+      handleCharactersEncounter(
+        characterA.characterId,
+        characterB.characterId,
+        world
+      );
 
       encounterStore.forEach((encounter) => {
         const participantA = encounter.participants.find(
@@ -96,6 +87,7 @@ describe('Visibility module', () => {
 
     test('Does not create encounter if characters are further than ENCOUNTER_DISTANCE', () => {
       const encounterStartTime = moment().subtract(50, 'seconds').valueOf();
+      const world = getFakeNamespace();
 
       const sessionA = {
         ...createSession({ sessionId: nanoid() }),
@@ -114,23 +106,17 @@ describe('Visibility module', () => {
 
       const characterA = {
         ...createCharacter({
-          session: sessionA,
-          socket: getFakeSocket()
+          session: sessionA
         })
       } as Character;
 
-      characterA.socket.data.sessionId = sessionA.sessionId;
-
       const characterB = {
         ...createCharacter({
-          session: sessionB,
-          socket: getFakeSocket()
+          session: sessionB
         }),
         charactersInSight: [],
         encountersInSight: []
       } as Character;
-
-      characterB.socket.data.sessionId = sessionB.sessionId;
 
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
@@ -138,7 +124,11 @@ describe('Visibility module', () => {
       expect(encounterStore.size()).toBe(0);
       expect(characterStore.size()).toBe(2);
 
-      handleCharactersEncounter(characterA.characterId, characterB.characterId);
+      handleCharactersEncounter(
+        characterA.characterId,
+        characterB.characterId,
+        world
+      );
 
       expect(encounterStore.size()).toBe(0);
       expect(characterStore.size()).toBe(2);
@@ -146,6 +136,7 @@ describe('Visibility module', () => {
 
     test('Does not create encounter if both sessions have encounterStartTime', () => {
       const encounterStartTime = moment().subtract(50, 'seconds').valueOf();
+      const world = getFakeNamespace();
 
       const sessionA = {
         ...createSession({ sessionId: nanoid() }),
@@ -162,25 +153,19 @@ describe('Visibility module', () => {
 
       const characterA = {
         ...createCharacter({
-          session: sessionA,
-          socket: getFakeSocket()
+          session: sessionA
         }),
         charactersInSight: [],
         encountersInSight: []
       } as Character;
-
-      characterA.socket.data.sessionId = sessionA.sessionId;
 
       const characterB = {
         ...createCharacter({
-          session: sessionB,
-          socket: getFakeSocket()
+          session: sessionB
         }),
         charactersInSight: [],
         encountersInSight: []
       } as Character;
-
-      characterB.socket.data.sessionId = sessionB.sessionId;
 
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
@@ -188,13 +173,18 @@ describe('Visibility module', () => {
       expect(encounterStore.size()).toBe(0);
       expect(characterStore.size()).toBe(2);
 
-      handleCharactersEncounter(characterA.characterId, characterB.characterId);
+      handleCharactersEncounter(
+        characterA.characterId,
+        characterB.characterId,
+        world
+      );
 
       expect(encounterStore.size()).toBe(0);
       expect(characterStore.size()).toBe(2);
     });
 
     test(`Does not create encounter if encounterEndTime is less than ENCOUNTER_COOL_DOWN_TIME`, () => {
+      const world = getFakeNamespace();
       const encounterEndTime = moment()
         .subtract(ENCOUNTER_COOL_DOWN_TIME - 1, 'seconds')
         .valueOf();
@@ -213,25 +203,19 @@ describe('Visibility module', () => {
 
       const characterA = {
         ...createCharacter({
-          session: sessionA,
-          socket: getFakeSocket()
+          session: sessionA
         }),
         charactersInSight: [],
         encountersInSight: []
       } as Character;
-
-      characterA.socket.data.sessionId = sessionA.sessionId;
 
       const characterB = {
         ...createCharacter({
-          session: sessionB,
-          socket: getFakeSocket()
+          session: sessionB
         }),
         charactersInSight: [],
         encountersInSight: []
       } as Character;
-
-      characterB.socket.data.sessionId = sessionB.sessionId;
 
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
@@ -239,7 +223,11 @@ describe('Visibility module', () => {
       expect(encounterStore.size()).toBe(0);
       expect(characterStore.size()).toBe(2);
 
-      handleCharactersEncounter(characterA.characterId, characterB.characterId);
+      handleCharactersEncounter(
+        characterA.characterId,
+        characterB.characterId,
+        world
+      );
 
       expect(encounterStore.size()).toBe(0);
       expect(characterStore.size()).toBe(2);

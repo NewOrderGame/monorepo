@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import logger from './utils/logger';
+import logger from './lib/logger';
 
 if (!process.env.UI_ORIGIN) {
   throw logger.error('Environment variable UI_ORIGIN is missing');

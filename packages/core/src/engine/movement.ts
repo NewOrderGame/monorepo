@@ -1,12 +1,12 @@
 import sessionStore from '../store/session-store';
-import logger from '../utils/logger';
+import logger from '../lib/logger';
 import characterStore from '../store/character-store';
 import {
   computeDestinationPoint as computeDestination,
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../utils/constants';
+import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../lib/constants';
 import { NogEvent } from '@newordergame/common';
 import { Socket } from 'socket.io';
 
@@ -27,12 +27,11 @@ export function moveCharacter(characterId: string) {
     DISTANCE_ACCURACY
   );
 
-  const sessionId = character.socket.data.sessionId;
-  const session = sessionStore.get(sessionId);
+  const session = sessionStore.get(characterId);
 
   if (distance < character.speed / SPEED_MULTIPLIER) {
     session.coordinates = character.movesTo;
-    sessionStore.set(sessionId, { ...session });
+    sessionStore.set(session.sessionId, { ...session });
 
     character.coordinates = character.movesTo;
     character.movesTo = null;
@@ -54,7 +53,7 @@ export function moveCharacter(characterId: string) {
     };
 
     session.coordinates = coordinates;
-    sessionStore.set(sessionId, { ...session });
+    sessionStore.set(session.sessionId, { ...session });
 
     character.coordinates = coordinates;
     characterStore.set(character.characterId, {

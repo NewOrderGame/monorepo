@@ -1,9 +1,9 @@
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
 import sessionStore from '../store/session-store';
-import { createSession } from '../utils/session';
+import { createSession } from '../lib/session';
 import { nanoid } from 'nanoid';
-import { createCharacter } from '../utils/character';
+import { createCharacter } from '../lib/character';
 import { Character, NogEvent, Session } from '@newordergame/common';
 import { Socket } from 'socket.io';
 import { handleMoveEvent, moveCharacter } from './movement';
@@ -13,13 +13,8 @@ import {
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../utils/constants';
-
-const getFakeSocket = () =>
-  ({
-    emit: jest.fn(),
-    data: {}
-  } as unknown as Socket);
+import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../lib/constants';
+import { getFakeSocket } from '../test/utils';
 
 describe('Movement module', () => {
   beforeEach(() => {
@@ -38,14 +33,11 @@ describe('Movement module', () => {
 
       const character = {
         ...createCharacter({
-          session: session,
-          socket: getFakeSocket()
+          session: session
         }),
         charactersInSight: [],
         encountersInSight: []
       } as Character;
-
-      character.socket.data.sessionId = session.sessionId;
 
       characterStore.set(character.characterId, character);
 
@@ -67,13 +59,10 @@ describe('Movement module', () => {
 
       const character = {
         ...createCharacter({
-          session: session,
-          socket: getFakeSocket()
+          session: session
         }),
         movesTo: { lat: 46.47684829298625, lng: 30.730953812599186 }
       } as Character;
-
-      character.socket.data.sessionId = session.sessionId;
 
       characterStore.set(character.characterId, character);
 
@@ -98,8 +87,7 @@ describe('Movement module', () => {
 
       const character = {
         ...createCharacter({
-          session: session,
-          socket: getFakeSocket()
+          session: session
         }),
         coordinates
       } as Character;
@@ -109,8 +97,6 @@ describe('Movement module', () => {
         character.speed / SPEED_MULTIPLIER - 1,
         0
       );
-
-      character.socket.data.sessionId = session.sessionId;
 
       characterStore.set(character.characterId, {
         ...character,
@@ -140,27 +126,28 @@ describe('Movement module', () => {
 
       const characterBefore = {
         ...createCharacter({
-          session: session,
-          socket: getFakeSocket()
+          session: session
         }),
         coordinates: startCoordinates
       } as Character;
 
       const destination = computeDestinationPoint(
         startCoordinates,
-        (characterBefore.speed / SPEED_MULTIPLIER) + 100,
+        characterBefore.speed / SPEED_MULTIPLIER + 100,
         0
       );
       const movesTo = { lat: destination.latitude, lng: destination.longitude };
 
       characterBefore.movesTo = movesTo;
-      characterBefore.socket.data.sessionId = session.sessionId;
       characterStore.set(characterBefore.characterId, {
         ...characterBefore,
         movesTo
       });
 
-      const bearing = computeBearing(characterBefore.coordinates, characterBefore.movesTo);
+      const bearing = computeBearing(
+        characterBefore.coordinates,
+        characterBefore.movesTo
+      );
 
       const intermediateDestination = computeDestination(
         characterBefore.coordinates,
@@ -181,20 +168,20 @@ describe('Movement module', () => {
       expect(sessionStore.get(session.sessionId).coordinates).toEqual(
         intermediateCoordinates
       );
-      expect(characterStore.get(characterAfter.characterId).coordinates).toEqual(
-        intermediateCoordinates
-      );
+      expect(
+        characterStore.get(characterAfter.characterId).coordinates
+      ).toEqual(intermediateCoordinates);
     });
   });
 
   describe('handleMoveEvent. Handles the movement request', () => {
     test(`Handles character's movement`, () => {
+      const socket = getFakeSocket();
       const startCoordinates = {
         lat: 46.47684829298625,
         lng: 30.730953812599186
       };
       const movesTo = { lat: 46.47736917180925, lng: 30.7302188873291 };
-      const socket = getFakeSocket();
 
       const session = {
         ...createSession({ sessionId: nanoid() }),
@@ -202,12 +189,9 @@ describe('Movement module', () => {
       } as Session;
       sessionStore.set(session.sessionId, { ...session });
 
-      socket.data.sessionId = session.sessionId;
-
       const character = {
         ...createCharacter({
-          session: session,
-          socket
+          session: session
         }),
         coordinates: startCoordinates
       } as Character;
@@ -227,9 +211,13 @@ describe('Movement module', () => {
 
       const duration = distance / character.speed;
 
+      socket.data.sessionId = session.sessionId
+
       handleMoveEvent(socket, movesTo);
 
-      expect(characterStore.get(character.characterId).movesTo).toEqual(movesTo);
+      expect(characterStore.get(character.characterId).movesTo).toEqual(
+        movesTo
+      );
       expect(socket.emit).toHaveBeenCalledWith(NogEvent.MOVE, {
         coordinates: movesTo,
         duration,

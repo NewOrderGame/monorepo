@@ -1,3 +1,3 @@
-import { withStats as wts } from './writer';
+import { withStats as withStatsOriginal } from './writer';
 
-export const withStats = wts;
+export const withStats = withStatsOriginal;

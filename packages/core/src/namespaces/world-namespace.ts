@@ -3,11 +3,11 @@ import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
 import characterStore from '../store/character-store';
 import sessionStore from '../store/session-store';
-import { createCharacter } from '../utils/character';
-import cognito from '../utils/cognito';
-import { createSession } from '../utils/session';
-import { handleDisconnect } from '../utils/handle-disconnect';
-import logger from '../utils/logger';
+import { createCharacter } from '../lib/character';
+import cognito from '../lib/cognito';
+import { createSession } from '../lib/session';
+import { handleDisconnect } from '../lib/handle-disconnect';
+import logger from '../lib/logger';
 import { handleMoveEvent } from '../engine/movement';
 
 let worldNamespace: Namespace;
@@ -44,7 +44,7 @@ function handleWorldConnection(socket: Socket) {
         if (session.page === Page.WORLD) {
           let character: Character = characterStore.get(session.sessionId);
           if (!character) {
-            character = createCharacter({ session, socket });
+            character = createCharacter({ session });
             characterStore.set(session.sessionId, character);
             logger.info('Created new character', {
               nickname: nickname

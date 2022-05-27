@@ -7,7 +7,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Amplify from 'aws-amplify';
 import '@aws-amplify/ui-react/styles.css';
 import { Authenticator } from '@aws-amplify/ui-react';
-import { ConnectionProvider } from './utils/connection';
+import { ConnectionProvider } from './lib/connection';
 import styled from 'styled-components';
 
 if (!process.env.REACT_APP_NOG_USER_POOL_ID) {

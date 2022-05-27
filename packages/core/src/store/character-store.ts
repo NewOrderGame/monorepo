@@ -1,5 +1,5 @@
 import { Character } from '@newordergame/common';
-import logger from '../utils/logger';
+import logger from '../lib/logger';
 
 export class InMemoryCharacterStore {
   private _characters: Map<string, Character>;

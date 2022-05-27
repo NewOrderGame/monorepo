@@ -9,7 +9,7 @@ import {
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useEffect } from 'react';
 import { CharacterInSight, EncounterInSight } from '../../../common';
-import { useConnection } from '../utils/connection';
+import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
 
 export function WorldMapEngine() {

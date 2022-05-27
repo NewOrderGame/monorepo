@@ -7,7 +7,7 @@ import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
 import { LatLng } from 'leaflet';
 import { Map } from '../components/Map';
-import { useConnection } from '../utils/connection';
+import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
 
 export function WorldPage() {

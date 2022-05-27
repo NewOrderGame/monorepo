@@ -4,7 +4,7 @@ import {
   Encounter,
   EncounterInSight
 } from '@newordergame/common';
-import { SECOND, SPEED_MULTIPLIER } from '../utils/constants';
+import { SECOND, SPEED_MULTIPLIER } from '../lib/constants';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
 import { moveCharacter } from './movement';
@@ -15,11 +15,13 @@ import {
   sendEncountersInSight
 } from './visibility';
 import { handleCharactersEncounter } from './encounter';
-import { argv } from '../utils/argv';
+import { argv } from '../lib/argv';
 import { withStats } from '../stats/writer';
-import { StatsGroups } from '../utils/types';
+import { StatsGroups } from '../lib/types';
+import { getWorld } from '../namespaces/world-namespace';
+import { Namespace } from 'socket.io';
 
-function doNextTick() {
+function doNextTick(world: Namespace) {
   const characters: Character[] = characterStore.getAll();
   const encounters: Encounter[] = encounterStore.getAll();
 
@@ -60,7 +62,11 @@ function doNextTick() {
         charactersInSight.get(characterA.characterId),
         charactersInSight.get(characterB.characterId)
       );
-      handleCharactersEncounter(characterA.characterId, characterB.characterId);
+      handleCharactersEncounter(
+        characterA.characterId,
+        characterB.characterId,
+        world
+      );
     }
     /** */
 
@@ -71,11 +77,13 @@ function doNextTick() {
     /** Send visible objects */
     sendCharactersInSight(
       characterA.characterId,
-      charactersInSight.get(characterA.characterId)
+      charactersInSight.get(characterA.characterId),
+      world
     );
     sendEncountersInSight(
       characterA.characterId,
-      encountersInSight.get(characterA.characterId)
+      encountersInSight.get(characterA.characterId),
+      world
     );
     /** */
   }
@@ -83,16 +91,17 @@ function doNextTick() {
 
 let worldTimer: NodeJS.Timer;
 
-const defineDoNextTick = () => {
+const defineDoNextTick = (world: Namespace) => {
   if (argv.s || argv.stats) {
-    return withStats(doNextTick, StatsGroups.TICK);
+    return withStats(() => doNextTick(world), StatsGroups.TICK);
   } else {
-    return doNextTick;
+    return () => doNextTick(world);
   }
 };
 
 export function runWorld() {
-  worldTimer = setInterval(defineDoNextTick(), SECOND / SPEED_MULTIPLIER);
+  const world = getWorld();
+  worldTimer = setInterval(defineDoNextTick(world), SECOND / SPEED_MULTIPLIER);
 }
 
 export function stopWorld() {

@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer } from 'react-leaflet';
-import { MAPBOX_URL } from '../utils/constants';
+import { MAPBOX_URL } from '../lib/constants';
 import { WorldMapEngine } from './WorldMapEngine';
 import * as React from 'react';
 import { LatLng } from 'leaflet';

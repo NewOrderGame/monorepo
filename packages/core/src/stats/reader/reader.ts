@@ -72,13 +72,13 @@ export function getRawStatsFromFile(file: string): number[][] {
   return al.map((line) => line.split(',').map((value) => Number(value)));
 }
 
-export function getTickTimeStats(statsDir: string): TickTimeStats {
-  const files: string[] = readdirSync(statsDir);
+export function getTickTimeStats(statsDirectory: string): TickTimeStats {
+  const files: string[] = readdirSync(statsDirectory);
 
   const filesWithCTime = files
     .map((file) => ({
       name: file,
-      mtime: statSync(`${statsDir}/${file}`).mtime
+      mtime: statSync(`${statsDirectory}/${file}`).mtime
     }))
     .sort((a, b) => a.mtime.getTime() - b.mtime.getTime());
 
@@ -87,13 +87,13 @@ export function getTickTimeStats(statsDir: string): TickTimeStats {
     .map((file) => file.name);
 
   const filesToDelete = filesWithCTime.slice(0, -ELEMENTS_TO_DISPLAY);
-  filesToDelete.forEach((file) => unlinkSync(`${statsDir}/${file.name}`));
+  filesToDelete.forEach((file) => unlinkSync(`${statsDirectory}/${file.name}`));
 
   let allRawStats: number[][] = [];
 
   const timeline = filesToDisplay.reduce(
     (result, timestamp): TimelineChunk[] => {
-      const rawStats = getRawStatsFromFile(`${statsDir}/${timestamp}`);
+      const rawStats = getRawStatsFromFile(`${statsDirectory}/${timestamp}`);
       const stats = parseStats(rawStats, Number(timestamp));
       allRawStats = allRawStats.concat(rawStats);
       return [...result, stats];

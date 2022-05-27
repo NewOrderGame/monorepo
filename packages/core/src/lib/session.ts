@@ -16,10 +16,3 @@ export function createSession({ sessionId }: { sessionId: string }): Session {
   sessionStore.set(sessionId, session);
   return session;
 }
-
-export function determinePage(session: Session): Page {
-  // TODO: this method should always check what page user is on
-  const page = session.encounterId ? Page.ENCOUNTER : Page.WORLD;
-  logger.info('Determine page', { page });
-  return page;
-}

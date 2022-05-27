@@ -37,6 +37,10 @@ export function ConnectionProvider({
     return connectedNamespaces.size;
   }
 
+  function handleRedirect({ page }: { page: Page }) {
+    navigate(`/${page}`);
+  }
+
   function connect() {
     if (connectedNamespaces.size === 0) {
       /**
@@ -61,9 +65,7 @@ export function ConnectionProvider({
         }
       });
 
-      core.auth.on(NogEvent.REDIRECT, ({ page }: { page: Page }) => {
-        navigate(`/${page}`);
-      });
+      core.auth.on(NogEvent.REDIRECT, handleRedirect);
 
       /**
        * World
@@ -87,9 +89,7 @@ export function ConnectionProvider({
         }
       });
 
-      core.world.on(NogEvent.REDIRECT, ({ page }: { page: Page }) => {
-        navigate(`/${page}`);
-      });
+      core.world.on(NogEvent.REDIRECT, handleRedirect);
 
       /**
        * Encounter
@@ -111,9 +111,7 @@ export function ConnectionProvider({
         navigate(`/`);
       });
 
-      core.encounter.on(NogEvent.REDIRECT, ({ page }: { page: Page }) => {
-        navigate(`/${page}`);
-      });
+      core.encounter.on(NogEvent.REDIRECT, handleRedirect);
 
       return () => {
         core.auth.off(NogEvent.CONNECT);

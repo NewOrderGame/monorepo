@@ -1,11 +1,12 @@
 import { io } from '../io';
 import sessionStore from '../store/session-store';
 import { Namespace, Socket } from 'socket.io';
-import { createSession, determinePage } from '../utils/session';
-import cognito from '../utils/cognito';
-import { handleDisconnect } from '../utils/handle-disconnect';
-import logger from '../utils/logger';
+import { createSession } from '../lib/session';
+import cognito from '../lib/cognito';
+import { handleDisconnect } from '../lib/handle-disconnect';
+import logger from '../lib/logger';
 import { NogEvent } from '@newordergame/common';
+import { determinePage } from "../lib/determine-page";
 
 let authNamespace: Namespace;
 

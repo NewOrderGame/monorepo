@@ -3,11 +3,11 @@ import encounterStore from '../store/encounter-store';
 import sessionStore from '../store/session-store';
 import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
-import cognito from '../utils/cognito';
-import { createSession } from '../utils/session';
+import cognito from '../lib/cognito';
+import { createSession } from '../lib/session';
 import * as moment from 'moment';
-import { handleDisconnect } from '../utils/handle-disconnect';
-import logger from '../utils/logger';
+import { handleDisconnect } from '../lib/handle-disconnect';
+import logger from '../lib/logger';
 
 let encounterNamespace: Namespace;
 
@@ -56,23 +56,23 @@ function handleEncounterConnection(socket: Socket) {
     if (!socket.data.sessionId) {
       logger.error('There should be session ID');
     }
-    const session = sessionStore.get(socket.data.sessionId);
-    const encounter = encounterStore.get(session.encounterId);
+    const sessionA = sessionStore.get(socket.data.sessionId);
+    const encounter = encounterStore.get(sessionA.encounterId);
     if (!encounter) {
       return logger.error('There should be an encounter');
     }
     const sessionB = sessionStore.get(
-      encounter.participants.find((p) => p.characterId !== session.sessionId)
+      encounter.participants.find((p) => p.characterId !== sessionA.sessionId)
         .characterId
     );
 
-    session.encounterId = null;
-    session.page = Page.WORLD;
-    session.encounterEndTime = moment().valueOf();
-    session.encounterStartTime = null;
-    session.coordinates = encounter.coordinates;
-    sessionStore.set(session.sessionId, {
-      ...session
+    sessionA.encounterId = null;
+    sessionA.page = Page.WORLD;
+    sessionA.encounterEndTime = moment().valueOf();
+    sessionA.encounterStartTime = null;
+    sessionA.coordinates = encounter.coordinates;
+    sessionStore.set(sessionA.sessionId, {
+      ...sessionA
     });
 
     sessionB.encounterId = null;
@@ -86,7 +86,7 @@ function handleEncounterConnection(socket: Socket) {
 
     encounterStore.delete(encounter.encounterId);
 
-    getEncounter().to(session.sessionId).emit(NogEvent.REDIRECT, {
+    getEncounter().to(sessionA.sessionId).emit(NogEvent.REDIRECT, {
       page: Page.WORLD
     });
 

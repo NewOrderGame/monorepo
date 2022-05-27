@@ -1,9 +1,9 @@
 import * as express from 'express';
 import { resolve } from 'path';
-import logger from '../../utils/logger';
+import logger from '../../lib/logger';
 import { getTickTimeStats } from './reader';
-import { TICK_TIME_STATS_DIR } from '../../utils/constants';
-import { StatsGroups } from '../../utils/types';
+import { TICK_TIME_STATS_DIR } from '../../lib/constants';
+import { StatsGroups } from '../../lib/types';
 
 const PORT = 5050;
 const app = express();

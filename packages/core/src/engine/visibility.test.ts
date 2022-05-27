@@ -5,24 +5,12 @@ import {
   sendCharactersInSight,
   sendEncountersInSight
 } from './visibility';
-import {
-  Character,
-  CharacterInSight,
-  Encounter,
-  EncounterInSight,
-  NogEvent,
-  Session
-} from '@newordergame/common';
+import { Character, CharacterInSight, Encounter, EncounterInSight, NogEvent, Session } from '@newordergame/common';
 import characterStore from '../store/character-store';
 import { nanoid } from 'nanoid';
-import { createCharacter } from '../utils/character';
-import { Socket } from 'socket.io';
+import { createCharacter } from '../lib/character';
 import encounterStore from '../store/encounter-store';
-
-const getFakeSocket = () =>
-  ({
-    emit: jest.fn()
-  } as unknown as Socket);
+import { getFakeNamespace } from '../test/utils';
 
 const DEFAULT_ENCOUNTER = {
   encounterId: nanoid(),
@@ -35,8 +23,7 @@ const DEFAULT_ENCOUNTER = {
           sessionId: nanoid(),
           nickname: 'A',
           coordinates: { lat: 0, lng: 0 }
-        } as Session,
-        socket: {} as Socket
+        } as Session
       }),
       charactersInSight: [],
       encountersInSight: []
@@ -47,8 +34,7 @@ const DEFAULT_ENCOUNTER = {
           sessionId: nanoid(),
           nickname: 'B',
           coordinates: { lat: 0, lng: 0 }
-        } as Session,
-        socket: {} as Socket
+        } as Session
       }),
       charactersInSight: [],
       encountersInSight: []
@@ -73,8 +59,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket: {} as Socket
+          } as Session
         }),
         charactersInSight: charactersInSightA,
         encountersInSight: []
@@ -86,8 +71,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'B',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket: {} as Socket
+          } as Session
         })
       } as Character;
 
@@ -118,8 +102,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket: {} as Socket
+          } as Session
         }),
         charactersInSight: charactersInSightA
       };
@@ -130,8 +113,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'B',
             coordinates: { lat: 46.47651581453476, lng: 30.73301374912262 }
-          } as Session,
-          socket: {} as Socket
+          } as Session
         })
       } as Character;
 
@@ -156,7 +138,7 @@ describe('Visibility module', () => {
   describe('sendCharactersInSight. Sends message and changes characterSightFlag', () => {
     test(`Should send charactersInSight and set Character A's characterSightFlag to "false"`, () => {
       const charactersInSight: CharacterInSight[] = [];
-      const socket = getFakeSocket();
+      const world = getFakeNamespace();
 
       const character = {
         ...createCharacter({
@@ -164,8 +146,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket
+          } as Session
         }),
         charactersInSight: charactersInSight
       };
@@ -174,13 +155,16 @@ describe('Visibility module', () => {
 
       characterStore.set(character.characterId, character);
 
-      sendCharactersInSight(character.characterId, charactersInSight);
+      sendCharactersInSight(character.characterId, charactersInSight, world);
 
       expect(character.characterSightFlag).toBe(false);
       expect(characterStore.get(character.characterId).characterSightFlag).toBe(
         false
       );
-      expect(socket.emit).toBeCalledWith(
+      expect(world.to).toBeCalled();
+      expect(world.to).toBeCalledWith(character.characterId);
+      expect(world.to(character.characterId).emit).toBeCalled();
+      expect(world.to(character.characterId).emit).toBeCalledWith(
         NogEvent.CHARACTERS_IN_SIGHT,
         charactersInSight
       );
@@ -188,7 +172,7 @@ describe('Visibility module', () => {
 
     test('Should not send charactersInSight', () => {
       const charactersInSight: CharacterInSight[] = [];
-      const socket = getFakeSocket();
+      const world = getFakeNamespace();
 
       const character = {
         ...createCharacter({
@@ -196,8 +180,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket
+          } as Session
         }),
         charactersInSight
       };
@@ -206,14 +189,14 @@ describe('Visibility module', () => {
 
       characterStore.set(character.characterId, character);
 
-      sendCharactersInSight(character.characterId, charactersInSight);
+      sendCharactersInSight(character.characterId, charactersInSight, world);
 
       expect(character.characterSightFlag).toBe(false);
       expect(charactersInSight.length).toBe(0);
       expect(characterStore.get(character.characterId).characterSightFlag).toBe(
         false
       );
-      expect(socket.emit).not.toBeCalled();
+      expect(world.to(character.characterId).emit).not.toBeCalled();
     });
   });
 
@@ -227,8 +210,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket: {} as Socket
+          } as Session
         }),
         charactersInSight: [],
         encountersInSight: encountersInSight
@@ -265,8 +247,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket: {} as Socket
+          } as Session
         }),
         charactersInSight: [],
         encountersInSight: encountersInSight
@@ -298,7 +279,7 @@ describe('Visibility module', () => {
   describe('sendEncountersInSight. Sends message and changes encountersSightFlag', () => {
     test(`Should send encountersInSight and set Character A's encounterSightFlag to "false"`, () => {
       const encountersInSight: EncounterInSight[] = [];
-      const socket = getFakeSocket();
+      const world = getFakeNamespace();
 
       const character = {
         ...createCharacter({
@@ -306,8 +287,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket
+          } as Session
         }),
         charactersInSight: [],
         encountersInSight: encountersInSight
@@ -317,14 +297,14 @@ describe('Visibility module', () => {
 
       characterStore.set(character.characterId, character);
 
-      sendEncountersInSight(character.characterId, encountersInSight);
+      sendEncountersInSight(character.characterId, encountersInSight, world);
 
       expect(encountersInSight.length).toBe(0);
       expect(character.encounterSightFlag).toBe(false);
       expect(characterStore.get(character.characterId).encounterSightFlag).toBe(
         false
       );
-      expect(socket.emit).toBeCalledWith(
+      expect(world.to(character.characterId).emit).toBeCalledWith(
         NogEvent.ENCOUNTERS_IN_SIGHT,
         encountersInSight
       );
@@ -332,7 +312,7 @@ describe('Visibility module', () => {
 
     test(`Should not send encountersInSight`, () => {
       const encountersInSight: EncounterInSight[] = [];
-      const socket = getFakeSocket();
+      const world = getFakeNamespace();
 
       const character = {
         ...createCharacter({
@@ -340,8 +320,7 @@ describe('Visibility module', () => {
             sessionId: nanoid(),
             nickname: 'A',
             coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
-          } as Session,
-          socket
+          } as Session
         }),
         charactersInSight: [],
         encountersInSight: encountersInSight
@@ -351,14 +330,14 @@ describe('Visibility module', () => {
 
       characterStore.set(character.characterId, character);
 
-      sendEncountersInSight(character.characterId, encountersInSight);
+      sendEncountersInSight(character.characterId, encountersInSight, world);
 
       expect(encountersInSight.length).toBe(0);
       expect(character.encounterSightFlag).toBe(false);
       expect(characterStore.get(character.characterId).encounterSightFlag).toBe(
         false
       );
-      expect(socket.emit).not.toBeCalled();
+      expect(world.to(character.characterId).emit).not.toBeCalled();
     });
   });
 });

@@ -1,5 +1,5 @@
 import { Session } from '@newordergame/common';
-import logger from '../utils/logger';
+import logger from '../lib/logger';
 
 export class InMemorySessionStore {
   private _sessions: Map<string, Session>;

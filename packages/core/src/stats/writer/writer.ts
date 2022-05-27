@@ -3,9 +3,9 @@ import {
   SECOND,
   STATS_SAVE_INTERVAL,
   TICK_TIME_STATS_DIR
-} from '../../utils/constants';
-import { Stats, StatsGroups } from '../../utils/types';
-import logger from '../../utils/logger';
+} from '../../lib/constants';
+import { Stats, StatsGroups } from '../../lib/types';
+import logger from '../../lib/logger';
 import { mkdirSync } from 'fs';
 import characterStore from '../../store/character-store';
 import encounterStore from '../../store/encounter-store';

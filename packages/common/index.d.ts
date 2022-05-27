@@ -1,4 +1,3 @@
-import { Socket } from 'socket.io';
 export declare type Coordinates = {
     lat: number;
     lng: number;
@@ -46,7 +45,6 @@ export interface Character {
     characterSightFlag: boolean;
     encountersInSight: EncounterInSight[];
     encounterSightFlag: boolean;
-    socket: Socket;
 }
 export interface Encounter {
     encounterId: string;
