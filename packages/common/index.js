@@ -1,12 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_COORDINATES = exports.NogEvent = exports.NogNamespace = exports.Page = void 0;
-var Page;
-(function (Page) {
-    Page["ROOT"] = "";
-    Page["WORLD"] = "world";
-    Page["ENCOUNTER"] = "encounter";
-})(Page = exports.Page || (exports.Page = {}));
+exports.DEFAULT_COORDINATES = exports.NogEvent = exports.NogNamespace = exports.NogPage = void 0;
+var NogPage;
+(function (NogPage) {
+    NogPage["ROOT"] = "";
+    NogPage["WORLD"] = "world";
+    NogPage["ENCOUNTER"] = "encounter";
+})(NogPage = exports.NogPage || (exports.NogPage = {}));
 var NogNamespace;
 (function (NogNamespace) {
     NogNamespace["AUTH"] = "auth";

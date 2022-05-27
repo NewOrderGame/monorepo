@@ -4,7 +4,7 @@ export declare type Coordinates = {
 };
 export declare type NogPlayerId = string;
 export declare type NogEncounterId = string;
-export declare enum Page {
+export declare enum NogPage {
     ROOT = "",
     WORLD = "world",
     ENCOUNTER = "encounter"
@@ -27,17 +27,17 @@ export declare enum NogEvent {
     CHARACTERS_IN_SIGHT = "characters-in-sight"
 }
 export interface Session {
-    sessionId: string;
+    sessionId: NogPlayerId;
     nickname: string;
     connected: boolean;
     coordinates: Coordinates;
-    encounterId: string | null;
+    encounterId: NogEncounterId | null;
     encounterEndTime: number | null;
     encounterStartTime: number | null;
-    page: Page;
+    page: NogPage;
 }
 export interface Character {
-    characterId: string;
+    characterId: NogPlayerId;
     nickname: string;
     coordinates: Coordinates;
     movesTo: Coordinates | null;
@@ -49,23 +49,23 @@ export interface Character {
     encounterSightFlag: boolean;
 }
 export interface Encounter {
-    encounterId: string;
+    encounterId: NogEncounterId;
     participants: EncounterParticipant[];
     coordinates: Coordinates;
     encounterStartTime: number | null;
 }
 export declare type EncounterParticipant = {
-    characterId: string;
+    characterId: NogPlayerId;
     nickname: string;
 };
 export declare type EncounterInSight = {
     coordinates: Coordinates;
-    encounterId: string;
+    encounterId: NogEncounterId;
     participants: EncounterParticipant[];
     distance: number;
 };
 export declare type CharacterInSight = {
-    characterId: string;
+    characterId: NogPlayerId;
     coordinates: Coordinates;
     nickname: string;
     distance: number;

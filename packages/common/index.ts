@@ -3,7 +3,7 @@ export type Coordinates = { lat: number; lng: number };
 export type NogPlayerId = string;
 export type NogEncounterId = string;
 
-export enum Page {
+export enum NogPage {
   ROOT = '',
   WORLD = 'world',
   ENCOUNTER = 'encounter'
@@ -29,18 +29,18 @@ export enum NogEvent {
 }
 
 export interface Session {
-  sessionId: string;
+  sessionId: NogPlayerId;
   nickname: string;
   connected: boolean;
   coordinates: Coordinates;
-  encounterId: string | null;
+  encounterId: NogEncounterId | null;
   encounterEndTime: number | null;
   encounterStartTime: number | null;
-  page: Page;
+  page: NogPage;
 }
 
 export interface Character {
-  characterId: string;
+  characterId: NogPlayerId;
   nickname: string;
   coordinates: Coordinates;
   movesTo: Coordinates | null;
@@ -53,26 +53,26 @@ export interface Character {
 }
 
 export interface Encounter {
-  encounterId: string;
+  encounterId: NogEncounterId;
   participants: EncounterParticipant[];
   coordinates: Coordinates;
   encounterStartTime: number | null;
 }
 
 export type EncounterParticipant = {
-  characterId: string;
+  characterId: NogPlayerId;
   nickname: string;
 };
 
 export type EncounterInSight = {
   coordinates: Coordinates;
-  encounterId: string;
+  encounterId: NogEncounterId;
   participants: EncounterParticipant[];
   distance: number;
 };
 
 export type CharacterInSight = {
-  characterId: string;
+  characterId: NogPlayerId;
   coordinates: Coordinates;
   nickname: string;
   distance: number;
