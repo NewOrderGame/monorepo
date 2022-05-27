@@ -1,19 +1,19 @@
-import { Session } from '@newordergame/common';
+import { NogPlayerId, Session } from '@newordergame/common';
 import logger from '../lib/logger';
 
 export class InMemorySessionStore {
-  private _sessions: Map<string, Session>;
+  private _sessions: Map<NogPlayerId, Session>;
 
   constructor() {
     logger.info('Creating Session Store');
-    this._sessions = new Map<string, Session>();
+    this._sessions = new Map<NogPlayerId, Session>();
   }
 
-  get(id: string): Session {
+  get(id: NogPlayerId): Session {
     return this._sessions.get(id);
   }
 
-  set(id: string, session: Session) {
+  set(id: NogPlayerId, session: Session) {
     this._sessions.set(id, session);
   }
 

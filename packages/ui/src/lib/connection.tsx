@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
-import { Page, NogNamespace, NogEvent } from '@newordergame/common';
+import { NogPage, NogNamespace, NogEvent } from '@newordergame/common';
 import { useNavigate } from 'react-router-dom';
 
 type ConnectionContextType = {
@@ -37,7 +37,7 @@ export function ConnectionProvider({
     return connectedNamespaces.size;
   }
 
-  function handleRedirect({ page }: { page: Page }) {
+  function handleRedirect({ page }: { page: NogPage }) {
     navigate(`/${page}`);
   }
 

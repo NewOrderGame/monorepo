@@ -1,14 +1,14 @@
 import { getDistance as computeDistance } from 'geolib';
 import { DISTANCE_ACCURACY } from '../lib/constants';
 import characterStore from '../store/character-store';
-import { CharacterInSight, EncounterInSight, NogEvent } from '@newordergame/common';
+import { CharacterInSight, EncounterInSight, NogEvent, NogPlayerId } from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
 import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
 
 export function checkCharacterVisibility(
-  characterIdA: string,
-  characterIdB: string,
+  characterIdA: NogPlayerId,
+  characterIdB: NogPlayerId,
   charactersInSightA: CharacterInSight[],
   charactersInSightB: CharacterInSight[]
 ) {
@@ -61,7 +61,7 @@ export function checkCharacterVisibility(
 }
 
 export function sendCharactersInSight(
-  characterId: string,
+  characterId: NogPlayerId,
   charactersInSight: CharacterInSight[],
   world: Namespace
 ) {
@@ -85,8 +85,8 @@ export function sendCharactersInSight(
 }
 
 export function checkEncounterVisibility(
-  characterId: string,
-  encounterId: string,
+  characterId: NogPlayerId,
+  encounterId: NogPlayerId,
   encountersInSight: EncounterInSight[]
 ) {
   const character = characterStore.get(characterId);
@@ -125,7 +125,7 @@ export function checkEncounterVisibility(
 }
 
 export function sendEncountersInSight(
-  characterId: string,
+  characterId: NogPlayerId,
   encountersInSight: EncounterInSight[],
   world: Namespace
 ) {

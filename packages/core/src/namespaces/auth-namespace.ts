@@ -5,8 +5,8 @@ import { createSession } from '../lib/session';
 import cognito from '../lib/cognito';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
-import { NogEvent } from '@newordergame/common';
-import { determinePage } from "../lib/determine-page";
+import { NogEvent, NogNamespace } from '@newordergame/common';
+import { determinePage } from '../lib/determine-page';
 
 let authNamespace: Namespace;
 
@@ -59,7 +59,7 @@ function handleAuthConnection(socket: Socket) {
 
   socket.on(
     NogEvent.DISCONNECT,
-    async () => await handleDisconnect('Auth', socket, authNamespace)
+    async () => await handleDisconnect(NogNamespace.AUTH, socket, authNamespace)
   );
 }
 

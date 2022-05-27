@@ -1,4 +1,4 @@
-import { Character, NogEvent, Page } from '@newordergame/common';
+import { Character, NogEvent, NogNamespace, NogPage } from '@newordergame/common';
 import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
 import characterStore from '../store/character-store';
@@ -41,7 +41,7 @@ function handleWorldConnection(socket: Socket) {
           session = createSession({ sessionId: username });
         }
 
-        if (session.page === Page.WORLD) {
+        if (session.page === NogPage.WORLD) {
           let character: Character = characterStore.get(session.sessionId);
           if (!character) {
             character = createCharacter({ session });
@@ -73,7 +73,7 @@ function handleWorldConnection(socket: Socket) {
 
   socket.on(NogEvent.DISCONNECT, async () => {
     characterStore.delete(socket.data.sessionId);
-    await handleDisconnect('World', socket, worldNamespace);
+    await handleDisconnect(NogNamespace.WORLD, socket, worldNamespace);
   });
 
   socket.on(NogEvent.MOVE, (coordinates: { lat: number; lng: number }) =>

@@ -1,4 +1,4 @@
-import { Encounter, NogEvent, Page } from '@newordergame/common';
+import { Encounter, NogEvent, NogNamespace, NogPage } from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
 import sessionStore from '../store/session-store';
 import { io } from '../io';
@@ -38,7 +38,7 @@ function handleEncounterConnection(socket: Socket) {
           session = createSession({ sessionId: username });
         }
 
-        if (session.page === Page.ENCOUNTER) {
+        if (session.page === NogPage.ENCOUNTER) {
           const encounter: Encounter = encounterStore.get(session.encounterId);
           if (encounter) {
             socket.emit(NogEvent.INIT, {
@@ -67,7 +67,7 @@ function handleEncounterConnection(socket: Socket) {
     );
 
     sessionA.encounterId = null;
-    sessionA.page = Page.WORLD;
+    sessionA.page = NogPage.WORLD;
     sessionA.encounterEndTime = moment().valueOf();
     sessionA.encounterStartTime = null;
     sessionA.coordinates = encounter.coordinates;
@@ -76,7 +76,7 @@ function handleEncounterConnection(socket: Socket) {
     });
 
     sessionB.encounterId = null;
-    sessionB.page = Page.WORLD;
+    sessionB.page = NogPage.WORLD;
     sessionB.encounterEndTime = moment().valueOf();
     sessionB.encounterStartTime = null;
     sessionB.coordinates = encounter.coordinates;
@@ -87,17 +87,18 @@ function handleEncounterConnection(socket: Socket) {
     encounterStore.delete(encounter.encounterId);
 
     getEncounter().to(sessionA.sessionId).emit(NogEvent.REDIRECT, {
-      page: Page.WORLD
+      page: NogPage.WORLD
     });
 
     getEncounter().to(sessionB.sessionId).emit(NogEvent.REDIRECT, {
-      page: Page.WORLD
+      page: NogPage.WORLD
     });
   });
 
   socket.on(
     NogEvent.DISCONNECT,
-    async () => await handleDisconnect('Encounter', socket, encounterNamespace)
+    async () =>
+      await handleDisconnect(NogNamespace.ENCOUNTER, socket, encounterNamespace)
   );
 }
 

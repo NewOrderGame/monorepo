@@ -1,18 +1,26 @@
 import { getCenter as computeCenter, getDistance as getDistance } from 'geolib';
-import { DISTANCE_ACCURACY, ENCOUNTER_COOL_DOWN_TIME, ENCOUNTER_DISTANCE } from '../lib/constants';
+import {
+  DISTANCE_ACCURACY,
+  ENCOUNTER_COOL_DOWN_TIME,
+  ENCOUNTER_DISTANCE
+} from '../lib/constants';
 import sessionStore from '../store/session-store';
 import * as moment from 'moment';
 import logger from '../lib/logger';
 import { nanoid } from 'nanoid';
-import { NogEvent, Page } from '@newordergame/common';
+import {
+  NogEvent,
+  NogPage,
+  NogPlayerId,
+  NogEncounterId
+} from '@newordergame/common';
 import characterStore from '../store/character-store';
 import encounterStore from '../store/encounter-store';
-import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
 
 export function handleCharactersEncounter(
-  characterIdA: string,
-  characterIdB: string,
+  characterIdA: NogPlayerId,
+  characterIdB: NogPlayerId,
   world: Namespace
 ) {
   const characterA = characterStore.get(characterIdA);
@@ -77,7 +85,7 @@ export function handleCharactersEncounter(
     ]);
 
     if (center) {
-      const encounterId = nanoid();
+      const encounterId: NogEncounterId = nanoid();
       const centerCoordinates = {
         lat: center.latitude,
         lng: center.longitude
@@ -85,13 +93,13 @@ export function handleCharactersEncounter(
 
       const encounterStartTime = moment().valueOf();
 
-      sessionA.page = Page.ENCOUNTER;
+      sessionA.page = NogPage.ENCOUNTER;
       sessionA.encounterId = encounterId;
       sessionA.coordinates = centerCoordinates;
       sessionA.encounterStartTime = encounterStartTime;
       sessionStore.set(sessionA.sessionId, { ...sessionA });
 
-      sessionB.page = Page.ENCOUNTER;
+      sessionB.page = NogPage.ENCOUNTER;
       sessionB.encounterId = encounterId;
       sessionB.coordinates = centerCoordinates;
       sessionB.encounterStartTime = encounterStartTime;
@@ -118,10 +126,10 @@ export function handleCharactersEncounter(
 
       world
         .to(characterA.characterId)
-        .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
+        .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
       world
         .to(characterB.characterId)
-        .emit(NogEvent.REDIRECT, { page: Page.ENCOUNTER });
+        .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
     } else {
       logger.error('Something is wrong with a center');
     }

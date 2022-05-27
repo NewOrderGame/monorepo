@@ -1,9 +1,10 @@
 import { Namespace, Socket } from 'socket.io';
 import sessionStore from '../store/session-store';
 import logger from './logger';
+import { NogNamespace } from '@newordergame/common';
 
 export async function handleDisconnect(
-  namespaceName: string,
+  namespaceName: NogNamespace,
   socket: Socket,
   namespace: Namespace
 ) {

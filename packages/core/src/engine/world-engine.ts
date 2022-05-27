@@ -2,7 +2,7 @@ import {
   Character,
   CharacterInSight,
   Encounter,
-  EncounterInSight
+  EncounterInSight, NogPlayerId
 } from '@newordergame/common';
 import { SECOND, SPEED_MULTIPLIER } from '../lib/constants';
 import characterStore from '../store/character-store';
@@ -25,8 +25,8 @@ function doNextTick(world: Namespace) {
   const characters: Character[] = characterStore.getAll();
   const encounters: Encounter[] = encounterStore.getAll();
 
-  const charactersInSight: Map<string, CharacterInSight[]> = new Map();
-  const encountersInSight: Map<string, EncounterInSight[]> = new Map();
+  const charactersInSight: Map<NogPlayerId, CharacterInSight[]> = new Map();
+  const encountersInSight: Map<NogPlayerId, EncounterInSight[]> = new Map();
 
   for (let cA = 0; cA < characters.length; cA += 1) {
     const characterA = characters[cA];

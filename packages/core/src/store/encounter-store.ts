@@ -1,23 +1,23 @@
-import { Encounter } from '@newordergame/common';
+import { Encounter, NogEncounterId, NogPlayerId } from '@newordergame/common';
 import logger from '../lib/logger';
 
 export class InMemoryEncounterStore {
-  private _encounters: Map<string, Encounter>;
+  private _encounters: Map<NogPlayerId, Encounter>;
 
   constructor() {
     logger.info('Creating Encounter Store');
-    this._encounters = new Map<string, Encounter>();
+    this._encounters = new Map<NogEncounterId, Encounter>();
   }
 
-  get(id: string): Encounter {
+  get(id: NogEncounterId): Encounter {
     return this._encounters.get(id);
   }
 
-  set(id: string, encounter: Encounter) {
+  set(id: NogEncounterId, encounter: Encounter) {
     this._encounters.set(id, encounter);
   }
 
-  delete(id: string) {
+  delete(id: NogEncounterId) {
     this._encounters.delete(id);
   }
 
@@ -25,7 +25,7 @@ export class InMemoryEncounterStore {
     return this._encounters.size;
   }
 
-  forEach(callback: (value: Encounter, key: string) => void) {
+  forEach(callback: (value: Encounter, key: NogEncounterId) => void) {
     return this._encounters.forEach.call(this._encounters, callback);
   }
 
