@@ -2,6 +2,7 @@ export declare type Coordinates = {
     lat: number;
     lng: number;
 };
+export declare type PlayerId = string;
 export declare enum Page {
     ROOT = "",
     WORLD = "world",

@@ -1,5 +1,7 @@
 export type Coordinates = { lat: number; lng: number };
 
+export type PlayerId = string;
+
 export enum Page {
   ROOT = '',
   WORLD = 'world',
