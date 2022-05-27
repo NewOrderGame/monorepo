@@ -1,6 +1,7 @@
 export type Coordinates = { lat: number; lng: number };
 
-export type PlayerId = string;
+export type NogPlayerId = string;
+export type NogEncounterId = string;
 
 export enum Page {
   ROOT = '',

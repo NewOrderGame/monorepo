@@ -2,7 +2,8 @@ export declare type Coordinates = {
     lat: number;
     lng: number;
 };
-export declare type PlayerId = string;
+export declare type NogPlayerId = string;
+export declare type NogEncounterId = string;
 export declare enum Page {
     ROOT = "",
     WORLD = "world",
