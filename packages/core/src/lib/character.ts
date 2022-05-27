@@ -1,10 +1,6 @@
 import { Character, Session } from '@newordergame/common';
 
-export function createCharacter({
-  session,
-}: {
-  session: Session;
-}): Character {
+export function createCharacter({ session }: { session: Session }): Character {
   return {
     characterId: session.sessionId,
     nickname: session.nickname,
@@ -15,6 +11,6 @@ export function createCharacter({
     encountersInSight: [],
     encounterSightFlag: false,
     charactersInSight: [],
-    characterSightFlag: false,
+    characterSightFlag: false
   };
 }

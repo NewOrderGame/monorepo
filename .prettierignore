@@ -1,0 +1,9 @@
+*.d.ts
+*.js
+
+packages/*/aws/cdk.out
+packages/*/build/*
+packages/*/coverage/*
+packages/*/node_modules
+
+/core/stats

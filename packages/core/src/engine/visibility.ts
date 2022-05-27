@@ -1,7 +1,12 @@
 import { getDistance as computeDistance } from 'geolib';
 import { DISTANCE_ACCURACY } from '../lib/constants';
 import characterStore from '../store/character-store';
-import { CharacterInSight, EncounterInSight, NogEvent, NogPlayerId } from '@newordergame/common';
+import {
+  CharacterInSight,
+  EncounterInSight,
+  NogEvent,
+  NogPlayerId
+} from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
 import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';

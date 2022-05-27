@@ -1,4 +1,9 @@
-import { Character, NogEvent, NogNamespace, NogPage } from '@newordergame/common';
+import {
+  Character,
+  NogEvent,
+  NogNamespace,
+  NogPage
+} from '@newordergame/common';
 import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
 import characterStore from '../store/character-store';

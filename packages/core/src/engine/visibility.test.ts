@@ -5,7 +5,14 @@ import {
   sendCharactersInSight,
   sendEncountersInSight
 } from './visibility';
-import { Character, CharacterInSight, Encounter, EncounterInSight, NogEvent, Session } from '@newordergame/common';
+import {
+  Character,
+  CharacterInSight,
+  Encounter,
+  EncounterInSight,
+  NogEvent,
+  Session
+} from '@newordergame/common';
 import characterStore from '../store/character-store';
 import { nanoid } from 'nanoid';
 import { createCharacter } from '../lib/character';

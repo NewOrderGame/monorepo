@@ -35,7 +35,13 @@ export function WorldMapEngine() {
         duration: number;
         distance: number;
       }) => {
-        console.log('Commit movement', coordinates, '. Distance: ', distance, 'meters');
+        console.log(
+          'Commit movement',
+          coordinates,
+          '. Distance: ',
+          distance,
+          'meters'
+        );
         map.flyTo(coordinates, 18, { ...zoomPanOptions, duration });
       }
     );

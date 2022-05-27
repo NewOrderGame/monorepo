@@ -1,9 +1,7 @@
 import { io, Socket } from 'socket.io-client';
 
 if (!process.env.REACT_APP_NOG_CORE_URL) {
-  throw new Error(
-    'Environment variable REACT_APP_NOG_CORE_URL is missing'
-  );
+  throw new Error('Environment variable REACT_APP_NOG_CORE_URL is missing');
 }
 
 const CORE_URL = process.env.REACT_APP_NOG_CORE_URL;

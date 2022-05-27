@@ -2,7 +2,8 @@ import {
   Character,
   CharacterInSight,
   Encounter,
-  EncounterInSight, NogPlayerId
+  EncounterInSight,
+  NogPlayerId
 } from '@newordergame/common';
 import { SECOND, SPEED_MULTIPLIER } from '../lib/constants';
 import characterStore from '../store/character-store';

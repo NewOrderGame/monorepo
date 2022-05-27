@@ -1,4 +1,9 @@
-import { Encounter, NogEvent, NogNamespace, NogPage } from '@newordergame/common';
+import {
+  Encounter,
+  NogEvent,
+  NogNamespace,
+  NogPage
+} from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
 import sessionStore from '../store/session-store';
 import { io } from '../io';

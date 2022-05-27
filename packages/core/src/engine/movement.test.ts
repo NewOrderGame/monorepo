@@ -211,7 +211,7 @@ describe('Movement module', () => {
 
       const duration = distance / character.speed;
 
-      socket.data.sessionId = session.sessionId
+      socket.data.sessionId = session.sessionId;
 
       handleMoveEvent(socket, movesTo);
 

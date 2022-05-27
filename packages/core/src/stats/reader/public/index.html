@@ -27,11 +27,11 @@
         .getElementById('execution-time-timeline')
         .getContext('2d');
       const charactersChartCtx = document
-              .getElementById('characters-chart')
-              .getContext('2d');
+        .getElementById('characters-chart')
+        .getContext('2d');
       const encountersChartCtx = document
-              .getElementById('encounters-chart')
-              .getContext('2d');
+        .getElementById('encounters-chart')
+        .getContext('2d');
 
       fetch('/stats')
         .then((response) => {
@@ -298,7 +298,7 @@
               scales: {
                 x: {
                   stacked: true,
-                  display: true,
+                  display: true
                 },
                 y: {
                   type: 'logarithmic',
