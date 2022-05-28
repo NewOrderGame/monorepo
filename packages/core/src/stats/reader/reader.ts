@@ -33,7 +33,7 @@ export function parseStats(
   timestamp: number
 ): TimelineChunk {
   const executionTime = rawStats.map((stat) => stat[0]);
-  const characters = rawStats.map((stat) => stat[1]);
+  const charactersAtWorld = rawStats.map((stat) => stat[1]);
   const encounters = rawStats.map((stat) => stat[2]);
 
   const executionTimeMin = Math.min(...executionTime);
@@ -41,10 +41,10 @@ export function parseStats(
     executionTime.reduce((a, b) => a + b, 0) / executionTime.length;
   const executionTimeMax = Math.max(...executionTime);
 
-  const charactersMin = Math.min(...characters);
+  const charactersMin = Math.min(...charactersAtWorld);
   const charactersAvg =
-    characters.reduce((a, b) => a + b, 0) / characters.length;
-  const charactersMax = Math.max(...characters);
+    charactersAtWorld.reduce((a, b) => a + b, 0) / charactersAtWorld.length;
+  const charactersMax = Math.max(...charactersAtWorld);
 
   const encountersMin = Math.min(...encounters);
   const encountersAvg =

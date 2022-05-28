@@ -1,7 +1,7 @@
 import { io } from '../io';
-import sessionStore from '../store/session-store';
+import characterStore from '../store/character-store';
 import { Namespace, Socket } from 'socket.io';
-import { createSession } from '../lib/session';
+import { createCharacter } from '../lib/character';
 import cognito from '../lib/cognito';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
@@ -30,29 +30,29 @@ function handleAuthConnection(socket: Socket) {
         (a) => a.Name === 'nickname'
       )?.Value;
 
-      socket.data.sessionId = username;
+      socket.data.characterId = username;
 
-      let session = sessionStore.get(username);
-      if (!session) {
-        session = createSession({
-          sessionId: username
+      let character = characterStore.get(username);
+      if (!character) {
+        character = createCharacter({
+          characterId: username
         });
       }
 
-      session.page = determinePage(session);
-      sessionStore.set(session.sessionId, {
-        ...session,
+      character.page = determinePage(character);
+      characterStore.set(character.characterId, {
+        ...character,
         nickname,
         connected: true
       });
-      socket.join(session.sessionId);
+      socket.join(character.characterId);
 
       socket.emit(NogEvent.REDIRECT, {
-        page: session.page
+        page: character.page
       });
       logger.info('Auth sent redirect', {
-        page: session.page,
-        nickname: session.nickname
+        page: character.page,
+        nickname: character.nickname
       });
     }
   );

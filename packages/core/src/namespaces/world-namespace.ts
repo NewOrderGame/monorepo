@@ -1,16 +1,16 @@
 import {
-  Character,
+  CharacterAtWorld,
   NogEvent,
   NogNamespace,
   NogPage
 } from '@newordergame/common';
 import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
+import characterAtWorldStore from '../store/character-at-world-store';
 import characterStore from '../store/character-store';
-import sessionStore from '../store/session-store';
-import { createCharacter } from '../lib/character';
+import { createCharacterAtWorld } from '../lib/character-at-world';
 import cognito from '../lib/cognito';
-import { createSession } from '../lib/session';
+import { createCharacter } from '../lib/character';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
 import { handleMoveEvent } from '../engine/movement';
@@ -39,45 +39,45 @@ function handleWorldConnection(socket: Socket) {
           (a) => a.Name === 'nickname'
         )?.Value;
 
-        socket.data.sessionId = username;
+        socket.data.characterId = username;
 
-        let session = sessionStore.get(username);
-        if (!session) {
-          session = createSession({ sessionId: username });
+        let character = characterStore.get(username);
+        if (!character) {
+          character = createCharacter({ characterId: username });
         }
 
-        if (session.page === NogPage.WORLD) {
-          let character: Character = characterStore.get(session.sessionId);
-          if (!character) {
-            character = createCharacter({ session });
-            characterStore.set(session.sessionId, character);
-            logger.info('Created new character', {
-              nickname: nickname
+        if (character.page === NogPage.WORLD) {
+          let characterAtWorld: CharacterAtWorld = characterAtWorldStore.get(character.characterId);
+          if (!characterAtWorld) {
+            characterAtWorld = createCharacterAtWorld({ character: character });
+            characterAtWorldStore.set(character.characterId, characterAtWorld);
+            logger.info('Created new characterAtWorld', {
+              nickname
             });
           }
           socket.emit(NogEvent.INIT, {
-            coordinates: session.coordinates
+            coordinates: character.coordinates
           });
-          sessionStore.set(session.sessionId, { ...session, connected: true });
-          socket.join(session.sessionId);
+          characterStore.set(character.characterId, { ...character, connected: true });
+          socket.join(character.characterId);
         }
       }
     );
   });
 
   socket.on(NogEvent.DESTROY, async () => {
-    const session = sessionStore.get(socket.data.sesssionId);
-    if (session) {
-      characterStore.delete(socket.data.sessionId);
+    const character = characterStore.get(socket.data.sesssionId);
+    if (character) {
+      characterAtWorldStore.delete(socket.data.characterId);
       logger.info('Removed character from world', {
         socketId: socket.id,
-        sessionId: socket.data.sessionId
+        characterId: socket.data.characterId
       });
     }
   });
 
   socket.on(NogEvent.DISCONNECT, async () => {
-    characterStore.delete(socket.data.sessionId);
+    characterAtWorldStore.delete(socket.data.characterId);
     await handleDisconnect(NogNamespace.WORLD, socket, worldNamespace);
   });
 

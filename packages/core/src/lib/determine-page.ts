@@ -1,9 +1,9 @@
-import { NogPage, Session } from '@newordergame/common';
+import { NogPage, Character } from '@newordergame/common';
 import logger from './logger';
 
-export function determinePage(session: Session): NogPage {
+export function determinePage(character: Character): NogPage {
   // TODO: this method should always check what page user is on
-  const page = session.encounterId ? NogPage.ENCOUNTER : NogPage.WORLD;
+  const page = character.encounterId ? NogPage.ENCOUNTER : NogPage.WORLD;
   logger.info('Determine page', { page });
   return page;
 }

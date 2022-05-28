@@ -1,19 +1,26 @@
-import { Character, Session } from '@newordergame/common';
+import {
+  Character,
+  DEFAULT_COORDINATES,
+  NogCharacterId,
+  NogPage
+} from '@newordergame/common';
+import characterStore from '../store/character-store';
 
-export function createCharacter({ session }: { session: Session }): Character {
-  return {
-    characterId: session.sessionId,
-    nickname: session.nickname,
-    coordinates: session.coordinates,
-    movesTo: null,
-    stats: {
-      sightRange: 100,
-      speed: 30,
-      outlook: [0, 0, 0]
-    },
-    encountersInSight: [],
-    encounterSightFlag: false,
-    charactersInSight: [],
-    characterSightFlag: false
+export function createCharacter({
+  characterId
+}: {
+  characterId: NogCharacterId;
+}): Character {
+  const character: Character = {
+    characterId: characterId,
+    nickname: '',
+    coordinates: DEFAULT_COORDINATES,
+    connected: true,
+    encounterId: null,
+    encounterEndTime: null,
+    encounterStartTime: null,
+    page: NogPage.ROOT
   };
+  characterStore.set(characterId, character);
+  return character;
 }

@@ -1,12 +1,12 @@
 import {
-  Character,
+  CharacterAtWorld,
   CharacterInSight,
   Encounter,
   EncounterInSight,
-  NogPlayerId
+  NogCharacterId
 } from '@newordergame/common';
 import { SECOND, SPEED_MULTIPLIER } from '../lib/constants';
-import characterStore from '../store/character-store';
+import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
 import { moveCharacter } from './movement';
 import {
@@ -23,67 +23,66 @@ import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
 
 function doNextTick(world: Namespace) {
-  const characters: Character[] = characterStore.getAll();
+  const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();
   const encounters: Encounter[] = encounterStore.getAll();
 
-  const charactersInSight: Map<NogPlayerId, CharacterInSight[]> = new Map();
-  const encountersInSight: Map<NogPlayerId, EncounterInSight[]> = new Map();
+  const charactersInSight: Map<NogCharacterId, CharacterInSight[]> = new Map();
+  const encountersInSight: Map<NogCharacterId, EncounterInSight[]> = new Map();
 
-  for (let cA = 0; cA < characters.length; cA += 1) {
-    const characterA = characters[cA];
+  for (let cA = 0; cA < charactersAtWorld.length; cA += 1) {
+    const characterAtWorldA = charactersAtWorld[cA];
 
     /** Encounter visibility */
-    encountersInSight.set(characterA.characterId, []);
+    encountersInSight.set(characterAtWorldA.characterId, []);
 
-    for (let e = 0; e < encounters.length; e += 1) {
-      const encounter = encounters[e];
+    for (const encounter of encounters) {
 
       checkEncounterVisibility(
-        characterA.characterId,
+        characterAtWorldA.characterId,
         encounter.encounterId,
-        encountersInSight.get(characterA.characterId)
+        encountersInSight.get(characterAtWorldA.characterId)
       );
     }
     /** */
 
     /** Character visibility and encounter */
-    if (!charactersInSight.has(characterA.characterId)) {
-      charactersInSight.set(characterA.characterId, []);
+    if (!charactersInSight.has(characterAtWorldA.characterId)) {
+      charactersInSight.set(characterAtWorldA.characterId, []);
     }
 
-    for (let cB = cA + 1; cB < characters.length; cB += 1) {
-      const characterB = characters[cB];
+    for (let cB = cA + 1; cB < charactersAtWorld.length; cB += 1) {
+      const characterAtWorldB = charactersAtWorld[cB];
 
-      if (!charactersInSight.has(characterB.characterId)) {
-        charactersInSight.set(characterB.characterId, []);
+      if (!charactersInSight.has(characterAtWorldB.characterId)) {
+        charactersInSight.set(characterAtWorldB.characterId, []);
       }
       checkCharacterVisibility(
-        characterA.characterId,
-        characterB.characterId,
-        charactersInSight.get(characterA.characterId),
-        charactersInSight.get(characterB.characterId)
+        characterAtWorldA.characterId,
+        characterAtWorldB.characterId,
+        charactersInSight.get(characterAtWorldA.characterId),
+        charactersInSight.get(characterAtWorldB.characterId)
       );
       handleCharactersEncounter(
-        characterA.characterId,
-        characterB.characterId,
+        characterAtWorldA.characterId,
+        characterAtWorldB.characterId,
         world
       );
     }
     /** */
 
     /** Movement */
-    moveCharacter(characterA.characterId);
+    moveCharacter(characterAtWorldA.characterId);
     /** */
 
     /** Send visible objects */
     sendCharactersInSight(
-      characterA.characterId,
-      charactersInSight.get(characterA.characterId),
+      characterAtWorldA.characterId,
+      charactersInSight.get(characterAtWorldA.characterId),
       world
     );
     sendEncountersInSight(
-      characterA.characterId,
-      encountersInSight.get(characterA.characterId),
+      characterAtWorldA.characterId,
+      encountersInSight.get(characterAtWorldA.characterId),
       world
     );
     /** */

@@ -6,11 +6,11 @@ import {
   NogPage
 } from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
-import sessionStore from '../store/session-store';
+import characterStore from '../store/character-store';
 import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
 import cognito from '../lib/cognito';
-import { createSession } from '../lib/session';
+import { createCharacter } from '../lib/character';
 import * as moment from 'moment';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
@@ -37,67 +37,67 @@ function handleEncounterConnection(socket: Socket) {
         }
         const username = response?.Username;
 
-        socket.data.sessionId = username;
+        socket.data.characterId = username;
 
-        let session = sessionStore.get(username);
-        if (!session) {
-          session = createSession({ sessionId: username });
+        let character = characterStore.get(username);
+        if (!character) {
+          character = createCharacter({ characterId: username });
         }
 
-        if (session.page === NogPage.ENCOUNTER) {
-          const encounter: Encounter = encounterStore.get(session.encounterId);
+        if (character.page === NogPage.ENCOUNTER) {
+          const encounter: Encounter = encounterStore.get(character.encounterId);
           if (encounter) {
             socket.emit(NogEvent.INIT, {
               participants: encounter.participants
             });
           }
         }
-        sessionStore.set(session.sessionId, { ...session, connected: true });
-        socket.join(session.sessionId);
+        characterStore.set(character.characterId, { ...character, connected: true });
+        socket.join(character.characterId);
       }
     );
   });
 
   socket.on(NogEvent.EXIT, () => {
-    if (!socket.data.sessionId) {
-      logger.error('There should be session ID');
+    if (!socket.data.characterId) {
+      logger.error('There should be character ID');
     }
-    const sessionA = sessionStore.get(socket.data.sessionId);
-    const encounter = encounterStore.get(sessionA.encounterId);
+    const characterA = characterStore.get(socket.data.characterId);
+    const encounter = encounterStore.get(characterA.encounterId);
     if (!encounter) {
       return logger.error('There should be an encounter');
     }
-    const sessionB = sessionStore.get(
+    const characterB = characterStore.get(
       encounter.participants.find(
-        (p: EncounterParticipant) => p.characterId !== sessionA.sessionId
+        (p: EncounterParticipant) => p.characterId !== characterA.characterId
       ).characterId
     );
 
-    sessionA.encounterId = null;
-    sessionA.page = NogPage.WORLD;
-    sessionA.encounterEndTime = moment().valueOf();
-    sessionA.encounterStartTime = null;
-    sessionA.coordinates = encounter.coordinates;
-    sessionStore.set(sessionA.sessionId, {
-      ...sessionA
+    characterA.encounterId = null;
+    characterA.page = NogPage.WORLD;
+    characterA.encounterEndTime = moment().valueOf();
+    characterA.encounterStartTime = null;
+    characterA.coordinates = encounter.coordinates;
+    characterStore.set(characterA.characterId, {
+      ...characterA
     });
 
-    sessionB.encounterId = null;
-    sessionB.page = NogPage.WORLD;
-    sessionB.encounterEndTime = moment().valueOf();
-    sessionB.encounterStartTime = null;
-    sessionB.coordinates = encounter.coordinates;
-    sessionStore.set(sessionB.sessionId, {
-      ...sessionB
+    characterB.encounterId = null;
+    characterB.page = NogPage.WORLD;
+    characterB.encounterEndTime = moment().valueOf();
+    characterB.encounterStartTime = null;
+    characterB.coordinates = encounter.coordinates;
+    characterStore.set(characterB.characterId, {
+      ...characterB
     });
 
     encounterStore.delete(encounter.encounterId);
 
-    getEncounter().to(sessionA.sessionId).emit(NogEvent.REDIRECT, {
+    getEncounter().to(characterA.characterId).emit(NogEvent.REDIRECT, {
       page: NogPage.WORLD
     });
 
-    getEncounter().to(sessionB.sessionId).emit(NogEvent.REDIRECT, {
+    getEncounter().to(characterB.characterId).emit(NogEvent.REDIRECT, {
       page: NogPage.WORLD
     });
   });

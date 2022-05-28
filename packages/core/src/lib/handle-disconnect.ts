@@ -1,5 +1,5 @@
 import { Namespace, Socket } from 'socket.io';
-import sessionStore from '../store/session-store';
+import characterStore from '../store/character-store';
 import logger from './logger';
 import { NogNamespace } from '@newordergame/common';
 
@@ -9,20 +9,20 @@ export async function handleDisconnect(
   namespace: Namespace
 ) {
   logger.info('Disconnected', { namespaceName, socketId: socket.id });
-  const session = sessionStore.get(socket.data.sessionId);
-  if (session) {
-    logger.info('Disconnected with session ID', {
-      sessionId: session.sessionId
+  const character = characterStore.get(socket.data.characterId);
+  if (character) {
+    logger.info('Disconnected with character ID', {
+      characterId: character.characterId
     });
-    const matchingSockets = await namespace.in(session.sessionId).allSockets();
+    const matchingSockets = await namespace.in(character.characterId).allSockets();
     const isDisconnected = matchingSockets.size === 0;
     if (isDisconnected) {
-      sessionStore.set(session.sessionId, {
-        ...session,
+      characterStore.set(character.characterId, {
+        ...character,
         connected: false
       });
     }
   } else {
-    logger.info('Disconnected without session ID');
+    logger.info('Disconnected without character ID');
   }
 }

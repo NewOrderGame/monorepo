@@ -7,7 +7,7 @@ import {
 import { Stats, StatsGroups } from '../../lib/types';
 import logger from '../../lib/logger';
 import { mkdirSync } from 'fs';
-import characterStore from '../../store/character-store';
+import characterAtWorldStore from '../../store/character-at-world-store';
 import encounterStore from '../../store/encounter-store';
 
 export const stats: Stats = {
@@ -28,7 +28,7 @@ export const withStats = (f: () => void, group: StatsGroups) => {
     const executionTime = tickEndTime - tickStartTime;
     stats[group].push({
       executionTime,
-      charactersCount: characterStore.size(),
+      charactersCount: characterAtWorldStore.size(),
       encountersCount: encounterStore.size()
     });
   };
@@ -46,6 +46,6 @@ export function saveTickStats() {
         ].join(',')
       )
       .join('\n')
-  ).catch((error) => console.error(error));
+  ).catch((error) => logger.error('Error during saving tick stats', {error}));
   stats[StatsGroups.TICK] = [];
 }

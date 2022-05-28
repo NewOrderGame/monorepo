@@ -1,11 +1,11 @@
-import sessionStore from '../store/session-store';
 import characterStore from '../store/character-store';
+import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
-import { createCharacter } from '../lib/character';
+import { createCharacterAtWorld } from '../lib/character-at-world';
 import { nanoid } from 'nanoid';
 import { handleCharactersEncounter } from './encounter';
-import { createSession } from '../lib/session';
-import { Character } from '@newordergame/common';
+import { createCharacter } from '../lib/character';
+import { CharacterAtWorld } from '@newordergame/common';
 import { ENCOUNTER_COOL_DOWN_TIME } from '../lib/constants';
 import moment = require('moment');
 import { getFakeNamespace } from '../test/utils';
@@ -14,9 +14,9 @@ jest.mock('../namespaces/world-namespace');
 
 describe('Visibility module', () => {
   beforeEach(() => {
-    characterStore.clear();
+    characterAtWorldStore.clear();
     encounterStore.clear();
-    sessionStore.clear();
+    characterStore.clear();
   });
 
   describe('handleCharactersEncounter. Handles encounter between characters on map', () => {
@@ -24,163 +24,164 @@ describe('Visibility module', () => {
       const encounterStartTime = moment().valueOf();
       const world = getFakeNamespace();
 
-      const sessionA = {
-        ...createSession({ sessionId: nanoid() })
+      const characterA = {
+        ...createCharacter({ characterId: nanoid() })
       };
 
-      const sessionB = {
-        ...createSession({ sessionId: nanoid() })
+      const characterB = {
+        ...createCharacter({ characterId: nanoid() })
       };
-
-      sessionStore.set(sessionA.sessionId, sessionA);
-      sessionStore.set(sessionB.sessionId, sessionB);
-
-      const characterA = createCharacter({
-        session: sessionA
-      });
-
-      const characterB = createCharacter({
-        session: sessionB
-      });
 
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
 
+      const characterAtWorldA = createCharacterAtWorld({
+        character: characterA
+      });
+
+      const characterAtWorldB = createCharacterAtWorld({
+        character: characterB
+      });
+
+      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
+      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+
       expect(encounterStore.size()).toBe(0);
 
       handleCharactersEncounter(
-        characterA.characterId,
-        characterB.characterId,
+        characterAtWorldA.characterId,
+        characterAtWorldB.characterId,
         world
       );
 
       encounterStore.forEach((encounter) => {
         const participantA = encounter.participants.find(
-          (participant) => participant.characterId === characterA.characterId
+          (participant) => participant.characterId === characterAtWorldA.characterId
         );
         const participantB = encounter.participants.find(
-          (participant) => participant.characterId === characterB.characterId
+          (participant) => participant.characterId === characterAtWorldB.characterId
         );
 
-        expect(sessionA.encounterId).toBe(encounter.encounterId);
-        expect(sessionB.encounterId).toBe(encounter.encounterId);
+        expect(characterA.encounterId).toBe(encounter.encounterId);
+        expect(characterB.encounterId).toBe(encounter.encounterId);
 
-        expect(sessionA.encounterStartTime - encounterStartTime).toBeLessThan(
+        expect(characterA.encounterStartTime - encounterStartTime).toBeLessThan(
           10
         );
-        expect(sessionB.encounterStartTime - encounterStartTime).toBeLessThan(
+        expect(characterB.encounterStartTime - encounterStartTime).toBeLessThan(
           10
         );
-        expect(sessionA.encounterStartTime).toBe(sessionB.encounterStartTime);
+        expect(characterA.encounterStartTime).toBe(characterB.encounterStartTime);
 
         expect(participantA).toEqual(
-          expect.objectContaining({ characterId: characterA.characterId })
+          expect.objectContaining({ characterId: characterAtWorldA.characterId })
         );
         expect(participantB).toEqual(
-          expect.objectContaining({ characterId: characterB.characterId })
+          expect.objectContaining({ characterId: characterAtWorldB.characterId })
         );
       });
 
       expect(encounterStore.size()).toBe(1);
-      expect(characterStore.size()).toBe(0);
+      expect(characterAtWorldStore.size()).toBe(0);
     });
 
     test('Does not create encounter if characters are further than ENCOUNTER_DISTANCE', () => {
       const encounterStartTime = moment().subtract(50, 'seconds').valueOf();
       const world = getFakeNamespace();
 
-      const sessionA = {
-        ...createSession({ sessionId: nanoid() }),
+      const characterA = {
+        ...createCharacter({ characterId: nanoid() }),
         encounterStartTime,
         coordinates: { lat: 50, lng: 30 }
       };
 
-      const sessionB = {
-        ...createSession({ sessionId: nanoid() }),
+      const characterB = {
+        ...createCharacter({ characterId: nanoid() }),
         encounterStartTime,
         coordinates: { lat: 40, lng: 30 }
       };
 
-      sessionStore.set(sessionA.sessionId, sessionA);
-      sessionStore.set(sessionB.sessionId, sessionB);
-
-      const characterA = {
-        ...createCharacter({
-          session: sessionA
-        })
-      } as Character;
-
-      const characterB = {
-        ...createCharacter({
-          session: sessionB
-        }),
-        charactersInSight: [],
-        encountersInSight: []
-      } as Character;
-
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
 
+      const characterAtWorldA = {
+        ...createCharacterAtWorld({
+          character: characterA
+        })
+      } as CharacterAtWorld;
+
+      const characterAtWorldB = {
+        ...createCharacterAtWorld({
+          character: characterB
+        }),
+        charactersInSight: [],
+        encountersInSight: []
+      } as CharacterAtWorld;
+
+      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
+      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+
       expect(encounterStore.size()).toBe(0);
-      expect(characterStore.size()).toBe(2);
+      expect(characterAtWorldStore.size()).toBe(2);
 
       handleCharactersEncounter(
-        characterA.characterId,
-        characterB.characterId,
+        characterAtWorldA.characterId,
+        characterAtWorldB.characterId,
         world
       );
 
       expect(encounterStore.size()).toBe(0);
-      expect(characterStore.size()).toBe(2);
+      expect(characterAtWorldStore.size()).toBe(2);
     });
 
-    test('Does not create encounter if both sessions have encounterStartTime', () => {
+    test('Does not create encounter if both characters have' +
+      ' encounterStartTime', () => {
       const encounterStartTime = moment().subtract(50, 'seconds').valueOf();
       const world = getFakeNamespace();
 
-      const sessionA = {
-        ...createSession({ sessionId: nanoid() }),
-        encounterStartTime
-      };
-
-      const sessionB = {
-        ...createSession({ sessionId: nanoid() }),
-        encounterStartTime
-      };
-
-      sessionStore.set(sessionA.sessionId, sessionA);
-      sessionStore.set(sessionB.sessionId, sessionB);
-
       const characterA = {
-        ...createCharacter({
-          session: sessionA
-        }),
-        charactersInSight: [],
-        encountersInSight: []
-      } as Character;
+        ...createCharacter({ characterId: nanoid() }),
+        encounterStartTime
+      };
 
       const characterB = {
-        ...createCharacter({
-          session: sessionB
-        }),
-        charactersInSight: [],
-        encountersInSight: []
-      } as Character;
+        ...createCharacter({ characterId: nanoid() }),
+        encounterStartTime
+      };
 
       characterStore.set(characterA.characterId, characterA);
       characterStore.set(characterB.characterId, characterB);
 
+      const characterAtWorldA = {
+        ...createCharacterAtWorld({
+          character: characterA
+        }),
+        charactersInSight: [],
+        encountersInSight: []
+      } as CharacterAtWorld;
+
+      const characterAtWorldB = {
+        ...createCharacterAtWorld({
+          character: characterB
+        }),
+        charactersInSight: [],
+        encountersInSight: []
+      } as CharacterAtWorld;
+
+      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
+      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+
       expect(encounterStore.size()).toBe(0);
-      expect(characterStore.size()).toBe(2);
+      expect(characterAtWorldStore.size()).toBe(2);
 
       handleCharactersEncounter(
-        characterA.characterId,
-        characterB.characterId,
+        characterAtWorldA.characterId,
+        characterAtWorldB.characterId,
         world
       );
 
       expect(encounterStore.size()).toBe(0);
-      expect(characterStore.size()).toBe(2);
+      expect(characterAtWorldStore.size()).toBe(2);
     });
 
     test(`Does not create encounter if encounterEndTime is less than ENCOUNTER_COOL_DOWN_TIME`, () => {
@@ -189,48 +190,48 @@ describe('Visibility module', () => {
         .subtract(ENCOUNTER_COOL_DOWN_TIME - 1, 'seconds')
         .valueOf();
 
-      const sessionA = {
-        ...createSession({ sessionId: nanoid() }),
+      const characterA = {
+        ...createCharacter({ characterId: nanoid() }),
         encounterEndTime
       };
 
-      const sessionB = {
-        ...createSession({ sessionId: nanoid() })
+      const characterB = {
+        ...createCharacter({ characterId: nanoid() })
       };
 
-      sessionStore.set(sessionA.sessionId, sessionA);
-      sessionStore.set(sessionB.sessionId, sessionB);
-
-      const characterA = {
-        ...createCharacter({
-          session: sessionA
-        }),
-        charactersInSight: [],
-        encountersInSight: []
-      } as Character;
-
-      const characterB = {
-        ...createCharacter({
-          session: sessionB
-        }),
-        charactersInSight: [],
-        encountersInSight: []
-      } as Character;
-
       characterStore.set(characterA.characterId, characterA);
-      characterStore.set(characterB.characterId, characterB);
+      characterStore.set( characterB.characterId,  characterB);
+
+      const characterAtWorldA = {
+        ...createCharacterAtWorld({
+          character: characterA
+        }),
+        charactersInSight: [],
+        encountersInSight: []
+      } as CharacterAtWorld;
+
+      const characterAtWorldB = {
+        ...createCharacterAtWorld({
+          character:  characterB
+        }),
+        charactersInSight: [],
+        encountersInSight: []
+      } as CharacterAtWorld;
+
+      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
+      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
 
       expect(encounterStore.size()).toBe(0);
-      expect(characterStore.size()).toBe(2);
+      expect(characterAtWorldStore.size()).toBe(2);
 
       handleCharactersEncounter(
-        characterA.characterId,
-        characterB.characterId,
+        characterAtWorldA.characterId,
+        characterAtWorldB.characterId,
         world
       );
 
       expect(encounterStore.size()).toBe(0);
-      expect(characterStore.size()).toBe(2);
+      expect(characterAtWorldStore.size()).toBe(2);
     });
   });
 });

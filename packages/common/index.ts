@@ -1,6 +1,6 @@
 export type Coordinates = { lat: number; lng: number };
 
-export type NogPlayerId = string;
+export type NogCharacterId = string;
 export type NogEncounterId = string;
 
 export enum NogPage {
@@ -29,8 +29,16 @@ export enum NogEvent {
   CHARACTERS_IN_SIGHT = 'characters-in-sight'
 }
 
-export interface Session {
-  sessionId: NogPlayerId;
+export type Outlook = number[];
+
+export type CharacterStats = {
+  speed: number; // m/s
+  sightRange: number; // m
+  outlook: Outlook
+}
+
+export interface Character {
+  characterId: NogCharacterId;
   nickname: string;
   connected: boolean;
   coordinates: Coordinates;
@@ -47,8 +55,8 @@ export interface Encounter {
   encounterStartTime: number | null;
 }
 
-export interface Character {
-  characterId: NogPlayerId;
+export interface CharacterAtWorld {
+  characterId: NogCharacterId;
   nickname: string;
   coordinates: Coordinates;
   movesTo: Coordinates | null;
@@ -59,16 +67,8 @@ export interface Character {
   encounterSightFlag: boolean;
 }
 
-export type Outlook = number[];
-
-export type CharacterStats = {
-  speed: number; // m/s
-  sightRange: number; // m
-  outlook
-}
-
 export type EncounterParticipant = {
-  characterId: NogPlayerId;
+  characterId: NogCharacterId;
   nickname: string;
 };
 
@@ -80,7 +80,7 @@ export type EncounterInSight = {
 };
 
 export type CharacterInSight = {
-  characterId: NogPlayerId;
+  characterId: NogCharacterId;
   coordinates: Coordinates;
   nickname: string;
   distance: number;

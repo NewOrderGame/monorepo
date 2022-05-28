@@ -1,10 +1,10 @@
-import characterStore from '../store/character-store';
+import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
-import sessionStore from '../store/session-store';
-import { createSession } from '../lib/session';
-import { nanoid } from 'nanoid';
+import characterStore from '../store/character-store';
 import { createCharacter } from '../lib/character';
-import { Character, NogEvent, Session } from '@newordergame/common';
+import { nanoid } from 'nanoid';
+import { createCharacterAtWorld } from '../lib/character-at-world';
+import { CharacterAtWorld, NogEvent, Character } from '@newordergame/common';
 import { Socket } from 'socket.io';
 import { handleMoveEvent, moveCharacter } from './movement';
 import {
@@ -18,98 +18,98 @@ import { getFakeSocket } from '../test/utils';
 
 describe('Movement module', () => {
   beforeEach(() => {
-    characterStore.clear();
+    characterAtWorldStore.clear();
     encounterStore.clear();
-    sessionStore.clear();
+    characterStore.clear();
   });
 
   describe('moveCharacter. Move character along with the tick', () => {
     test('Does nothing if "movesTo" is falsy', () => {
-      const session = {
-        ...createSession({ sessionId: nanoid() })
+      const character = {
+        ...createCharacter({ characterId: nanoid() })
       };
 
-      sessionStore.set(session.sessionId, session);
+      characterStore.set(character.characterId, character);
 
-      const character = {
-        ...createCharacter({
-          session: session
+      const characterAtWorld = {
+        ...createCharacterAtWorld({
+          character: character
         }),
         charactersInSight: [],
         encountersInSight: []
-      } as Character;
+      } as CharacterAtWorld;
 
-      characterStore.set(character.characterId, character);
+      characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
 
-      const sessionBefore = { ...session };
       const characterBefore = { ...character };
+      const characterAtWorldBefore = { ...characterAtWorld };
 
-      moveCharacter(character.characterId);
+      moveCharacter(characterAtWorld.characterId);
 
-      expect(session).toEqual(sessionBefore);
       expect(character).toEqual(characterBefore);
+      expect(characterAtWorld).toEqual(characterAtWorldBefore);
     });
 
     test('Does something if "movesTo" is defined', () => {
-      const session = {
-        ...createSession({ sessionId: nanoid() })
-      };
-
-      sessionStore.set(session.sessionId, session);
-
       const character = {
-        ...createCharacter({
-          session: session
-        }),
-        movesTo: { lat: 46.47684829298625, lng: 30.730953812599186 }
-      } as Character;
+        ...createCharacter({ characterId: nanoid() })
+      };
 
       characterStore.set(character.characterId, character);
 
-      const sessionBefore = { ...session };
+      const characterAtWorld = {
+        ...createCharacterAtWorld({
+          character: character
+        }),
+        movesTo: { lat: 46.47684829298625, lng: 30.730953812599186 }
+      } as CharacterAtWorld;
+
+      characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
+
       const characterBefore = { ...character };
+      const characterAtWorldBefore = { ...characterAtWorld };
 
-      moveCharacter(character.characterId);
+      moveCharacter(characterAtWorld.characterId);
 
-      expect(session).not.toEqual(sessionBefore);
       expect(character).not.toEqual(characterBefore);
+      expect(characterAtWorld).not.toEqual(characterAtWorldBefore);
     });
 
     test('Assign final destination point to coordinates if distance is less than speed with multiplier', () => {
       const coordinates = { lat: 46.47684829298625, lng: 30.730953812599186 };
 
-      const session = {
-        ...createSession({ sessionId: nanoid() }),
-        coordinates
-      } as Session;
-
-      sessionStore.set(session.sessionId, { ...session });
-
       const character = {
-        ...createCharacter({
-          session: session
-        }),
+        ...createCharacter({ characterId: nanoid() }),
         coordinates
       } as Character;
 
+      characterStore.set(character.characterId, { ...character });
+
+      const characterAtWorld = {
+        ...createCharacterAtWorld({
+          character: character
+        }),
+        coordinates
+      } as CharacterAtWorld;
+
       const movesTo = computeDestinationPoint(
         coordinates,
-        character.speed / SPEED_MULTIPLIER - 1,
+        characterAtWorld.stats.speed / SPEED_MULTIPLIER - 1,
         0
       );
 
-      characterStore.set(character.characterId, {
-        ...character,
+      characterAtWorldStore.set(characterAtWorld.characterId, {
+        ...characterAtWorld,
         movesTo: {
           lat: movesTo.latitude,
           lng: movesTo.longitude
         }
       });
 
-      moveCharacter(character.characterId);
+      moveCharacter(characterAtWorld.characterId);
 
-      expect(session.coordinates).not.toEqual(movesTo);
       expect(character.coordinates).not.toEqual(movesTo);
+      expect(characterAtWorld.coordinates).not.toEqual(movesTo);
     });
 
     test('Assigns next destination point to coordinates if distance is greater than speed with multiplier', () => {
@@ -118,28 +118,28 @@ describe('Movement module', () => {
         lng: 30.730953812599186
       };
 
-      const session = {
-        ...createSession({ sessionId: nanoid() }),
-        coordinates: startCoordinates
-      } as Session;
-      sessionStore.set(session.sessionId, { ...session });
-
-      const characterBefore = {
-        ...createCharacter({
-          session: session
-        }),
+      const character = {
+        ...createCharacter({ characterId: nanoid() }),
         coordinates: startCoordinates
       } as Character;
+      characterStore.set(character.characterId, { ...character });
+
+      const characterBefore = {
+        ...createCharacterAtWorld({
+          character: character
+        }),
+        coordinates: startCoordinates
+      } as CharacterAtWorld;
 
       const destination = computeDestinationPoint(
         startCoordinates,
-        characterBefore.speed / SPEED_MULTIPLIER + 100,
+        characterBefore.stats.speed / SPEED_MULTIPLIER + 100,
         0
       );
       const movesTo = { lat: destination.latitude, lng: destination.longitude };
 
       characterBefore.movesTo = movesTo;
-      characterStore.set(characterBefore.characterId, {
+      characterAtWorldStore.set(characterBefore.characterId, {
         ...characterBefore,
         movesTo
       });
@@ -151,7 +151,7 @@ describe('Movement module', () => {
 
       const intermediateDestination = computeDestination(
         characterBefore.coordinates,
-        characterBefore.speed / SPEED_MULTIPLIER,
+        characterBefore.stats.speed / SPEED_MULTIPLIER,
         bearing
       );
 
@@ -162,14 +162,14 @@ describe('Movement module', () => {
 
       moveCharacter(characterBefore.characterId);
 
-      const characterAfter = characterStore.get(characterBefore.characterId);
+      const characterAfter = characterAtWorldStore.get(characterBefore.characterId);
 
       expect(characterAfter.coordinates).toEqual(intermediateCoordinates);
-      expect(sessionStore.get(session.sessionId).coordinates).toEqual(
+      expect(characterStore.get(character.characterId).coordinates).toEqual(
         intermediateCoordinates
       );
       expect(
-        characterStore.get(characterAfter.characterId).coordinates
+        characterAtWorldStore.get(characterAfter.characterId).coordinates
       ).toEqual(intermediateCoordinates);
     });
   });
@@ -183,24 +183,24 @@ describe('Movement module', () => {
       };
       const movesTo = { lat: 46.47736917180925, lng: 30.7302188873291 };
 
-      const session = {
-        ...createSession({ sessionId: nanoid() }),
-        coordinates: startCoordinates
-      } as Session;
-      sessionStore.set(session.sessionId, { ...session });
-
       const character = {
-        ...createCharacter({
-          session: session
-        }),
+        ...createCharacter({ characterId: nanoid() }),
         coordinates: startCoordinates
       } as Character;
       characterStore.set(character.characterId, { ...character });
 
+      const characterAtWorld = {
+        ...createCharacterAtWorld({
+          character: character
+        }),
+        coordinates: startCoordinates
+      } as CharacterAtWorld;
+      characterAtWorldStore.set(characterAtWorld.characterId, { ...characterAtWorld });
+
       const distance = computeDistance(
         {
-          latitude: character.coordinates.lat,
-          longitude: character.coordinates.lng
+          latitude: characterAtWorld.coordinates.lat,
+          longitude: characterAtWorld.coordinates.lng
         },
         {
           latitude: movesTo.lat,
@@ -209,13 +209,13 @@ describe('Movement module', () => {
         DISTANCE_ACCURACY
       );
 
-      const duration = distance / character.speed;
+      const duration = distance / characterAtWorld.stats.speed;
 
-      socket.data.sessionId = session.sessionId;
+      socket.data.characterId = character.characterId;
 
       handleMoveEvent(socket, movesTo);
 
-      expect(characterStore.get(character.characterId).movesTo).toEqual(
+      expect(characterAtWorldStore.get(characterAtWorld.characterId).movesTo).toEqual(
         movesTo
       );
       expect(socket.emit).toHaveBeenCalledWith(NogEvent.MOVE, {

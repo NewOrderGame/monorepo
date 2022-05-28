@@ -1,102 +1,101 @@
 import { getDistance as computeDistance } from 'geolib';
 import { DISTANCE_ACCURACY } from '../lib/constants';
-import characterStore from '../store/character-store';
+import characterAtWorldStore from '../store/character-at-world-store';
 import {
   CharacterInSight,
   EncounterInSight,
   NogEvent,
-  NogPlayerId
+  NogCharacterId
 } from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
-import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
 
 export function checkCharacterVisibility(
-  characterIdA: NogPlayerId,
-  characterIdB: NogPlayerId,
+  characterIdA: NogCharacterId,
+  characterIdB: NogCharacterId,
   charactersInSightA: CharacterInSight[],
   charactersInSightB: CharacterInSight[]
 ) {
-  const characterA = characterStore.get(characterIdA);
-  const characterB = characterStore.get(characterIdB);
+  const characterAtWorldA = characterAtWorldStore.get(characterIdA);
+  const characterAtWorldB = characterAtWorldStore.get(characterIdB);
 
-  if (!characterA || !characterB) {
+  if (!characterAtWorldA || !characterAtWorldB) {
     return;
   }
 
   const distance = computeDistance(
     {
-      latitude: characterA.coordinates.lat,
-      longitude: characterA.coordinates.lng
+      latitude: characterAtWorldA.coordinates.lat,
+      longitude: characterAtWorldA.coordinates.lng
     },
     {
-      latitude: characterB.coordinates.lat,
-      longitude: characterB.coordinates.lng
+      latitude: characterAtWorldB.coordinates.lat,
+      longitude: characterAtWorldB.coordinates.lng
     },
     DISTANCE_ACCURACY
   );
 
-  if (distance <= characterA.stats.sightRange) {
+  if (distance <= characterAtWorldA.stats.sightRange) {
     charactersInSightA.push({
-      coordinates: characterB.coordinates,
-      characterId: characterB.characterId,
-      nickname: characterB.nickname,
+      coordinates: characterAtWorldB.coordinates,
+      characterId: characterAtWorldB.characterId,
+      nickname: characterAtWorldB.nickname,
       distance
     });
 
-    characterA.characterSightFlag = true;
-    characterStore.set(characterA.characterId, {
-      ...characterA
+    characterAtWorldA.characterSightFlag = true;
+    characterAtWorldStore.set(characterAtWorldA.characterId, {
+      ...characterAtWorldA
     });
   }
 
-  if (distance <= characterB.stats.sightRange) {
+  if (distance <= characterAtWorldB.stats.sightRange) {
     charactersInSightB.push({
-      coordinates: characterA.coordinates,
-      characterId: characterA.characterId,
-      nickname: characterA.nickname,
+      coordinates: characterAtWorldA.coordinates,
+      characterId: characterAtWorldA.characterId,
+      nickname: characterAtWorldA.nickname,
       distance
     });
 
-    characterB.characterSightFlag = true;
-    characterStore.set(characterB.characterId, {
-      ...characterB
+    characterAtWorldB.characterSightFlag = true;
+    characterAtWorldStore.set(characterAtWorldB.characterId, {
+      ...characterAtWorldB
     });
   }
 }
 
 export function sendCharactersInSight(
-  characterId: NogPlayerId,
+  characterId: NogCharacterId,
   charactersInSight: CharacterInSight[],
   world: Namespace
 ) {
-  const character = characterStore.get(characterId);
-  if (!character) {
+  const characterAtWorld = characterAtWorldStore.get(characterId);
+  if (!characterAtWorld) {
     return;
   }
 
-  if (character.characterSightFlag) {
+  if (characterAtWorld.characterSightFlag) {
     world
-      .to(character.characterId)
+      .to(characterAtWorld.characterId)
       .emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
   }
 
   if (!charactersInSight.length) {
-    character.characterSightFlag = false;
-    characterStore.set(character.characterId, {
-      ...character
+    characterAtWorld.characterSightFlag = false;
+    characterAtWorldStore.set(characterAtWorld.characterId, {
+      ...characterAtWorld
     });
   }
 }
 
 export function checkEncounterVisibility(
-  characterId: NogPlayerId,
-  encounterId: NogPlayerId,
+  characterId: NogCharacterId,
+  encounterId: NogCharacterId,
   encountersInSight: EncounterInSight[]
 ) {
-  const character = characterStore.get(characterId);
+  const characterAtWorld = characterAtWorldStore.get(characterId);
 
-  if (!character) {
+  if (!characterAtWorld) {
     return;
   }
 
@@ -104,8 +103,8 @@ export function checkEncounterVisibility(
 
   const distance = computeDistance(
     {
-      latitude: character.coordinates.lat,
-      longitude: character.coordinates.lng
+      latitude: characterAtWorld.coordinates.lat,
+      longitude: characterAtWorld.coordinates.lng
     },
     {
       latitude: encounter.coordinates.lat,
@@ -114,7 +113,7 @@ export function checkEncounterVisibility(
     DISTANCE_ACCURACY
   );
 
-  if (distance < character.stats.sightRange) {
+  if (distance < characterAtWorld.stats.sightRange) {
     encountersInSight.push({
       encounterId: encounter.encounterId,
       coordinates: encounter.coordinates,
@@ -122,34 +121,34 @@ export function checkEncounterVisibility(
       distance
     });
 
-    character.encounterSightFlag = true;
-    characterStore.set(character.characterId, {
-      ...character
+    characterAtWorld.encounterSightFlag = true;
+    characterAtWorldStore.set(characterAtWorld.characterId, {
+      ...characterAtWorld
     });
   }
 }
 
 export function sendEncountersInSight(
-  characterId: NogPlayerId,
+  characterId: NogCharacterId,
   encountersInSight: EncounterInSight[],
   world: Namespace
 ) {
-  const character = characterStore.get(characterId);
+  const characterAtWorld = characterAtWorldStore.get(characterId);
 
-  if (!character) {
+  if (!characterAtWorld) {
     return;
   }
 
-  if (character.encounterSightFlag) {
+  if (characterAtWorld.encounterSightFlag) {
     world
-      .to(character.characterId)
+      .to(characterAtWorld.characterId)
       .emit(NogEvent.ENCOUNTERS_IN_SIGHT, encountersInSight);
   }
 
   if (!encountersInSight.length) {
-    character.encounterSightFlag = false;
-    characterStore.set(character.characterId, {
-      ...character
+    characterAtWorld.encounterSightFlag = false;
+    characterAtWorldStore.set(characterAtWorld.characterId, {
+      ...characterAtWorld
     });
   }
 }

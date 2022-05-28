@@ -4,84 +4,84 @@ import {
   ENCOUNTER_COOL_DOWN_TIME,
   ENCOUNTER_DISTANCE
 } from '../lib/constants';
-import sessionStore from '../store/session-store';
+import characterStore from '../store/character-store';
 import * as moment from 'moment';
 import logger from '../lib/logger';
 import { nanoid } from 'nanoid';
 import {
   NogEvent,
   NogPage,
-  NogPlayerId,
+  NogCharacterId,
   NogEncounterId
 } from '@newordergame/common';
-import characterStore from '../store/character-store';
+import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
 import { Namespace } from 'socket.io';
 
 export function handleCharactersEncounter(
-  characterIdA: NogPlayerId,
-  characterIdB: NogPlayerId,
+  characterIdA: NogCharacterId,
+  characterIdB: NogCharacterId,
   world: Namespace
 ) {
-  const characterA = characterStore.get(characterIdA);
-  const characterB = characterStore.get(characterIdB);
+  const characterAtWorldA = characterAtWorldStore.get(characterIdA);
+  const characterAtWorldB = characterAtWorldStore.get(characterIdB);
 
-  if (!characterA || !characterB) {
+  if (!characterAtWorldA || !characterAtWorldB) {
     return;
   }
 
-  if (characterA.characterId === characterB.characterId) {
+  if (characterAtWorldA.characterId === characterAtWorldB.characterId) {
     return;
   }
 
   const distance = getDistance(
     {
-      latitude: characterA.coordinates.lat,
-      longitude: characterA.coordinates.lng
+      latitude: characterAtWorldA.coordinates.lat,
+      longitude: characterAtWorldA.coordinates.lng
     },
     {
-      latitude: characterB.coordinates.lat,
-      longitude: characterB.coordinates.lng
+      latitude: characterAtWorldB.coordinates.lat,
+      longitude: characterAtWorldB.coordinates.lng
     },
     DISTANCE_ACCURACY
   );
 
-  const sessionA = sessionStore.get(characterA.characterId);
-  const sessionB = sessionStore.get(characterB.characterId);
+  const characterA = characterStore.get(characterAtWorldA.characterId);
+  const characterB = characterStore.get(characterAtWorldB.characterId);
 
   let canEncounter: boolean =
-    !sessionA.encounterStartTime && !sessionB.encounterStartTime;
+    !characterA.encounterStartTime && !characterB.encounterStartTime;
 
-  if (sessionA.encounterEndTime) {
+  if (characterA.encounterEndTime) {
     const now = moment().valueOf();
     canEncounter =
       canEncounter &&
-      moment(sessionA.encounterEndTime)
+      moment(characterA.encounterEndTime)
         .add(ENCOUNTER_COOL_DOWN_TIME, 'second')
         .diff(now) <= 0;
   }
 
-  if (canEncounter && sessionA.encounterEndTime) {
-    sessionA.encounterEndTime = null;
-    sessionStore.set(sessionA.sessionId, {
-      ...sessionA
+  if (canEncounter && characterA.encounterEndTime) {
+    characterA.encounterEndTime = null;
+    characterStore.set(characterA.characterId, {
+      ...characterA
     });
   }
 
   if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
     logger.info('Encounter', {
-      characterA: {
-        characterId: characterA.characterId,
-        nickname: characterA.nickname
+      characterAtWorldA: {
+        characterId: characterAtWorldA.characterId,
+        nickname: characterAtWorldA.nickname
       },
-      characterB: {
-        characterId: characterB.characterId,
-        nickname: characterB.nickname
+      characterAtWorldB: {
+        characterId: characterAtWorldB.characterId,
+        nickname: characterAtWorldB.nickname
       }
     });
     const center = computeCenter([
-      characterA.coordinates,
-      characterB.coordinates
+      characterAtWorldA.coordinates,
+      characterAtWorldB.coordinates
     ]);
 
     if (center) {
@@ -93,42 +93,42 @@ export function handleCharactersEncounter(
 
       const encounterStartTime = moment().valueOf();
 
-      sessionA.page = NogPage.ENCOUNTER;
-      sessionA.encounterId = encounterId;
-      sessionA.coordinates = centerCoordinates;
-      sessionA.encounterStartTime = encounterStartTime;
-      sessionStore.set(sessionA.sessionId, { ...sessionA });
+      characterA.page = NogPage.ENCOUNTER;
+      characterA.encounterId = encounterId;
+      characterA.coordinates = centerCoordinates;
+      characterA.encounterStartTime = encounterStartTime;
+      characterStore.set(characterA.characterId, { ...characterA });
 
-      sessionB.page = NogPage.ENCOUNTER;
-      sessionB.encounterId = encounterId;
-      sessionB.coordinates = centerCoordinates;
-      sessionB.encounterStartTime = encounterStartTime;
-      sessionStore.set(sessionB.sessionId, { ...sessionB });
+      characterB.page = NogPage.ENCOUNTER;
+      characterB.encounterId = encounterId;
+      characterB.coordinates = centerCoordinates;
+      characterB.encounterStartTime = encounterStartTime;
+      characterStore.set(characterB.characterId, { ...characterB });
 
-      characterStore.delete(characterA.characterId);
-      characterStore.delete(characterB.characterId);
+      characterAtWorldStore.delete(characterAtWorldA.characterId);
+      characterAtWorldStore.delete(characterAtWorldB.characterId);
 
       encounterStore.set(encounterId, {
         encounterId,
-        encounterStartTime: encounterStartTime,
+        encounterStartTime,
         coordinates: centerCoordinates,
         participants: [
           {
-            characterId: characterA.characterId,
-            nickname: characterA.nickname
+            characterId: characterAtWorldA.characterId,
+            nickname: characterAtWorldA.nickname
           },
           {
-            characterId: characterB.characterId,
-            nickname: characterB.nickname
+            characterId: characterAtWorldB.characterId,
+            nickname: characterAtWorldB.nickname
           }
         ]
       });
 
       world
-        .to(characterA.characterId)
+        .to(characterAtWorldA.characterId)
         .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
       world
-        .to(characterB.characterId)
+        .to(characterAtWorldB.characterId)
         .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
     } else {
       logger.error('Something is wrong with a center');
