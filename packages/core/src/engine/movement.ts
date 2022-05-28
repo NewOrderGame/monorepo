@@ -7,7 +7,7 @@ import {
   getGreatCircleBearing as computeBearing
 } from 'geolib';
 import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../lib/constants';
-import { NogEvent, NogCharacterId } from '@newordergame/common';
+import { NogCharacterId, NogEvent } from '@newordergame/common';
 import { Socket } from 'socket.io';
 
 export function moveCharacter(characterId: NogCharacterId) {
@@ -39,7 +39,10 @@ export function moveCharacter(characterId: NogCharacterId) {
       ...characterAtWorld
     });
   } else {
-    const bearing = computeBearing(characterAtWorld.coordinates, characterAtWorld.movesTo);
+    const bearing = computeBearing(
+      characterAtWorld.coordinates,
+      characterAtWorld.movesTo
+    );
 
     const destination = computeDestination(
       characterAtWorld.coordinates,

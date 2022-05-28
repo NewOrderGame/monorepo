@@ -1,4 +1,8 @@
-import { Encounter, NogEncounterId, NogCharacterId } from '@newordergame/common';
+import {
+  Encounter,
+  NogEncounterId,
+  NogCharacterId
+} from '@newordergame/common';
 import logger from '../lib/logger';
 
 export class InMemoryEncounterStore {

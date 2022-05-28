@@ -5,12 +5,18 @@ import { createCharacterAtWorld } from '../lib/character-at-world';
 import { nanoid } from 'nanoid';
 import { handleCharactersEncounter } from './encounter';
 import { createCharacter } from '../lib/character';
-import { CharacterAtWorld } from '@newordergame/common';
+import { CharacterAtWorld, CharacterStats } from '@newordergame/common';
 import { ENCOUNTER_COOL_DOWN_TIME } from '../lib/constants';
-import moment = require('moment');
 import { getFakeNamespace } from '../test/utils';
+import moment = require('moment');
 
 jest.mock('../namespaces/world-namespace');
+
+const DEFAULT_CHARACTER_STATS: CharacterStats = {
+  outlook: [0, 0, 0],
+  speed: 30,
+  sightRange: 100
+};
 
 describe('Visibility module', () => {
   beforeEach(() => {
@@ -25,11 +31,19 @@ describe('Visibility module', () => {
       const world = getFakeNamespace();
 
       const characterA = {
-        ...createCharacter({ characterId: nanoid() })
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+        })
       };
 
       const characterB = {
-        ...createCharacter({ characterId: nanoid() })
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+        })
       };
 
       characterStore.set(characterA.characterId, characterA);
@@ -43,8 +57,14 @@ describe('Visibility module', () => {
         character: characterB
       });
 
-      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
-      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+      characterAtWorldStore.set(
+        characterAtWorldA.characterId,
+        characterAtWorldA
+      );
+      characterAtWorldStore.set(
+        characterAtWorldB.characterId,
+        characterAtWorldB
+      );
 
       expect(encounterStore.size()).toBe(0);
 
@@ -56,10 +76,12 @@ describe('Visibility module', () => {
 
       encounterStore.forEach((encounter) => {
         const participantA = encounter.participants.find(
-          (participant) => participant.characterId === characterAtWorldA.characterId
+          (participant) =>
+            participant.characterId === characterAtWorldA.characterId
         );
         const participantB = encounter.participants.find(
-          (participant) => participant.characterId === characterAtWorldB.characterId
+          (participant) =>
+            participant.characterId === characterAtWorldB.characterId
         );
 
         expect(characterA.encounterId).toBe(encounter.encounterId);
@@ -71,13 +93,19 @@ describe('Visibility module', () => {
         expect(characterB.encounterStartTime - encounterStartTime).toBeLessThan(
           10
         );
-        expect(characterA.encounterStartTime).toBe(characterB.encounterStartTime);
+        expect(characterA.encounterStartTime).toBe(
+          characterB.encounterStartTime
+        );
 
         expect(participantA).toEqual(
-          expect.objectContaining({ characterId: characterAtWorldA.characterId })
+          expect.objectContaining({
+            characterId: characterAtWorldA.characterId
+          })
         );
         expect(participantB).toEqual(
-          expect.objectContaining({ characterId: characterAtWorldB.characterId })
+          expect.objectContaining({
+            characterId: characterAtWorldB.characterId
+          })
         );
       });
 
@@ -90,13 +118,21 @@ describe('Visibility module', () => {
       const world = getFakeNamespace();
 
       const characterA = {
-        ...createCharacter({ characterId: nanoid() }),
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+        }),
         encounterStartTime,
         coordinates: { lat: 50, lng: 30 }
       };
 
       const characterB = {
-        ...createCharacter({ characterId: nanoid() }),
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+        }),
         encounterStartTime,
         coordinates: { lat: 40, lng: 30 }
       };
@@ -118,8 +154,14 @@ describe('Visibility module', () => {
         encountersInSight: []
       } as CharacterAtWorld;
 
-      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
-      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+      characterAtWorldStore.set(
+        characterAtWorldA.characterId,
+        characterAtWorldA
+      );
+      characterAtWorldStore.set(
+        characterAtWorldB.characterId,
+        characterAtWorldB
+      );
 
       expect(encounterStore.size()).toBe(0);
       expect(characterAtWorldStore.size()).toBe(2);
@@ -134,19 +176,94 @@ describe('Visibility module', () => {
       expect(characterAtWorldStore.size()).toBe(2);
     });
 
-    test('Does not create encounter if both characters have' +
-      ' encounterStartTime', () => {
-      const encounterStartTime = moment().subtract(50, 'seconds').valueOf();
+    test(
+      'Does not create encounter if both characters have' +
+        ' encounterStartTime',
+      () => {
+        const encounterStartTime = moment().subtract(50, 'seconds').valueOf();
+        const world = getFakeNamespace();
+
+        const characterA = {
+          ...createCharacter({
+            characterId: nanoid(),
+            nickname: 'TestUser',
+            stats: DEFAULT_CHARACTER_STATS
+          }),
+          encounterStartTime
+        };
+
+        const characterB = {
+          ...createCharacter({
+            characterId: nanoid(),
+            nickname: 'TestUser',
+            stats: DEFAULT_CHARACTER_STATS
+          }),
+          encounterStartTime
+        };
+
+        characterStore.set(characterA.characterId, characterA);
+        characterStore.set(characterB.characterId, characterB);
+
+        const characterAtWorldA = {
+          ...createCharacterAtWorld({
+            character: characterA
+          }),
+          charactersInSight: [],
+          encountersInSight: []
+        } as CharacterAtWorld;
+
+        const characterAtWorldB = {
+          ...createCharacterAtWorld({
+            character: characterB
+          }),
+          charactersInSight: [],
+          encountersInSight: []
+        } as CharacterAtWorld;
+
+        characterAtWorldStore.set(
+          characterAtWorldA.characterId,
+          characterAtWorldA
+        );
+        characterAtWorldStore.set(
+          characterAtWorldB.characterId,
+          characterAtWorldB
+        );
+
+        expect(encounterStore.size()).toBe(0);
+        expect(characterAtWorldStore.size()).toBe(2);
+
+        handleCharactersEncounter(
+          characterAtWorldA.characterId,
+          characterAtWorldB.characterId,
+          world
+        );
+
+        expect(encounterStore.size()).toBe(0);
+        expect(characterAtWorldStore.size()).toBe(2);
+      }
+    );
+
+    test(`Does not create encounter if encounterEndTime is less than ENCOUNTER_COOL_DOWN_TIME`, () => {
       const world = getFakeNamespace();
+      const encounterEndTime = moment()
+        .subtract(ENCOUNTER_COOL_DOWN_TIME - 1, 'seconds')
+        .valueOf();
 
       const characterA = {
-        ...createCharacter({ characterId: nanoid() }),
-        encounterStartTime
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+        }),
+        encounterEndTime
       };
 
       const characterB = {
-        ...createCharacter({ characterId: nanoid() }),
-        encounterStartTime
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+        })
       };
 
       characterStore.set(characterA.characterId, characterA);
@@ -168,58 +285,14 @@ describe('Visibility module', () => {
         encountersInSight: []
       } as CharacterAtWorld;
 
-      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
-      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
-
-      expect(encounterStore.size()).toBe(0);
-      expect(characterAtWorldStore.size()).toBe(2);
-
-      handleCharactersEncounter(
+      characterAtWorldStore.set(
         characterAtWorldA.characterId,
-        characterAtWorldB.characterId,
-        world
+        characterAtWorldA
       );
-
-      expect(encounterStore.size()).toBe(0);
-      expect(characterAtWorldStore.size()).toBe(2);
-    });
-
-    test(`Does not create encounter if encounterEndTime is less than ENCOUNTER_COOL_DOWN_TIME`, () => {
-      const world = getFakeNamespace();
-      const encounterEndTime = moment()
-        .subtract(ENCOUNTER_COOL_DOWN_TIME - 1, 'seconds')
-        .valueOf();
-
-      const characterA = {
-        ...createCharacter({ characterId: nanoid() }),
-        encounterEndTime
-      };
-
-      const characterB = {
-        ...createCharacter({ characterId: nanoid() })
-      };
-
-      characterStore.set(characterA.characterId, characterA);
-      characterStore.set( characterB.characterId,  characterB);
-
-      const characterAtWorldA = {
-        ...createCharacterAtWorld({
-          character: characterA
-        }),
-        charactersInSight: [],
-        encountersInSight: []
-      } as CharacterAtWorld;
-
-      const characterAtWorldB = {
-        ...createCharacterAtWorld({
-          character:  characterB
-        }),
-        charactersInSight: [],
-        encountersInSight: []
-      } as CharacterAtWorld;
-
-      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
-      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+      characterAtWorldStore.set(
+        characterAtWorldB.characterId,
+        characterAtWorldB
+      );
 
       expect(encounterStore.size()).toBe(0);
       expect(characterAtWorldStore.size()).toBe(2);

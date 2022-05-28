@@ -36,7 +36,6 @@ function doNextTick(world: Namespace) {
     encountersInSight.set(characterAtWorldA.characterId, []);
 
     for (const encounter of encounters) {
-
       checkEncounterVisibility(
         characterAtWorldA.characterId,
         encounter.encounterId,

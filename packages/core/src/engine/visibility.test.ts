@@ -6,12 +6,12 @@ import {
   sendEncountersInSight
 } from './visibility';
 import {
+  Character,
   CharacterAtWorld,
   CharacterInSight,
   Encounter,
   EncounterInSight,
-  NogEvent,
-  Character
+  NogEvent
 } from '@newordergame/common';
 import characterAtWorldStore from '../store/character-at-world-store';
 import { nanoid } from 'nanoid';
@@ -29,7 +29,12 @@ const DEFAULT_ENCOUNTER = {
         character: {
           characterId: nanoid(),
           nickname: 'A',
-          coordinates: { lat: 0, lng: 0 }
+          coordinates: { lat: 0, lng: 0 },
+          stats: {
+            outlook: [0, 0, 0],
+            sightRange: 100,
+            speed: 30
+          }
         } as Character
       }),
       charactersInSight: [],
@@ -40,7 +45,12 @@ const DEFAULT_ENCOUNTER = {
         character: {
           characterId: nanoid(),
           nickname: 'B',
-          coordinates: { lat: 0, lng: 0 }
+          coordinates: { lat: 0, lng: 0 },
+          stats: {
+            outlook: [0, 0, 0],
+            sightRange: 100,
+            speed: 30
+          }
         } as Character
       }),
       charactersInSight: [],
@@ -65,7 +75,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight: charactersInSightA,
@@ -77,13 +92,24 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'B',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         })
       } as CharacterAtWorld;
 
-      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
-      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+      characterAtWorldStore.set(
+        characterAtWorldA.characterId,
+        characterAtWorldA
+      );
+      characterAtWorldStore.set(
+        characterAtWorldB.characterId,
+        characterAtWorldB
+      );
 
       checkCharacterVisibility(
         characterAtWorldA.characterId,
@@ -95,7 +121,8 @@ describe('Visibility module', () => {
       expect(charactersInSightA.length).toBe(1);
       expect(characterAtWorldA.characterSightFlag).toBe(true);
       expect(
-        characterAtWorldStore.get(characterAtWorldA.characterId).characterSightFlag
+        characterAtWorldStore.get(characterAtWorldA.characterId)
+          .characterSightFlag
       ).toBe(true);
     });
 
@@ -108,7 +135,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight: charactersInSightA
@@ -119,13 +151,24 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'B',
-            coordinates: { lat: 46.47651581453476, lng: 30.73301374912262 }
+            coordinates: { lat: 46.47651581453476, lng: 30.73301374912262 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         })
       } as CharacterAtWorld;
 
-      characterAtWorldStore.set(characterAtWorldA.characterId, characterAtWorldA);
-      characterAtWorldStore.set(characterAtWorldB.characterId, characterAtWorldB);
+      characterAtWorldStore.set(
+        characterAtWorldA.characterId,
+        characterAtWorldA
+      );
+      characterAtWorldStore.set(
+        characterAtWorldB.characterId,
+        characterAtWorldB
+      );
 
       checkCharacterVisibility(
         characterAtWorldA.characterId,
@@ -137,7 +180,8 @@ describe('Visibility module', () => {
       expect(charactersInSightA.length).toBe(0);
       expect(characterAtWorldA.characterSightFlag).toBe(false);
       expect(
-        characterAtWorldStore.get(characterAtWorldA.characterId).characterSightFlag
+        characterAtWorldStore.get(characterAtWorldA.characterId)
+          .characterSightFlag
       ).toBe(false);
     });
   });
@@ -152,7 +196,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight
@@ -162,12 +211,17 @@ describe('Visibility module', () => {
 
       characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
 
-      sendCharactersInSight(characterAtWorld.characterId, charactersInSight, world);
+      sendCharactersInSight(
+        characterAtWorld.characterId,
+        charactersInSight,
+        world
+      );
 
       expect(characterAtWorld.characterSightFlag).toBe(false);
-      expect(characterAtWorldStore.get(characterAtWorld.characterId).characterSightFlag).toBe(
-        false
-      );
+      expect(
+        characterAtWorldStore.get(characterAtWorld.characterId)
+          .characterSightFlag
+      ).toBe(false);
       expect(world.to).toBeCalled();
       expect(world.to).toBeCalledWith(characterAtWorld.characterId);
       expect(world.to(characterAtWorld.characterId).emit).toBeCalled();
@@ -186,7 +240,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight
@@ -196,13 +255,18 @@ describe('Visibility module', () => {
 
       characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
 
-      sendCharactersInSight(characterAtWorld.characterId, charactersInSight, world);
+      sendCharactersInSight(
+        characterAtWorld.characterId,
+        charactersInSight,
+        world
+      );
 
       expect(characterAtWorld.characterSightFlag).toBe(false);
       expect(charactersInSight.length).toBe(0);
-      expect(characterAtWorldStore.get(characterAtWorld.characterId).characterSightFlag).toBe(
-        false
-      );
+      expect(
+        characterAtWorldStore.get(characterAtWorld.characterId)
+          .characterSightFlag
+      ).toBe(false);
       expect(world.to(characterAtWorld.characterId).emit).not.toBeCalled();
     });
   });
@@ -216,7 +280,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight: [],
@@ -226,7 +295,12 @@ describe('Visibility module', () => {
       const encounter = {
         ...DEFAULT_ENCOUNTER,
         encounterId: nanoid(),
-        coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+        coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+        stats: {
+          outlook: [0, 0, 0],
+          sightRange: 100,
+          speed: 30
+        }
       } as Encounter;
 
       characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
@@ -240,9 +314,10 @@ describe('Visibility module', () => {
 
       expect(encountersInSight.length).toBe(1);
       expect(characterAtWorld.encounterSightFlag).toBe(true);
-      expect(characterAtWorldStore.get(characterAtWorld.characterId).encounterSightFlag).toBe(
-        true
-      );
+      expect(
+        characterAtWorldStore.get(characterAtWorld.characterId)
+          .encounterSightFlag
+      ).toBe(true);
     });
 
     test('Character should not see Encounter', () => {
@@ -253,7 +328,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight: [],
@@ -263,7 +343,12 @@ describe('Visibility module', () => {
       const encounter = {
         ...DEFAULT_ENCOUNTER,
         encounterId: nanoid(),
-        coordinates: { lat: 46.47651581453476, lng: 30.73301374912262 }
+        coordinates: { lat: 46.47651581453476, lng: 30.73301374912262 },
+        stats: {
+          outlook: [0, 0, 0],
+          sightRange: 100,
+          speed: 30
+        }
       } as Encounter;
 
       characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
@@ -277,9 +362,10 @@ describe('Visibility module', () => {
 
       expect(encountersInSight.length).toBe(0);
       expect(characterAtWorld.encounterSightFlag).toBe(false);
-      expect(characterAtWorldStore.get(characterAtWorld.characterId).encounterSightFlag).toBe(
-        false
-      );
+      expect(
+        characterAtWorldStore.get(characterAtWorld.characterId)
+          .encounterSightFlag
+      ).toBe(false);
     });
   });
 
@@ -293,7 +379,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight: [],
@@ -304,13 +395,18 @@ describe('Visibility module', () => {
 
       characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
 
-      sendEncountersInSight(characterAtWorld.characterId, encountersInSight, world);
+      sendEncountersInSight(
+        characterAtWorld.characterId,
+        encountersInSight,
+        world
+      );
 
       expect(encountersInSight.length).toBe(0);
       expect(characterAtWorld.encounterSightFlag).toBe(false);
-      expect(characterAtWorldStore.get(characterAtWorld.characterId).encounterSightFlag).toBe(
-        false
-      );
+      expect(
+        characterAtWorldStore.get(characterAtWorld.characterId)
+          .encounterSightFlag
+      ).toBe(false);
       expect(world.to(characterAtWorld.characterId).emit).toBeCalledWith(
         NogEvent.ENCOUNTERS_IN_SIGHT,
         encountersInSight
@@ -326,7 +422,12 @@ describe('Visibility module', () => {
           character: {
             characterId: nanoid(),
             nickname: 'A',
-            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 }
+            coordinates: { lat: 46.47684829298625, lng: 30.730953812599186 },
+            stats: {
+              outlook: [0, 0, 0],
+              sightRange: 100,
+              speed: 30
+            }
           } as Character
         }),
         charactersInSight: [],
@@ -337,13 +438,18 @@ describe('Visibility module', () => {
 
       characterAtWorldStore.set(characterAtWorld.characterId, characterAtWorld);
 
-      sendEncountersInSight(characterAtWorld.characterId, encountersInSight, world);
+      sendEncountersInSight(
+        characterAtWorld.characterId,
+        encountersInSight,
+        world
+      );
 
       expect(encountersInSight.length).toBe(0);
       expect(characterAtWorld.encounterSightFlag).toBe(false);
-      expect(characterAtWorldStore.get(characterAtWorld.characterId).encounterSightFlag).toBe(
-        false
-      );
+      expect(
+        characterAtWorldStore.get(characterAtWorld.characterId)
+          .encounterSightFlag
+      ).toBe(false);
       expect(world.to(characterAtWorld.characterId).emit).not.toBeCalled();
     });
   });

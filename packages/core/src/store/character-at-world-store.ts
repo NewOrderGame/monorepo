@@ -26,7 +26,10 @@ export class InMemoryCharacterAtWorldStore {
   }
 
   forEach(callback: (value: CharacterAtWorld, key: NogCharacterId) => void) {
-    return this._charactersAtWorld.forEach.call(this._charactersAtWorld, callback);
+    return this._charactersAtWorld.forEach.call(
+      this._charactersAtWorld,
+      callback
+    );
   }
 
   clear() {

@@ -26,7 +26,8 @@ export enum NogEvent {
   MOVE = 'move',
   EXIT = 'exit',
   ENCOUNTERS_IN_SIGHT = 'encounters-in-sight',
-  CHARACTERS_IN_SIGHT = 'characters-in-sight'
+  CHARACTERS_IN_SIGHT = 'characters-in-sight',
+  CREATE_CHARACTER = 'create-character'
 }
 
 export type Outlook = number[];
@@ -34,8 +35,8 @@ export type Outlook = number[];
 export type CharacterStats = {
   speed: number; // m/s
   sightRange: number; // m
-  outlook: Outlook
-}
+  outlook: Outlook;
+};
 
 export interface Character {
   characterId: NogCharacterId;
@@ -46,6 +47,7 @@ export interface Character {
   encounterEndTime: number | null;
   encounterStartTime: number | null;
   page: NogPage;
+  stats: CharacterStats;
 }
 
 export interface Encounter {
@@ -60,11 +62,11 @@ export interface CharacterAtWorld {
   nickname: string;
   coordinates: Coordinates;
   movesTo: Coordinates | null;
-  stats: CharacterStats;
   charactersInSight: CharacterInSight[];
   characterSightFlag: boolean;
   encountersInSight: EncounterInSight[];
   encounterSightFlag: boolean;
+  stats: CharacterStats;
 }
 
 export type EncounterParticipant = {
@@ -84,6 +86,7 @@ export type CharacterInSight = {
   coordinates: Coordinates;
   nickname: string;
   distance: number;
+  isEnemy: boolean;
 };
 
 export const DEFAULT_COORDINATES: Coordinates = {

@@ -10,7 +10,6 @@ import characterAtWorldStore from '../store/character-at-world-store';
 import characterStore from '../store/character-store';
 import { createCharacterAtWorld } from '../lib/character-at-world';
 import cognito from '../lib/cognito';
-import { createCharacter } from '../lib/character';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
 import { handleMoveEvent } from '../engine/movement';
@@ -43,11 +42,15 @@ function handleWorldConnection(socket: Socket) {
 
         let character = characterStore.get(username);
         if (!character) {
-          character = createCharacter({ characterId: username });
+          return socket.emit(NogEvent.REDIRECT, {
+            page: NogPage.CHARACTER
+          });
         }
 
         if (character.page === NogPage.WORLD) {
-          let characterAtWorld: CharacterAtWorld = characterAtWorldStore.get(character.characterId);
+          let characterAtWorld: CharacterAtWorld = characterAtWorldStore.get(
+            character.characterId
+          );
           if (!characterAtWorld) {
             characterAtWorld = createCharacterAtWorld({ character: character });
             characterAtWorldStore.set(character.characterId, characterAtWorld);
@@ -58,7 +61,10 @@ function handleWorldConnection(socket: Socket) {
           socket.emit(NogEvent.INIT, {
             coordinates: character.coordinates
           });
-          characterStore.set(character.characterId, { ...character, connected: true });
+          characterStore.set(character.characterId, {
+            ...character,
+            connected: true
+          });
           socket.join(character.characterId);
         }
       }

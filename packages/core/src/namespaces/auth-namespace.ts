@@ -1,12 +1,12 @@
 import { io } from '../io';
 import characterStore from '../store/character-store';
 import { Namespace, Socket } from 'socket.io';
-import { createCharacter } from '../lib/character';
 import cognito from '../lib/cognito';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
-import { NogEvent, NogNamespace } from '@newordergame/common';
+import { NogEvent, NogNamespace, NogPage } from '@newordergame/common';
 import { determinePage } from '../lib/determine-page';
+import { handleCreateCharacter } from '../lib/character';
 
 let authNamespace: Namespace;
 
@@ -33,26 +33,26 @@ function handleAuthConnection(socket: Socket) {
       socket.data.characterId = username;
 
       let character = characterStore.get(username);
-      if (!character) {
-        character = createCharacter({
-          characterId: username
+      const page = determinePage(character);
+
+      if (character) {
+        characterStore.set(character.characterId, {
+          ...character,
+          nickname,
+          page,
+          connected: true
         });
+        socket.join(character.characterId);
       }
 
-      character.page = determinePage(character);
-      characterStore.set(character.characterId, {
-        ...character,
-        nickname,
-        connected: true
-      });
-      socket.join(character.characterId);
-
       socket.emit(NogEvent.REDIRECT, {
-        page: character.page
+        page
       });
+
       logger.info('Auth sent redirect', {
-        page: character.page,
-        nickname: character.nickname
+        page,
+        characterId: username,
+        nickname: character?.nickname
       });
     }
   );
@@ -61,6 +61,13 @@ function handleAuthConnection(socket: Socket) {
     NogEvent.DISCONNECT,
     async () => await handleDisconnect(NogNamespace.AUTH, socket, authNamespace)
   );
+
+  socket.on(NogEvent.CREATE_CHARACTER, (props) => {
+    handleCreateCharacter(props);
+    socket.emit(NogEvent.REDIRECT, {
+      page: NogPage.WORLD
+    });
+  });
 }
 
 export function initAuth() {

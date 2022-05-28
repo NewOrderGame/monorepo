@@ -10,7 +10,6 @@ import characterStore from '../store/character-store';
 import { io } from '../io';
 import { Namespace, Socket } from 'socket.io';
 import cognito from '../lib/cognito';
-import { createCharacter } from '../lib/character';
 import * as moment from 'moment';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
@@ -41,18 +40,25 @@ function handleEncounterConnection(socket: Socket) {
 
         let character = characterStore.get(username);
         if (!character) {
-          character = createCharacter({ characterId: username });
+          return socket.emit(NogEvent.REDIRECT, {
+            page: NogPage.CHARACTER
+          });
         }
 
         if (character.page === NogPage.ENCOUNTER) {
-          const encounter: Encounter = encounterStore.get(character.encounterId);
+          const encounter: Encounter = encounterStore.get(
+            character.encounterId
+          );
           if (encounter) {
             socket.emit(NogEvent.INIT, {
               participants: encounter.participants
             });
           }
         }
-        characterStore.set(character.characterId, { ...character, connected: true });
+        characterStore.set(character.characterId, {
+          ...character,
+          connected: true
+        });
         socket.join(character.characterId);
       }
     );

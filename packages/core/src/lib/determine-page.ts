@@ -3,7 +3,15 @@ import logger from './logger';
 
 export function determinePage(character: Character): NogPage {
   // TODO: this method should always check what page user is on
-  const page = character.encounterId ? NogPage.ENCOUNTER : NogPage.WORLD;
+  let page;
+
+  if (!character) {
+    page = NogPage.CHARACTER;
+  } else if (character.encounterId) {
+    page = NogPage.ENCOUNTER;
+  } else {
+    page = NogPage.WORLD;
+  }
   logger.info('Determine page', { page });
   return page;
 }

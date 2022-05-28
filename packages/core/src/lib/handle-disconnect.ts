@@ -14,7 +14,9 @@ export async function handleDisconnect(
     logger.info('Disconnected with character ID', {
       characterId: character.characterId
     });
-    const matchingSockets = await namespace.in(character.characterId).allSockets();
+    const matchingSockets = await namespace
+      .in(character.characterId)
+      .allSockets();
     const isDisconnected = matchingSockets.size === 0;
     if (isDisconnected) {
       characterStore.set(character.characterId, {

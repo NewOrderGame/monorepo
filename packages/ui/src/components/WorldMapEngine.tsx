@@ -25,7 +25,7 @@ export function WorldMapEngine() {
 
   useEffect(() => {
     connection.world.on(
-      'move',
+      NogEvent.MOVE,
       ({
         coordinates,
         duration,
@@ -58,7 +58,7 @@ export function WorldMapEngine() {
           charactersInSight.push({
             ...character,
             marker: marker(character.coordinates, {
-              icon: otherCharacterIcon
+              icon: character.isEnemy ? enemyCharacterIcon : otherCharacterIcon
             }).addTo(map)
           });
         });
@@ -97,6 +97,11 @@ export function WorldMapEngine() {
 
 const otherCharacterIcon = icon({
   iconUrl: 'other-character.png',
+  iconSize: [62, 62] // size of the icon
+});
+
+const enemyCharacterIcon = icon({
+  iconUrl: 'enemy-character.png',
   iconSize: [62, 62] // size of the icon
 });
 

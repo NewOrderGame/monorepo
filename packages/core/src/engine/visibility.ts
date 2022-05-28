@@ -4,11 +4,12 @@ import characterAtWorldStore from '../store/character-at-world-store';
 import {
   CharacterInSight,
   EncounterInSight,
-  NogEvent,
-  NogCharacterId
+  NogCharacterId,
+  NogEvent
 } from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
 import { Namespace } from 'socket.io';
+import { areEnemies } from '../lib/character';
 
 export function checkCharacterVisibility(
   characterIdA: NogCharacterId,
@@ -40,7 +41,11 @@ export function checkCharacterVisibility(
       coordinates: characterAtWorldB.coordinates,
       characterId: characterAtWorldB.characterId,
       nickname: characterAtWorldB.nickname,
-      distance
+      distance,
+      isEnemy: areEnemies(
+        characterAtWorldA.stats.outlook,
+        characterAtWorldB.stats.outlook
+      )
     });
 
     characterAtWorldA.characterSightFlag = true;
@@ -54,7 +59,11 @@ export function checkCharacterVisibility(
       coordinates: characterAtWorldA.coordinates,
       characterId: characterAtWorldA.characterId,
       nickname: characterAtWorldA.nickname,
-      distance
+      distance,
+      isEnemy: areEnemies(
+        characterAtWorldA.stats.outlook,
+        characterAtWorldB.stats.outlook
+      )
     });
 
     characterAtWorldB.characterSightFlag = true;

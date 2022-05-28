@@ -4,8 +4,12 @@ import characterStore from '../store/character-store';
 import { createCharacter } from '../lib/character';
 import { nanoid } from 'nanoid';
 import { createCharacterAtWorld } from '../lib/character-at-world';
-import { CharacterAtWorld, NogEvent, Character } from '@newordergame/common';
-import { Socket } from 'socket.io';
+import {
+  Character,
+  CharacterAtWorld,
+  CharacterStats,
+  NogEvent
+} from '@newordergame/common';
 import { handleMoveEvent, moveCharacter } from './movement';
 import {
   computeDestinationPoint as computeDestination,
@@ -15,6 +19,13 @@ import {
 } from 'geolib';
 import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../lib/constants';
 import { getFakeSocket } from '../test/utils';
+
+const DEFAULT_CHARACTER_STATS: CharacterStats = {
+  outlook: [0, 0, 0],
+  speed: 30,
+  sightRange: 100
+};
+
 
 describe('Movement module', () => {
   beforeEach(() => {
@@ -26,7 +37,11 @@ describe('Movement module', () => {
   describe('moveCharacter. Move character along with the tick', () => {
     test('Does nothing if "movesTo" is falsy', () => {
       const character = {
-        ...createCharacter({ characterId: nanoid() })
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+})
       };
 
       characterStore.set(character.characterId, character);
@@ -52,7 +67,11 @@ describe('Movement module', () => {
 
     test('Does something if "movesTo" is defined', () => {
       const character = {
-        ...createCharacter({ characterId: nanoid() })
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+})
       };
 
       characterStore.set(character.characterId, character);
@@ -79,7 +98,11 @@ describe('Movement module', () => {
       const coordinates = { lat: 46.47684829298625, lng: 30.730953812599186 };
 
       const character = {
-        ...createCharacter({ characterId: nanoid() }),
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+}),
         coordinates
       } as Character;
 
@@ -119,7 +142,11 @@ describe('Movement module', () => {
       };
 
       const character = {
-        ...createCharacter({ characterId: nanoid() }),
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+}),
         coordinates: startCoordinates
       } as Character;
       characterStore.set(character.characterId, { ...character });
@@ -162,7 +189,9 @@ describe('Movement module', () => {
 
       moveCharacter(characterBefore.characterId);
 
-      const characterAfter = characterAtWorldStore.get(characterBefore.characterId);
+      const characterAfter = characterAtWorldStore.get(
+        characterBefore.characterId
+      );
 
       expect(characterAfter.coordinates).toEqual(intermediateCoordinates);
       expect(characterStore.get(character.characterId).coordinates).toEqual(
@@ -184,7 +213,11 @@ describe('Movement module', () => {
       const movesTo = { lat: 46.47736917180925, lng: 30.7302188873291 };
 
       const character = {
-        ...createCharacter({ characterId: nanoid() }),
+        ...createCharacter({
+          characterId: nanoid(),
+          nickname: 'TestUser',
+          stats: DEFAULT_CHARACTER_STATS
+}),
         coordinates: startCoordinates
       } as Character;
       characterStore.set(character.characterId, { ...character });
@@ -195,7 +228,9 @@ describe('Movement module', () => {
         }),
         coordinates: startCoordinates
       } as CharacterAtWorld;
-      characterAtWorldStore.set(characterAtWorld.characterId, { ...characterAtWorld });
+      characterAtWorldStore.set(characterAtWorld.characterId, {
+        ...characterAtWorld
+      });
 
       const distance = computeDistance(
         {
@@ -215,9 +250,9 @@ describe('Movement module', () => {
 
       handleMoveEvent(socket, movesTo);
 
-      expect(characterAtWorldStore.get(characterAtWorld.characterId).movesTo).toEqual(
-        movesTo
-      );
+      expect(
+        characterAtWorldStore.get(characterAtWorld.characterId).movesTo
+      ).toEqual(movesTo);
       expect(socket.emit).toHaveBeenCalledWith(NogEvent.MOVE, {
         coordinates: movesTo,
         duration,

@@ -46,6 +46,6 @@ export function saveTickStats() {
         ].join(',')
       )
       .join('\n')
-  ).catch((error) => logger.error('Error during saving tick stats', {error}));
+  ).catch((error) => logger.error('Error during saving tick stats', { error }));
   stats[StatsGroups.TICK] = [];
 }

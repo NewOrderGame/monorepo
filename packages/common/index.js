@@ -26,6 +26,7 @@ var NogEvent;
     NogEvent["EXIT"] = "exit";
     NogEvent["ENCOUNTERS_IN_SIGHT"] = "encounters-in-sight";
     NogEvent["CHARACTERS_IN_SIGHT"] = "characters-in-sight";
+    NogEvent["CREATE_CHARACTER"] = "create-character";
 })(NogEvent = exports.NogEvent || (exports.NogEvent = {}));
 exports.DEFAULT_COORDINATES = {
     lat: 46.47705630400258,
