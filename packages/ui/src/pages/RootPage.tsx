@@ -10,7 +10,7 @@ export function RootPage() {
 
   useEffect(() => {
     console.log('Root Page init');
-    if (!connection.size()) {
+    if (!connection.isConnected()) {
       connection.connect();
     }
 

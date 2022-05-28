@@ -29,7 +29,7 @@ export function moveCharacter(characterId: NogPlayerId) {
 
   const session = sessionStore.get(characterId);
 
-  if (distance < character.speed / SPEED_MULTIPLIER) {
+  if (distance < character.stats.speed / SPEED_MULTIPLIER) {
     session.coordinates = character.movesTo;
     sessionStore.set(session.sessionId, { ...session });
 
@@ -43,7 +43,7 @@ export function moveCharacter(characterId: NogPlayerId) {
 
     const destination = computeDestination(
       character.coordinates,
-      character.speed / SPEED_MULTIPLIER,
+      character.stats.speed / SPEED_MULTIPLIER,
       bearing
     );
 
@@ -92,7 +92,7 @@ export function handleMoveEvent(
     DISTANCE_ACCURACY
   );
 
-  const duration = distance / character.speed;
+  const duration = distance / character.stats.speed;
 
   socket.emit(NogEvent.MOVE, { coordinates, duration, distance });
 }

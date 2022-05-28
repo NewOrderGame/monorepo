@@ -11,7 +11,7 @@ type ConnectionContextType = {
   world: Socket;
   encounter: Socket;
   connect: () => void;
-  size: () => number;
+  isConnected: () => boolean;
 };
 
 const connectedNamespaces: Set<NogNamespace> = new Set();
@@ -33,13 +33,9 @@ export function ConnectionProvider({
     ?.getAccessToken()
     ?.getJwtToken();
 
-  function size() {
-    return connectedNamespaces.size;
-  }
-
-  function handleRedirect({ page }: { page: NogPage }) {
+  const handleRedirect = ({ page }: { page: NogPage }) => {
     navigate(`/${page}`);
-  }
+  };
 
   const handleConnect = (namespace: NogNamespace) => () => {
     console.log(`Connected to ${namespace}`);
@@ -53,6 +49,10 @@ export function ConnectionProvider({
       navigate(`/`);
     }
   };
+
+  function isConnected(): boolean {
+    return connectedNamespaces.size !== 0;
+  }
 
   function connect() {
     if (connectedNamespaces.size === 0) {
@@ -128,8 +128,9 @@ export function ConnectionProvider({
     world: core.world,
     encounter: core.encounter,
     connect,
-    size
+    isConnected
   };
+
   return (
     <ConnectionContext.Provider value={value}>
       {children}

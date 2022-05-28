@@ -1,5 +1,6 @@
 import {
   Encounter,
+  EncounterParticipant,
   NogEvent,
   NogNamespace,
   NogPage
@@ -67,8 +68,9 @@ function handleEncounterConnection(socket: Socket) {
       return logger.error('There should be an encounter');
     }
     const sessionB = sessionStore.get(
-      encounter.participants.find((p) => p.characterId !== sessionA.sessionId)
-        .characterId
+      encounter.participants.find(
+        (p: EncounterParticipant) => p.characterId !== sessionA.sessionId
+      ).characterId
     );
 
     sessionA.encounterId = null;

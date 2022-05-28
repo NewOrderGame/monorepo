@@ -5,6 +5,7 @@ export type NogEncounterId = string;
 
 export enum NogPage {
   ROOT = '',
+  CHARACTER = 'character',
   WORLD = 'world',
   ENCOUNTER = 'encounter'
 }
@@ -39,24 +40,31 @@ export interface Session {
   page: NogPage;
 }
 
+export interface Encounter {
+  encounterId: NogEncounterId;
+  participants: EncounterParticipant[];
+  coordinates: Coordinates;
+  encounterStartTime: number | null;
+}
+
 export interface Character {
   characterId: NogPlayerId;
   nickname: string;
   coordinates: Coordinates;
   movesTo: Coordinates | null;
-  sightRange: number; // m
-  speed: number; // m/s
+  stats: CharacterStats;
   charactersInSight: CharacterInSight[];
   characterSightFlag: boolean;
   encountersInSight: EncounterInSight[];
   encounterSightFlag: boolean;
 }
 
-export interface Encounter {
-  encounterId: NogEncounterId;
-  participants: EncounterParticipant[];
-  coordinates: Coordinates;
-  encounterStartTime: number | null;
+export type Outlook = number[];
+
+export type CharacterStats = {
+  speed: number; // m/s
+  sightRange: number; // m
+  outlook
 }
 
 export type EncounterParticipant = {

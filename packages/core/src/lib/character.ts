@@ -6,8 +6,11 @@ export function createCharacter({ session }: { session: Session }): Character {
     nickname: session.nickname,
     coordinates: session.coordinates,
     movesTo: null,
-    sightRange: 100,
-    speed: 30,
+    stats: {
+      sightRange: 100,
+      speed: 30,
+      outlook: [0, 0, 0]
+    },
     encountersInSight: [],
     encounterSightFlag: false,
     charactersInSight: [],

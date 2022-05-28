@@ -36,7 +36,7 @@ export function checkCharacterVisibility(
     DISTANCE_ACCURACY
   );
 
-  if (distance <= characterA.sightRange) {
+  if (distance <= characterA.stats.sightRange) {
     charactersInSightA.push({
       coordinates: characterB.coordinates,
       characterId: characterB.characterId,
@@ -50,7 +50,7 @@ export function checkCharacterVisibility(
     });
   }
 
-  if (distance <= characterB.sightRange) {
+  if (distance <= characterB.stats.sightRange) {
     charactersInSightB.push({
       coordinates: characterA.coordinates,
       characterId: characterA.characterId,
@@ -114,7 +114,7 @@ export function checkEncounterVisibility(
     DISTANCE_ACCURACY
   );
 
-  if (distance < character.sightRange) {
+  if (distance < character.stats.sightRange) {
     encountersInSight.push({
       encounterId: encounter.encounterId,
       coordinates: encounter.coordinates,

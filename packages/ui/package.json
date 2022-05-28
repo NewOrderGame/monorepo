@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@aws-amplify/ui-react": "^2.17.1",
-    "@newordergame/common": "^1.0.37",
+    "@newordergame/common": "file:../common",
     "aws-amplify": "^4.3.22",
     "leaflet": "^1.8.0",
     "react": "^18.1.0",
