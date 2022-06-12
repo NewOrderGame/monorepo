@@ -67,6 +67,7 @@ export interface CharacterAtWorld {
   encountersInSight: EncounterInSight[];
   encounterSightFlag: boolean;
   stats: CharacterStats;
+  isNpc: boolean;
 }
 
 export type EncounterParticipant = {

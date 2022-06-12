@@ -61,6 +61,7 @@ export interface CharacterAtWorld {
     encountersInSight: EncounterInSight[];
     encounterSightFlag: boolean;
     stats: CharacterStats;
+    isNpc: boolean;
 }
 export declare type EncounterParticipant = {
     characterId: NogCharacterId;
