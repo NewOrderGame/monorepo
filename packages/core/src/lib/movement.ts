@@ -1,12 +1,12 @@
 import characterStore from '../store/character-store';
-import logger from '../lib/logger';
+import logger from './logger';
 import characterAtWorldStore from '../store/character-at-world-store';
 import {
   computeDestinationPoint as computeDestination,
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../lib/constants';
+import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './constants';
 import { NogCharacterId, NogEvent } from '@newordergame/common';
 import { Socket } from 'socket.io';
 
@@ -29,7 +29,7 @@ export function moveCharacter(characterId: NogCharacterId) {
 
   const character = characterStore.get(characterId);
 
-  if (distance < characterAtWorld.stats.speed / SPEED_MULTIPLIER) {
+  if (distance < characterAtWorld.stats.speed / TICK_PER_SECOND) {
     character.coordinates = characterAtWorld.movesTo;
     characterStore.set(character.characterId, { ...character });
 
@@ -46,7 +46,7 @@ export function moveCharacter(characterId: NogCharacterId) {
 
     const destination = computeDestination(
       characterAtWorld.coordinates,
-      characterAtWorld.stats.speed / SPEED_MULTIPLIER,
+      characterAtWorld.stats.speed / TICK_PER_SECOND,
       bearing
     );
 

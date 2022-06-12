@@ -3,10 +3,10 @@ import {
   DISTANCE_ACCURACY,
   ENCOUNTER_COOL_DOWN_TIME,
   ENCOUNTER_DISTANCE
-} from '../lib/constants';
+} from './constants';
 import characterStore from '../store/character-store';
 import * as moment from 'moment';
-import logger from '../lib/logger';
+import logger from './logger';
 import { nanoid } from 'nanoid';
 import {
   NogCharacterId,
@@ -31,6 +31,10 @@ export function handleCharactersEncounter(
   }
 
   if (characterAtWorldA.characterId === characterAtWorldB.characterId) {
+    return;
+  }
+
+  if (characterAtWorldA.isNpc || characterAtWorldB.isNpc) {
     return;
   }
 

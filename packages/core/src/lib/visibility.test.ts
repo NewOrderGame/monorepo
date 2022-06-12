@@ -15,7 +15,7 @@ import {
 } from '@newordergame/common';
 import characterAtWorldStore from '../store/character-at-world-store';
 import { nanoid } from 'nanoid';
-import { createCharacterAtWorld } from '../lib/character-at-world';
+import { createCharacterAtWorld } from './character-at-world';
 import encounterStore from '../store/encounter-store';
 import { getFakeNamespace } from '../test/utils';
 
@@ -35,7 +35,8 @@ const DEFAULT_ENCOUNTER = {
             sightRange: 100,
             speed: 30
           }
-        } as Character
+        } as Character,
+        isNpc: false
       }),
       charactersInSight: [],
       encountersInSight: []
@@ -51,7 +52,8 @@ const DEFAULT_ENCOUNTER = {
             sightRange: 100,
             speed: 30
           }
-        } as Character
+        } as Character,
+        isNpc: false
       }),
       charactersInSight: [],
       encountersInSight: []
@@ -81,7 +83,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight: charactersInSightA,
         encountersInSight: []
@@ -98,7 +101,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         })
       } as CharacterAtWorld;
 
@@ -141,7 +145,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight: charactersInSightA
       };
@@ -157,7 +162,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         })
       } as CharacterAtWorld;
 
@@ -202,7 +208,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight
       };
@@ -246,7 +253,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight
       };
@@ -286,7 +294,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight
@@ -334,7 +343,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight
@@ -385,7 +395,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight
@@ -428,7 +439,8 @@ describe('Visibility module', () => {
               sightRange: 100,
               speed: 30
             }
-          } as Character
+          } as Character,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight

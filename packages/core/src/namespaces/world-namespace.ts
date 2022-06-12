@@ -12,7 +12,7 @@ import { createCharacterAtWorld } from '../lib/character-at-world';
 import cognito from '../lib/cognito';
 import { handleDisconnect } from '../lib/handle-disconnect';
 import logger from '../lib/logger';
-import { handleMoveEvent } from '../engine/movement';
+import { handleMoveEvent } from '../lib/movement';
 
 let worldNamespace: Namespace;
 
@@ -52,7 +52,7 @@ function handleWorldConnection(socket: Socket) {
             character.characterId
           );
           if (!characterAtWorld) {
-            characterAtWorld = createCharacterAtWorld({ character: character });
+            characterAtWorld = createCharacterAtWorld({ character: character, isNpc: false });
             characterAtWorldStore.set(character.characterId, characterAtWorld);
             logger.info('Created new characterAtWorld', {
               nickname

@@ -11,13 +11,13 @@ export function MapWrapper({ firstCoordinates }: { firstCoordinates: LatLng }) {
     <MapContainer
       center={firstCoordinates}
       zoom={18}
+      zoomControl={false}
+      boxZoom={false}
+      touchZoom={false}
+      doubleClickZoom={false}
       scrollWheelZoom={false}
       dragging={false}
       keyboard={false}
-      zoomControl={false}
-      touchZoom={false}
-      boxZoom={false}
-      doubleClickZoom={false}
     >
       <TileLayer url={MAPBOX_URL} />
       <WorldMapEngine />

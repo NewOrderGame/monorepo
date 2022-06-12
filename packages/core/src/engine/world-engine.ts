@@ -5,22 +5,23 @@ import {
   EncounterInSight,
   NogCharacterId
 } from '@newordergame/common';
-import { SECOND, SPEED_MULTIPLIER } from '../lib/constants';
+import { SECOND, TICK_PER_SECOND } from '../lib/constants';
 import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
-import { moveCharacter } from './movement';
+import { moveCharacter } from '../lib/movement';
 import {
   checkCharacterVisibility,
   checkEncounterVisibility,
   sendCharactersInSight,
   sendEncountersInSight
-} from './visibility';
-import { handleCharactersEncounter } from './encounter';
+} from '../lib/visibility';
+import { handleCharactersEncounter } from '../lib/encounter';
 import { argv } from '../lib/argv';
 import { withStats } from '../stats/writer';
 import { StatsGroups } from '../lib/types';
 import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
+import { handleNpcGeneration } from '../lib/npc';
 
 function doNextTick(world: Namespace) {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();
@@ -69,6 +70,14 @@ function doNextTick(world: Namespace) {
     }
     /** */
 
+    /** NPC */
+    handleNpcGeneration(
+      characterAtWorldA.coordinates,
+      characterAtWorldA.stats.sightRange,
+      charactersInSight.get(characterAtWorldA.characterId)?.length
+    );
+    /** */
+
     /** Movement */
     moveCharacter(characterAtWorldA.characterId);
     /** */
@@ -100,7 +109,7 @@ const defineDoNextTick = (world: Namespace) => {
 
 export function runWorld() {
   const world = getWorld();
-  worldTimer = setInterval(defineDoNextTick(world), SECOND / SPEED_MULTIPLIER);
+  worldTimer = setInterval(defineDoNextTick(world), SECOND / TICK_PER_SECOND);
 }
 
 export function stopWorld() {

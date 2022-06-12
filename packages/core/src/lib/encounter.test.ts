@@ -1,12 +1,12 @@
 import characterStore from '../store/character-store';
 import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
-import { createCharacterAtWorld } from '../lib/character-at-world';
+import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
 import { handleCharactersEncounter } from './encounter';
-import { createCharacter } from '../lib/character';
+import { createCharacter } from './character';
 import { CharacterAtWorld, CharacterStats } from '@newordergame/common';
-import { ENCOUNTER_COOL_DOWN_TIME } from '../lib/constants';
+import { ENCOUNTER_COOL_DOWN_TIME } from './constants';
 import { getFakeNamespace } from '../test/utils';
 import moment = require('moment');
 
@@ -50,11 +50,13 @@ describe('Visibility module', () => {
       characterStore.set(characterB.characterId, characterB);
 
       const characterAtWorldA = createCharacterAtWorld({
-        character: characterA
+        character: characterA,
+        isNpc: false
       });
 
       const characterAtWorldB = createCharacterAtWorld({
-        character: characterB
+        character: characterB,
+        isNpc: false
       });
 
       characterAtWorldStore.set(
@@ -142,13 +144,15 @@ describe('Visibility module', () => {
 
       const characterAtWorldA = {
         ...createCharacterAtWorld({
-          character: characterA
+          character: characterA,
+          isNpc: false
         })
       } as CharacterAtWorld;
 
       const characterAtWorldB = {
         ...createCharacterAtWorld({
-          character: characterB
+          character: characterB,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight: []
@@ -206,7 +210,8 @@ describe('Visibility module', () => {
 
         const characterAtWorldA = {
           ...createCharacterAtWorld({
-            character: characterA
+            character: characterA,
+            isNpc: false
           }),
           charactersInSight: [],
           encountersInSight: []
@@ -214,7 +219,8 @@ describe('Visibility module', () => {
 
         const characterAtWorldB = {
           ...createCharacterAtWorld({
-            character: characterB
+            character: characterB,
+            isNpc: false
           }),
           charactersInSight: [],
           encountersInSight: []
@@ -271,7 +277,8 @@ describe('Visibility module', () => {
 
       const characterAtWorldA = {
         ...createCharacterAtWorld({
-          character: characterA
+          character: characterA,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight: []
@@ -279,7 +286,8 @@ describe('Visibility module', () => {
 
       const characterAtWorldB = {
         ...createCharacterAtWorld({
-          character: characterB
+          character: characterB,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight: []

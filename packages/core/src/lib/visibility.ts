@@ -1,5 +1,5 @@
 import { getDistance as computeDistance } from 'geolib';
-import { DISTANCE_ACCURACY } from '../lib/constants';
+import { DISTANCE_ACCURACY } from './constants';
 import characterAtWorldStore from '../store/character-at-world-store';
 import {
   CharacterInSight,
@@ -9,7 +9,7 @@ import {
 } from '@newordergame/common';
 import encounterStore from '../store/encounter-store';
 import { Namespace } from 'socket.io';
-import { areEnemies } from '../lib/character';
+import { areEnemies } from './character';
 
 export function checkCharacterVisibility(
   characterIdA: NogCharacterId,

@@ -42,7 +42,10 @@ export function WorldMapEngine() {
           distance,
           'meters'
         );
-        map.flyTo(coordinates, 18, { ...zoomPanOptions, duration });
+        map.flyTo(coordinates, 18, {
+          ...zoomPanOptions,
+          duration
+        });
       }
     );
 
@@ -97,21 +100,20 @@ export function WorldMapEngine() {
 
 const otherCharacterIcon = icon({
   iconUrl: 'other-character.png',
-  iconSize: [62, 62] // size of the icon
+  iconSize: [62, 62]
 });
 
 const enemyCharacterIcon = icon({
   iconUrl: 'enemy-character.png',
-  iconSize: [62, 62] // size of the icon
+  iconSize: [62, 62]
 });
 
 const encounterIcon = icon({
   iconUrl: 'encounter.png',
-  iconSize: [44, 40] // size of the icon
+  iconSize: [44, 40]
 });
 
 const zoomPanOptions: ZoomPanOptions = {
   animate: true,
-  duration: 1,
   easeLinearity: 1
 };

@@ -1,9 +1,9 @@
 import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
 import characterStore from '../store/character-store';
-import { createCharacter } from '../lib/character';
+import { createCharacter } from './character';
 import { nanoid } from 'nanoid';
-import { createCharacterAtWorld } from '../lib/character-at-world';
+import { createCharacterAtWorld } from './character-at-world';
 import {
   Character,
   CharacterAtWorld,
@@ -17,7 +17,7 @@ import {
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, SPEED_MULTIPLIER } from '../lib/constants';
+import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './constants';
 import { getFakeSocket } from '../test/utils';
 
 const DEFAULT_CHARACTER_STATS: CharacterStats = {
@@ -48,7 +48,8 @@ describe('Movement module', () => {
 
       const characterAtWorld = {
         ...createCharacterAtWorld({
-          character: character
+          character: character,
+          isNpc: false
         }),
         charactersInSight: [],
         encountersInSight: []
@@ -78,7 +79,8 @@ describe('Movement module', () => {
 
       const characterAtWorld = {
         ...createCharacterAtWorld({
-          character: character
+          character: character,
+          isNpc: false
         }),
         movesTo: { lat: 46.47684829298625, lng: 30.730953812599186 }
       } as CharacterAtWorld;
@@ -110,14 +112,15 @@ describe('Movement module', () => {
 
       const characterAtWorld = {
         ...createCharacterAtWorld({
-          character: character
+          character: character,
+          isNpc: false
         }),
         coordinates
       } as CharacterAtWorld;
 
       const movesTo = computeDestinationPoint(
         coordinates,
-        characterAtWorld.stats.speed / SPEED_MULTIPLIER - 1,
+        characterAtWorld.stats.speed / TICK_PER_SECOND - 1,
         0
       );
 
@@ -153,14 +156,15 @@ describe('Movement module', () => {
 
       const characterBefore = {
         ...createCharacterAtWorld({
-          character: character
+          character: character,
+          isNpc: false
         }),
         coordinates: startCoordinates
       } as CharacterAtWorld;
 
       const destination = computeDestinationPoint(
         startCoordinates,
-        characterBefore.stats.speed / SPEED_MULTIPLIER + 100,
+        characterBefore.stats.speed / TICK_PER_SECOND + 100,
         0
       );
       const movesTo = { lat: destination.latitude, lng: destination.longitude };
@@ -178,7 +182,7 @@ describe('Movement module', () => {
 
       const intermediateDestination = computeDestination(
         characterBefore.coordinates,
-        characterBefore.stats.speed / SPEED_MULTIPLIER,
+        characterBefore.stats.speed / TICK_PER_SECOND,
         bearing
       );
 
@@ -224,7 +228,8 @@ describe('Movement module', () => {
 
       const characterAtWorld = {
         ...createCharacterAtWorld({
-          character: character
+          character: character,
+          isNpc: false
         }),
         coordinates: startCoordinates
       } as CharacterAtWorld;
