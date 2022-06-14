@@ -1,61 +1,54 @@
+import { NogEvent, NogNamespace, NogPage } from '@newordergame/common';
 import { io } from '../io';
 import characterStore from '../store/character-store';
+import logger from '../lib/utils/logger';
 import { Namespace, Socket } from 'socket.io';
-import cognito from '../lib/cognito';
-import { handleDisconnect } from '../lib/handle-disconnect';
-import logger from '../lib/logger';
-import { NogEvent, NogNamespace, NogPage } from '@newordergame/common';
-import { determinePage } from '../lib/determine-page';
+import { getUser } from '../lib/utils/cognito';
+import { handleDisconnect } from '../lib/utils/handle-disconnect';
+import { determinePage } from '../lib/utils/determine-page';
 import { handleCreateCharacter } from '../lib/character';
+import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 let authNamespace: Namespace;
 
-function handleAuthConnection(socket: Socket) {
+async function handleAuthConnection(socket: Socket) {
   logger.info('Auth connected', { socketId: socket.id });
   const accessToken = socket.handshake.auth.accessToken;
+  let user: GetUserResponse;
+  try {
+    user = await getUser(accessToken);
+  } catch (error) {
+    logger.error('Error during getting user in Auth Namespace', error);
+    return;
+  }
+  const username = user.Username;
+  const nickname: string = user.UserAttributes.find(
+    (a) => a.Name === 'nickname'
+  )?.Value;
+  socket.data.characterId = username;
 
-  cognito.getUser(
-    {
-      AccessToken: accessToken
-    },
-    (error, response) => {
-      if (error) {
-        return logger.error(error);
-      }
-      if (!response) {
-        return logger.error('There should be a response');
-      }
-      const username = response.Username;
-      const nickname: string = response.UserAttributes.find(
-        (a) => a.Name === 'nickname'
-      )?.Value;
+  let character = characterStore.get(username);
+  const page = determinePage(character);
 
-      socket.data.characterId = username;
+  if (character) {
+    characterStore.set(character.characterId, {
+      ...character,
+      nickname,
+      page,
+      connected: true
+    });
+    socket.join(character.characterId);
+  }
 
-      let character = characterStore.get(username);
-      const page = determinePage(character);
+  socket.emit(NogEvent.REDIRECT, {
+    page
+  });
 
-      if (character) {
-        characterStore.set(character.characterId, {
-          ...character,
-          nickname,
-          page,
-          connected: true
-        });
-        socket.join(character.characterId);
-      }
-
-      socket.emit(NogEvent.REDIRECT, {
-        page
-      });
-
-      logger.info('Auth sent redirect', {
-        page,
-        characterId: username,
-        nickname: character?.nickname
-      });
-    }
-  );
+  logger.info('Auth sent redirect', {
+    page,
+    characterId: username,
+    nickname: character?.nickname
+  });
 
   socket.on(
     NogEvent.DISCONNECT,

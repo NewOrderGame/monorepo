@@ -1,16 +1,10 @@
+import { Coordinates, NogCharacterId, NogPage } from '@newordergame/common';
 import {
-  Character,
-  CharacterAtWorld,
-  CharacterInSight,
-  Coordinates,
-  DEFAULT_COORDINATES,
-  NogCharacterId,
-  NogPage
-} from '@newordergame/common';
-import { NPC_GENERATION_THRESHOLD } from './constants';
+  NPC_GENERATION_CHANCE_PER_TICK,
+  NPC_GENERATION_THRESHOLD
+} from './utils/constants';
 import { computeDestinationPoint as computeDestination } from 'geolib';
 import { createCharacterAtWorld } from './character-at-world';
-import { createCharacter } from './character';
 import { nanoid } from 'nanoid';
 import characterAtWorldStore from '../store/character-at-world-store';
 
@@ -21,7 +15,7 @@ export function handleNpcGeneration(
 ) {
   if (
     charactersInSightNumber < NPC_GENERATION_THRESHOLD &&
-    Math.random() < 0.1
+    Math.random() < NPC_GENERATION_CHANCE_PER_TICK
   ) {
     const angle = Math.random() * 360;
     const distance = Math.random() * sightRange;

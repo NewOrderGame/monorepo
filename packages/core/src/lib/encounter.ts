@@ -3,10 +3,10 @@ import {
   DISTANCE_ACCURACY,
   ENCOUNTER_COOL_DOWN_TIME,
   ENCOUNTER_DISTANCE
-} from './constants';
+} from './utils/constants';
 import characterStore from '../store/character-store';
 import * as moment from 'moment';
-import logger from './logger';
+import logger from './utils/logger';
 import { nanoid } from 'nanoid';
 import {
   NogCharacterId,

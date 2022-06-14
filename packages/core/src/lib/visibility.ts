@@ -1,5 +1,5 @@
 import { getDistance as computeDistance } from 'geolib';
-import { DISTANCE_ACCURACY } from './constants';
+import { DISTANCE_ACCURACY } from './utils/constants';
 import characterAtWorldStore from '../store/character-at-world-store';
 import {
   CharacterInSight,

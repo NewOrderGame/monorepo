@@ -1,5 +1,5 @@
 import { Namespace, Socket } from 'socket.io';
-import characterStore from '../store/character-store';
+import characterStore from '../../store/character-store';
 import logger from './logger';
 import { NogNamespace } from '@newordergame/common';
 

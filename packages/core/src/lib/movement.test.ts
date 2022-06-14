@@ -17,7 +17,7 @@ import {
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './constants';
+import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
 import { getFakeSocket } from '../test/utils';
 
 const DEFAULT_CHARACTER_STATS: CharacterStats = {

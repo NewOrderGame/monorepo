@@ -5,7 +5,7 @@ import {
   EncounterInSight,
   NogCharacterId
 } from '@newordergame/common';
-import { SECOND, TICK_PER_SECOND } from '../lib/constants';
+import { SECOND, TICK_PER_SECOND } from '../lib/utils/constants';
 import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
 import { moveCharacter } from '../lib/movement';
@@ -16,9 +16,9 @@ import {
   sendEncountersInSight
 } from '../lib/visibility';
 import { handleCharactersEncounter } from '../lib/encounter';
-import { argv } from '../lib/argv';
+import { argv } from '../lib/utils/argv';
 import { withStats } from '../stats/writer';
-import { StatsGroups } from '../lib/types';
+import { StatsGroups } from '../lib/utils/types';
 import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from '../lib/npc';

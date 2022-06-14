@@ -7,8 +7,9 @@ import {
   Outlook
 } from '@newordergame/common';
 import characterStore from '../store/character-store';
-import cognito from './cognito';
-import logger from './logger';
+import logger from './utils/logger';
+import { getUser } from './utils/cognito';
+import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 export function createCharacter({
   characterId,
@@ -34,44 +35,38 @@ export function createCharacter({
   return character;
 }
 
-export const handleCreateCharacter = ({
+export const handleCreateCharacter = async ({
   accessToken,
   stats
 }: {
   accessToken: string;
   stats: { outlook: Outlook };
 }) => {
-  cognito.getUser(
-    {
-      AccessToken: accessToken
-    },
-    (error, response) => {
-      if (error) {
-        return logger.error(error);
-      }
-      if (!response) {
-        return logger.error('There should be a response');
-      }
-      const username = response?.Username;
-      const nickname: string = response?.UserAttributes.find(
-        (a) => a.Name === 'nickname'
-      )?.Value;
+  let user: GetUserResponse;
+  try {
+    user = await getUser(accessToken);
+  } catch (error) {
+    logger.error('Error during getting user in Create Character', error);
+    return;
+  }
+  const username = user?.Username;
+  const nickname: string = user?.UserAttributes.find(
+    (a) => a.Name === 'nickname'
+  )?.Value;
 
-      console.log(nickname);
-      console.log(username);
+  console.log(nickname);
+  console.log(username);
 
-      const character = createCharacter({
-        characterId: username,
-        nickname,
-        stats: {
-          ...stats,
-          sightRange: 100,
-          speed: 30
-        }
-      });
-      characterStore.set(character.characterId, character);
+  const character = createCharacter({
+    characterId: username,
+    nickname,
+    stats: {
+      ...stats,
+      sightRange: 100,
+      speed: 30
     }
-  );
+  });
+  characterStore.set(character.characterId, character);
 };
 
 export function areEnemies(outlookA: Outlook, outlookB: Outlook): boolean {

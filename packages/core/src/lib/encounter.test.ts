@@ -6,7 +6,7 @@ import { nanoid } from 'nanoid';
 import { handleCharactersEncounter } from './encounter';
 import { createCharacter } from './character';
 import { CharacterAtWorld, CharacterStats } from '@newordergame/common';
-import { ENCOUNTER_COOL_DOWN_TIME } from './constants';
+import { ENCOUNTER_COOL_DOWN_TIME } from './utils/constants';
 import { getFakeNamespace } from '../test/utils';
 import moment = require('moment');
 

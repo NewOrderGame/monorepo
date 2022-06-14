@@ -5,14 +5,15 @@ import {
   NogNamespace,
   NogPage
 } from '@newordergame/common';
+import { io } from '../io';
 import encounterStore from '../store/encounter-store';
 import characterStore from '../store/character-store';
-import { io } from '../io';
+import logger from '../lib/utils/logger';
 import { Namespace, Socket } from 'socket.io';
-import cognito from '../lib/cognito';
+import { getUser } from '../lib/utils/cognito';
 import * as moment from 'moment';
-import { handleDisconnect } from '../lib/handle-disconnect';
-import logger from '../lib/logger';
+import { handleDisconnect } from '../lib/utils/handle-disconnect';
+import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 let encounterNamespace: Namespace;
 
@@ -21,50 +22,41 @@ function handleEncounterConnection(socket: Socket) {
 
   const accessToken = socket.handshake.auth.accessToken;
 
-  socket.on(NogEvent.INIT, () => {
+  async function handleInit() {
     logger.info('Encounter init', { socketId: socket.id });
-    cognito.getUser(
-      {
-        AccessToken: accessToken
-      },
-      (error, response) => {
-        if (error) {
-          return logger.error(error);
-        }
-        if (!response) {
-          return logger.error('There should be a response');
-        }
-        const username = response?.Username;
+    let user: GetUserResponse;
+    try {
+      user = await getUser(accessToken);
+    } catch (error) {
+      logger.error('Error during getting user in Encounter Namespace', error);
+      return;
+    }
+    const username = user?.Username;
+    socket.data.characterId = username;
 
-        socket.data.characterId = username;
+    let character = characterStore.get(username);
+    if (!character) {
+      return socket.emit(NogEvent.REDIRECT, {
+        page: NogPage.CHARACTER
+      });
+    }
 
-        let character = characterStore.get(username);
-        if (!character) {
-          return socket.emit(NogEvent.REDIRECT, {
-            page: NogPage.CHARACTER
-          });
-        }
-
-        if (character.page === NogPage.ENCOUNTER) {
-          const encounter: Encounter = encounterStore.get(
-            character.encounterId
-          );
-          if (encounter) {
-            socket.emit(NogEvent.INIT, {
-              participants: encounter.participants
-            });
-          }
-        }
-        characterStore.set(character.characterId, {
-          ...character,
-          connected: true
+    if (character.page === NogPage.ENCOUNTER) {
+      const encounter: Encounter = encounterStore.get(character.encounterId);
+      if (encounter) {
+        socket.emit(NogEvent.INIT, {
+          participants: encounter.participants
         });
-        socket.join(character.characterId);
       }
-    );
-  });
+    }
+    characterStore.set(character.characterId, {
+      ...character,
+      connected: true
+    });
+    socket.join(character.characterId);
+  }
 
-  socket.on(NogEvent.EXIT, () => {
+  function handleExit() {
     if (!socket.data.characterId) {
       logger.error('There should be character ID');
     }
@@ -106,7 +98,11 @@ function handleEncounterConnection(socket: Socket) {
     getEncounter().to(characterB.characterId).emit(NogEvent.REDIRECT, {
       page: NogPage.WORLD
     });
-  });
+  }
+
+  socket.on(NogEvent.INIT, handleInit);
+
+  socket.on(NogEvent.EXIT, handleExit);
 
   socket.on(
     NogEvent.DISCONNECT,

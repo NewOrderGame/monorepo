@@ -1,12 +1,12 @@
 import characterStore from '../store/character-store';
-import logger from './logger';
+import logger from './utils/logger';
 import characterAtWorldStore from '../store/character-at-world-store';
 import {
   computeDestinationPoint as computeDestination,
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './constants';
+import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
 import { NogCharacterId, NogEvent } from '@newordergame/common';
 import { Socket } from 'socket.io';
 

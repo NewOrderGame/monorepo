@@ -3,7 +3,7 @@ import {
   NogEncounterId,
   NogCharacterId
 } from '@newordergame/common';
-import logger from '../lib/logger';
+import logger from '../lib/utils/logger';
 
 export class InMemoryEncounterStore {
   private _encounters: Map<NogCharacterId, Encounter>;
