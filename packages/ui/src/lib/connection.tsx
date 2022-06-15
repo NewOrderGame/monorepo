@@ -21,8 +21,8 @@ export const ConnectionContext = React.createContext<ConnectionContextType>(
 );
 
 export function ConnectionProvider({
-  children
-}: {
+                                     children
+                                   }: {
   children: React.ReactNode;
 }) {
   const authenticator = useAuthenticator();
@@ -33,7 +33,7 @@ export function ConnectionProvider({
     ?.getAccessToken()
     ?.getJwtToken();
 
-  const handleRedirect = ({ page }: { page: NogPage }) => {
+  const handleRedirect = ({page}: { page: NogPage }) => {
     navigate(`/${page}`);
   };
 

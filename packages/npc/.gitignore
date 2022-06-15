@@ -1,0 +1,6 @@
+build
+coverage
+*.d.ts
+*.js
+.env*
+!.env.example

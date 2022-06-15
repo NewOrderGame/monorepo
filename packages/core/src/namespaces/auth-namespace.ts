@@ -8,11 +8,20 @@ import { handleDisconnect } from '../lib/utils/handle-disconnect';
 import { determinePage } from '../lib/utils/determine-page';
 import { handleCreateCharacter } from '../lib/character';
 import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import characterAtWorldStore from '../store/character-at-world-store';
 
 let authNamespace: Namespace;
 
 async function handleAuthConnection(socket: Socket) {
   logger.info('Auth connected', { socketId: socket.id });
+
+  if (socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET') {
+    logger.debug('WE HAVE NPC SERVICE!');
+    const allNpc = characterAtWorldStore.getAllNpc();
+    socket.emit(NogEvent.INIT, allNpc);
+    return;
+  }
+
   const accessToken = socket.handshake.auth.accessToken;
   let user: GetUserResponse;
   try {
