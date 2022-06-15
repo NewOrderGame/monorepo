@@ -12,7 +12,7 @@ import characterAtWorldStore from '../store/character-at-world-store';
 
 let authNamespace: Namespace;
 
-async function handleAuthConnection(socket: Socket) {
+const handleAuthConnection = async (socket: Socket) => {
   logger.info('Auth connected', { socketId: socket.id });
 
   if (socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET') {
@@ -72,12 +72,12 @@ async function handleAuthConnection(socket: Socket) {
   });
 }
 
-export function initAuth() {
+export const initAuth = () => {
   logger.info('Init Auth');
   authNamespace = io.of('/auth');
   authNamespace.on(NogEvent.CONNECTION, handleAuthConnection);
 }
 
-export function getAuth(): Namespace {
+export const getAuth = (): Namespace => {
   return authNamespace;
 }

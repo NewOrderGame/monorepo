@@ -1,12 +1,12 @@
 import { CharacterAtWorld, Character } from '@newordergame/common';
 
-export function createCharacterAtWorld({
+export const createCharacterAtWorld = ({
   character,
   isNpc
 }: {
   character: Character;
   isNpc: boolean;
-}): CharacterAtWorld {
+}): CharacterAtWorld => {
   return {
     characterId: character.characterId,
     nickname: character.nickname,

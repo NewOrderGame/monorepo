@@ -10,7 +10,7 @@ import { Map } from '../components/Map';
 import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
 
-export function WorldPage() {
+export const WorldPage = () => {
   console.log('World Page');
   const connection = useConnection();
   const navigate = useNavigate();

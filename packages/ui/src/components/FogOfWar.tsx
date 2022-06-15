@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import * as React from 'react';
 
-function FogOfWarSvg({
+const FogOfWarSvg = ({
   width,
   height,
   className
@@ -9,7 +9,7 @@ function FogOfWarSvg({
   width: number;
   height: number;
   className?: string;
-}) {
+}) => {
   return (
     <svg
       width="100%"

@@ -8,7 +8,7 @@ import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 
-export function CharacterPage() {
+export const CharacterPage = () => {
   console.log('Character Page');
   const connection = useConnection();
   const navigate = useNavigate();

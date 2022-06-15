@@ -3,11 +3,11 @@ import characterStore from '../../store/character-store';
 import logger from './logger';
 import { NogNamespace } from '@newordergame/common';
 
-export async function handleDisconnect(
+export const handleDisconnect = async (
   namespaceName: NogNamespace,
   socket: Socket,
   namespace: Namespace
-) {
+) => {
   logger.info('Disconnected', { namespaceName, socketId: socket.id });
   const character = characterStore.get(socket.data.characterId);
   if (character) {

@@ -11,12 +11,12 @@ import encounterStore from '../store/encounter-store';
 import { Namespace } from 'socket.io';
 import { areEnemies } from './character';
 
-export function checkCharacterVisibility(
+export const checkCharacterVisibility = (
   characterIdA: NogCharacterId,
   characterIdB: NogCharacterId,
   charactersInSightA: CharacterInSight[],
   charactersInSightB: CharacterInSight[]
-) {
+) => {
   const characterAtWorldA = characterAtWorldStore.get(characterIdA);
   const characterAtWorldB = characterAtWorldStore.get(characterIdB);
 
@@ -73,11 +73,11 @@ export function checkCharacterVisibility(
   }
 }
 
-export function sendCharactersInSight(
+export const sendCharactersInSight = (
   characterId: NogCharacterId,
   charactersInSight: CharacterInSight[],
   world: Namespace
-) {
+) => {
   const characterAtWorld = characterAtWorldStore.get(characterId);
   if (!characterAtWorld) {
     return;
@@ -97,11 +97,11 @@ export function sendCharactersInSight(
   }
 }
 
-export function checkEncounterVisibility(
+export const checkEncounterVisibility = (
   characterId: NogCharacterId,
   encounterId: NogCharacterId,
   encountersInSight: EncounterInSight[]
-) {
+) => {
   const characterAtWorld = characterAtWorldStore.get(characterId);
 
   if (!characterAtWorld) {
@@ -137,11 +137,11 @@ export function checkEncounterVisibility(
   }
 }
 
-export function sendEncountersInSight(
+export const sendEncountersInSight = (
   characterId: NogCharacterId,
   encountersInSight: EncounterInSight[],
   world: Namespace
-) {
+) => {
   const characterAtWorld = characterAtWorldStore.get(characterId);
 
   if (!characterAtWorld) {

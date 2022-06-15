@@ -4,7 +4,7 @@ import { Content } from '../components/Content';
 import { Loader } from '../components/Loader';
 import { useConnection } from '../lib/connection';
 
-export function RootPage() {
+export const RootPage = () => {
   console.log('Root Page');
   const connection = useConnection();
 

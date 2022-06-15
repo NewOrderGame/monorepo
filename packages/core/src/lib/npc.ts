@@ -8,11 +8,11 @@ import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
 import characterAtWorldStore from '../store/character-at-world-store';
 
-export function handleNpcGeneration(
+export const handleNpcGeneration = (
   coordinates: Coordinates,
   sightRange: number,
   charactersInSightNumber: number
-) {
+) => {
   if (
     charactersInSightNumber < NPC_GENERATION_THRESHOLD &&
     Math.random() < NPC_GENERATION_CHANCE_PER_TICK

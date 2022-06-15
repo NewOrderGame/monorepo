@@ -7,7 +7,7 @@ import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
 import { useConnection } from '../lib/connection';
 
-export function EncounterPage() {
+export const EncounterPage = () => {
   console.log('Encounter Page');
   const connection = useConnection();
   const navigate = useNavigate();
@@ -32,9 +32,9 @@ export function EncounterPage() {
       connection.encounter.off(NogEvent.INIT);
       connection.encounter.off(NogEvent.REDIRECT);
     };
-  }, [navigate]);
+  }, [connection.encounter, navigate]);
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     connection.encounter.emit(NogEvent.EXIT);
   }

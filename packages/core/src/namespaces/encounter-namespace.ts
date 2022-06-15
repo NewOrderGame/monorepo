@@ -17,12 +17,12 @@ import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider'
 
 let encounterNamespace: Namespace;
 
-function handleEncounterConnection(socket: Socket) {
+const handleEncounterConnection = (socket: Socket) => {
   logger.info('Encounter connected', { socketId: socket.id });
 
   const accessToken = socket.handshake.auth.accessToken;
 
-  async function handleInit() {
+  const handleInit = async () => {
     logger.info('Encounter init', { socketId: socket.id });
     let user: GetUserResponse;
     try {
@@ -56,7 +56,7 @@ function handleEncounterConnection(socket: Socket) {
     socket.join(character.characterId);
   }
 
-  function handleExit() {
+  const handleExit = () => {
     if (!socket.data.characterId) {
       logger.error('There should be character ID');
     }
@@ -111,12 +111,12 @@ function handleEncounterConnection(socket: Socket) {
   );
 }
 
-export function initEncounter() {
+export const initEncounter = () => {
   logger.info('Init Encounter');
   encounterNamespace = io.of('/encounter');
   encounterNamespace.on(NogEvent.CONNECTION, handleEncounterConnection);
 }
 
-export function getEncounter() {
+export const getEncounter = () => {
   return encounterNamespace;
 }

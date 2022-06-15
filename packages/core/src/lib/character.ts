@@ -11,7 +11,7 @@ import logger from './utils/logger';
 import { getUser } from './utils/cognito';
 import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
-export function createCharacter({
+export const createCharacter = ({
   characterId,
   nickname,
   stats
@@ -19,7 +19,7 @@ export function createCharacter({
   characterId: NogCharacterId;
   nickname: string;
   stats: CharacterStats;
-}): Character {
+}): Character => {
   const character: Character = {
     characterId,
     nickname,
@@ -54,9 +54,6 @@ export const handleCreateCharacter = async ({
     (a) => a.Name === 'nickname'
   )?.Value;
 
-  console.log(nickname);
-  console.log(username);
-
   const character = createCharacter({
     characterId: username,
     nickname,
@@ -69,7 +66,7 @@ export const handleCreateCharacter = async ({
   characterStore.set(character.characterId, character);
 };
 
-export function areEnemies(outlookA: Outlook, outlookB: Outlook): boolean {
+export const areEnemies = (outlookA: Outlook, outlookB: Outlook): boolean => {
   return (
     (outlookA[0] > 0 && outlookB[0] < 0) ||
     (outlookA[0] < 0 && outlookB[0] > 0) ||

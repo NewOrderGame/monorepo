@@ -1,7 +1,7 @@
 import { NogPage, Character } from '@newordergame/common';
 import logger from './logger';
 
-export function determinePage(character: Character): NogPage {
+export const determinePage = (character: Character): NogPage => {
   // TODO: this method should always check what page user is on
   let page;
 

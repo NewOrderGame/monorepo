@@ -18,11 +18,11 @@ import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
 import { Namespace } from 'socket.io';
 
-export function handleCharactersEncounter(
+export const handleCharactersEncounter = (
   characterIdA: NogCharacterId,
   characterIdB: NogCharacterId,
   world: Namespace
-) {
+) => {
   const characterAtWorldA = characterAtWorldStore.get(characterIdA);
   const characterAtWorldB = characterAtWorldStore.get(characterIdB);
 

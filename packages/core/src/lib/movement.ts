@@ -10,7 +10,7 @@ import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
 import { NogCharacterId, NogEvent } from '@newordergame/common';
 import { Socket } from 'socket.io';
 
-export function moveCharacter(characterId: NogCharacterId) {
+export const moveCharacter = (characterId: NogCharacterId) => {
   const characterAtWorld = characterAtWorldStore.get(characterId);
 
   if (!characterAtWorld) {
@@ -65,10 +65,10 @@ export function moveCharacter(characterId: NogCharacterId) {
   }
 }
 
-export function handleMoveEvent(
+export const handleMoveEvent = (
   socket: Socket,
   coordinates: { lat: number; lng: number }
-) {
+) => {
   const character = characterStore.get(socket.data.characterId);
   if (!character) {
     return logger.error('Character should exist');

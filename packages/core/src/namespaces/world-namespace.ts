@@ -17,11 +17,11 @@ import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider'
 
 let worldNamespace: Namespace;
 
-function handleWorldConnection(socket: Socket) {
+const handleWorldConnection = (socket: Socket) => {
   logger.info('World connected', { socketId: socket.id });
   const accessToken = socket.handshake.auth.accessToken;
 
-  async function handleInit() {
+  const handleInit = async () => {
     logger.info('World init', { socketId: socket.id });
     let user: GetUserResponse;
     try {
@@ -68,7 +68,7 @@ function handleWorldConnection(socket: Socket) {
     }
   }
 
-  function handleDestroy() {
+  const handleDestroy = () => {
     const character = characterStore.get(socket.data.sesssionId);
     if (character) {
       characterAtWorldStore.delete(socket.data.characterId);
@@ -90,12 +90,12 @@ function handleWorldConnection(socket: Socket) {
   );
 }
 
-export function initWorld() {
+export const initWorld = () => {
   logger.info('Init World');
   worldNamespace = io.of('/world');
   worldNamespace.on(NogEvent.CONNECTION, handleWorldConnection);
 }
 
-export function getWorld(): Namespace {
+export const getWorld = (): Namespace => {
   return worldNamespace;
 }

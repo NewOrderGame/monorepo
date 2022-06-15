@@ -28,10 +28,10 @@ type TickTimeStats = {
   encountersChart: QuantityChart[];
 };
 
-export function parseStats(
+export const parseStats = (
   rawStats: number[][],
   timestamp: number
-): TimelineChunk {
+): TimelineChunk => {
   const executionTime = rawStats.map((stat) => stat[0]);
   const charactersAtWorld = rawStats.map((stat) => stat[1]);
   const encounters = rawStats.map((stat) => stat[2]);
@@ -65,14 +65,14 @@ export function parseStats(
   };
 }
 
-export function getRawStatsFromFile(file: string): number[][] {
+export const getRawStatsFromFile = (file: string): number[][] => {
   const b: Buffer = readFileSync(file);
   const s: string = b.toString();
   const al: string[] = s.split('\n');
   return al.map((line) => line.split(',').map((value) => Number(value)));
 }
 
-export function getTickTimeStats(statsDirectory: string): TickTimeStats {
+export const getTickTimeStats = (statsDirectory: string): TickTimeStats => {
   const files: string[] = readdirSync(statsDirectory);
 
   const filesWithCTime = files
@@ -108,10 +108,10 @@ export function getTickTimeStats(statsDirectory: string): TickTimeStats {
   };
 }
 
-export function calculateQuantityChart(
+export const calculateQuantityChart = (
   stats: number[][],
   index: number
-): QuantityChart[] {
+): QuantityChart[] => {
   const statsMap = new Map<number, number[]>();
   stats.forEach((stat) => {
     if (statsMap.has(stat[index])) {

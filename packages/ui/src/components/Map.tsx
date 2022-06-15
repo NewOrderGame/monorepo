@@ -6,7 +6,7 @@ import { LatLng } from 'leaflet';
 import styled from 'styled-components';
 import 'leaflet/dist/leaflet.css';
 
-export function MapWrapper({ firstCoordinates }: { firstCoordinates: LatLng }) {
+export const MapWrapper = ({ firstCoordinates }: { firstCoordinates: LatLng }) => {
   return (
     <MapContainer
       center={firstCoordinates}

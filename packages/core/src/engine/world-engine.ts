@@ -23,7 +23,7 @@ import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from '../lib/npc';
 
-function doNextTick(world: Namespace) {
+const doNextTick = (world: Namespace) => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();
   const encounters: Encounter[] = encounterStore.getAll();
 
@@ -107,11 +107,11 @@ const defineDoNextTick = (world: Namespace) => {
   }
 };
 
-export function runWorld() {
+export const runWorld = () => {
   const world = getWorld();
   worldTimer = setInterval(defineDoNextTick(world), SECOND / TICK_PER_SECOND);
 }
 
-export function stopWorld() {
+export const stopWorld = () => {
   clearInterval(worldTimer);
 }

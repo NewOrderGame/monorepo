@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import * as React from 'react';
 
-export function LoaderSvg({ className }: { className?: string }) {
+export const LoaderSvg = ({ className }: { className?: string }) => {
   return (
     <svg
       version="1.1"

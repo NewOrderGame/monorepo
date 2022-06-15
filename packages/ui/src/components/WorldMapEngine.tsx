@@ -12,7 +12,7 @@ import { CharacterInSight, EncounterInSight } from '../../../common';
 import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
 
-export function WorldMapEngine() {
+export const WorldMapEngine = () => {
   const map = useMap();
   const connection = useConnection();
 

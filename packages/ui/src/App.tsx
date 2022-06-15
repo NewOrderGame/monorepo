@@ -6,7 +6,7 @@ import { LogoutPage } from './pages/LogoutPage';
 import { EncounterPage } from './pages/EncounterPage';
 import { CharacterPage } from './pages/CharacterPage';
 
-export default function App() {
+const App = () => {
   console.log('App');
   return (
     <Routes>
@@ -21,3 +21,5 @@ export default function App() {
     </Routes>
   );
 }
+
+export default App;

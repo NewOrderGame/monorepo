@@ -34,7 +34,7 @@ export const withStats = (f: () => void, group: StatsGroups) => {
   };
 };
 
-export function saveTickStats() {
+export const saveTickStats = () => {
   writeFile(
     `${TICK_TIME_STATS_DIR}/${StatsGroups.TICK}/${Date.now()}`,
     stats[StatsGroups.TICK]

@@ -20,11 +20,11 @@ export const ConnectionContext = React.createContext<ConnectionContextType>(
   {} as ConnectionContextType
 );
 
-export function ConnectionProvider({
+export const ConnectionProvider = ({
                                      children
                                    }: {
   children: React.ReactNode;
-}) {
+}) => {
   const authenticator = useAuthenticator();
   const navigate = useNavigate();
 
@@ -50,11 +50,11 @@ export function ConnectionProvider({
     }
   };
 
-  function isConnected(): boolean {
+  const isConnected = (): boolean => {
     return connectedNamespaces.size !== 0;
   }
 
-  function connect() {
+  const connect = () => {
     if (connectedNamespaces.size === 0) {
       /**
        * Auth
@@ -109,7 +109,7 @@ export function ConnectionProvider({
     }
   }
 
-  function disconnect() {
+  const disconnect = () => {
     core.auth.disconnect();
     core.world.disconnect();
     core.encounter.disconnect();
@@ -138,6 +138,6 @@ export function ConnectionProvider({
   );
 }
 
-export function useConnection(): ConnectionContextType {
+export const useConnection = (): ConnectionContextType => {
   return React.useContext(ConnectionContext);
 }

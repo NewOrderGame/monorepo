@@ -6,7 +6,7 @@ if (!process.env.REACT_APP_NOG_CORE_URL) {
 
 const CORE_URL = process.env.REACT_APP_NOG_CORE_URL;
 
-function core() {
+const core = () => {
   const auth: Socket = io(`${CORE_URL}/auth`, {
     autoConnect: false
   });

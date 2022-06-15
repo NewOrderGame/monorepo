@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { useNavigate } from 'react-router-dom';
 
-export function LogoutPage() {
+export const LogoutPage = () => {
   console.log('Logout Page');
   const navigate = useNavigate();
   const authenticator = useAuthenticator();

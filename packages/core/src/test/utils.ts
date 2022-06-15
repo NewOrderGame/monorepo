@@ -1,6 +1,6 @@
 import { Namespace, Socket } from 'socket.io';
 
-export function getFakeSocket() {
+export const getFakeSocket = () => {
   const emit = jest.fn();
   const data = {};
   return {
@@ -9,7 +9,7 @@ export function getFakeSocket() {
   } as unknown as Socket;
 }
 
-export function getFakeNamespace() {
+export const getFakeNamespace = () => {
   const emit = jest.fn();
 
   const to = jest.fn(() => ({
