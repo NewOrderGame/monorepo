@@ -1,4 +1,9 @@
-import { Coordinates, NogCharacterId, NogPage } from '@newordergame/common';
+import {
+  CharacterAtWorld,
+  NogCharacterId,
+  NogEvent,
+  NogPage
+} from '@newordergame/common';
 import {
   NPC_GENERATION_CHANCE_PER_TICK,
   NPC_GENERATION_THRESHOLD
@@ -7,10 +12,44 @@ import { computeDestinationPoint as computeDestination } from 'geolib';
 import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
 import characterAtWorldStore from '../store/character-at-world-store';
+import { Namespace, Socket } from 'socket.io';
+import logger from './utils/logger';
+import npcSocketStore from '../store/npc-socket-store';
+
+
+export const handleNpcServiceWorldConnection = (
+  socket: Socket,
+  worldNamespace: Namespace
+) => {
+  const isNpcService =
+    socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
+
+  if (!isNpcService) {
+    return;
+  }
+
+  logger.info('NPC service connected to World');
+};
+
+export const handleNpcServiceAuthConnection = (
+  socket: Socket,
+  authNamespace: Namespace
+) => {
+  const isNpcService =
+    socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
+
+  if (!isNpcService) {
+    return;
+  }
+
+  logger.info('NPC service connected to Auth');
+  const allNpc = characterAtWorldStore.getAllNpc();
+  npcSocketStore.set(authNamespace.name, socket);
+  socket.emit(NogEvent.INIT, allNpc);
+};
 
 export const handleNpcGeneration = (
-  coordinates: Coordinates,
-  sightRange: number,
+  characterAtWorld: CharacterAtWorld,
   charactersInSightNumber: number
 ) => {
   if (
@@ -18,9 +57,13 @@ export const handleNpcGeneration = (
     Math.random() < NPC_GENERATION_CHANCE_PER_TICK
   ) {
     const angle = Math.random() * 360;
-    const distance = Math.random() * sightRange;
+    const distance = Math.random() * characterAtWorld.stats.sightRange;
 
-    const npcCoordinates = computeDestination(coordinates, distance, angle);
+    const npcCoordinates = computeDestination(
+      characterAtWorld.coordinates,
+      distance,
+      angle
+    );
 
     const npc = createCharacterAtWorld({
       character: {
@@ -49,5 +92,11 @@ export const handleNpcGeneration = (
     });
 
     characterAtWorldStore.set(npc.characterId, npc);
+
+    const npcAuthSocket = npcSocketStore.get('/auth');
+
+    if (npcAuthSocket) {
+      npcAuthSocket.emit(NogEvent.INIT, [npc]);
+    }
   }
-}
+};

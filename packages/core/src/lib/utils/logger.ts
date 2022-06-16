@@ -10,7 +10,10 @@ if (process.env.NODE_ENV === 'production') {
   logger.add(
     new transports.Console({
       level: 'debug',
-      format: format.simple()
+      format: format.combine(
+        format.simple(),
+        format.colorize({ all: true }),
+      )
     })
   );
 }

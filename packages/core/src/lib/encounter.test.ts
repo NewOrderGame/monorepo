@@ -3,11 +3,11 @@ import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
 import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
-import { handleCharactersEncounter } from './encounter';
 import { createCharacter } from './character';
 import { CharacterAtWorld, CharacterStats } from '@newordergame/common';
 import { ENCOUNTER_COOL_DOWN_TIME } from './utils/constants';
 import { getFakeNamespace } from '../test/utils';
+import { handleCharactersEncounter } from './world';
 import moment = require('moment');
 
 jest.mock('../namespaces/world-namespace');

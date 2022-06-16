@@ -1,15 +1,20 @@
 import { Namespace, Socket } from 'socket.io';
 import characterStore from '../../store/character-store';
 import logger from './logger';
-import { NogNamespace } from '@newordergame/common';
+import npcSocketStore from '../../store/npc-socket-store';
 
 export const handleDisconnect = async (
-  namespaceName: NogNamespace,
   socket: Socket,
   namespace: Namespace
 ) => {
-  logger.info('Disconnected', { namespaceName, socketId: socket.id });
-  const character = characterStore.get(socket.data.characterId);
+  logger.info('Disconnected', {
+    namespaceName: namespace.name,
+    socketId: socket.id
+  });
+  if (!socket) {
+    throw new Error('Socket is missing');
+  }
+  const character = characterStore.get(socket.data?.characterId);
   if (character) {
     logger.info('Disconnected with character ID', {
       characterId: character.characterId
@@ -27,4 +32,11 @@ export const handleDisconnect = async (
   } else {
     logger.info('Disconnected without character ID');
   }
-}
+
+  const isNpcService =
+    socket.handshake?.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
+  if (isNpcService) {
+    npcSocketStore.set(namespace.name, null);
+    logger.warn(`NPC service disconnected from ${namespace.name}`);
+  }
+};

@@ -8,14 +8,14 @@ import {
 import { SECOND, TICK_PER_SECOND } from '../lib/utils/constants';
 import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
-import { moveCharacter } from '../lib/movement';
 import {
   checkCharacterVisibility,
   checkEncounterVisibility,
+  handleCharactersEncounter,
+  moveCharacter,
   sendCharactersInSight,
   sendEncountersInSight
-} from '../lib/visibility';
-import { handleCharactersEncounter } from '../lib/encounter';
+} from '../lib/world';
 import { argv } from '../lib/utils/argv';
 import { withStats } from '../stats/writer';
 import { StatsGroups } from '../lib/utils/types';
@@ -72,8 +72,7 @@ const doNextTick = (world: Namespace) => {
 
     /** NPC */
     handleNpcGeneration(
-      characterAtWorldA.coordinates,
-      characterAtWorldA.stats.sightRange,
+      characterAtWorldA,
       charactersInSight.get(characterAtWorldA.characterId)?.length
     );
     /** */
@@ -95,7 +94,7 @@ const doNextTick = (world: Namespace) => {
     );
     /** */
   }
-}
+};
 
 let worldTimer: NodeJS.Timer;
 
@@ -107,11 +106,11 @@ const defineDoNextTick = (world: Namespace) => {
   }
 };
 
-export const runWorld = () => {
+export const startWorld = () => {
   const world = getWorld();
   worldTimer = setInterval(defineDoNextTick(world), SECOND / TICK_PER_SECOND);
-}
+};
 
 export const stopWorld = () => {
   clearInterval(worldTimer);
-}
+};

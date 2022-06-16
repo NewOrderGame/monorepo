@@ -1,141 +1,112 @@
-import { getCenter as computeCenter, getDistance as getDistance } from 'geolib';
-import {
-  DISTANCE_ACCURACY,
-  ENCOUNTER_COOL_DOWN_TIME,
-  ENCOUNTER_DISTANCE
-} from './utils/constants';
 import characterStore from '../store/character-store';
 import * as moment from 'moment';
 import logger from './utils/logger';
-import { nanoid } from 'nanoid';
 import {
-  NogCharacterId,
-  NogEncounterId,
+  Encounter,
+  EncounterParticipant,
   NogEvent,
   NogPage
 } from '@newordergame/common';
-import characterAtWorldStore from '../store/character-at-world-store';
 import encounterStore from '../store/encounter-store';
-import { Namespace } from 'socket.io';
+import { Namespace, Socket } from 'socket.io';
+import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { getUser } from './utils/cognito';
+import { handleDisconnect } from './utils/handle-disconnect';
 
-export const handleCharactersEncounter = (
-  characterIdA: NogCharacterId,
-  characterIdB: NogCharacterId,
-  world: Namespace
-) => {
-  const characterAtWorldA = characterAtWorldStore.get(characterIdA);
-  const characterAtWorldB = characterAtWorldStore.get(characterIdB);
+export const handleEncounterInit = (socket: Socket) => async () => {
+  logger.info('Encounter init', { socketId: socket.id });
+  const accessToken = socket.handshake.auth.accessToken;
 
-  if (!characterAtWorldA || !characterAtWorldB) {
+  let user: GetUserResponse;
+  try {
+    user = await getUser(accessToken);
+  } catch (error) {
+    logger.error('Error during getting user in Encounter Namespace', error);
+    return;
+  }
+  const username = user?.Username;
+  socket.data.characterId = username;
+
+  let character = characterStore.get(username);
+  if (!character) {
+    socket.emit(NogEvent.REDIRECT, {
+      page: NogPage.CHARACTER
+    });
     return;
   }
 
-  if (characterAtWorldA.characterId === characterAtWorldB.characterId) {
-    return;
+  if (character.page === NogPage.ENCOUNTER) {
+    const encounter: Encounter = encounterStore.get(character.encounterId);
+    if (encounter) {
+      socket.emit(NogEvent.INIT, {
+        participants: encounter.participants
+      });
+    }
   }
+  characterStore.set(character.characterId, {
+    ...character,
+    connected: true
+  });
+  socket.join(character.characterId);
+};
 
-  if (characterAtWorldA.isNpc || characterAtWorldB.isNpc) {
-    return;
-  }
+export const handleExit =
+  (socket: Socket, encounterNamespace: Namespace) => () => {
+    if (!socket.data.characterId) {
+      logger.error('There should be character ID');
+    }
+    const characterA = characterStore.get(socket.data.characterId);
+    const encounter = encounterStore.get(characterA.encounterId);
+    if (!encounter) {
+      return logger.error('There should be an encounter');
+    }
+    const characterB = characterStore.get(
+      encounter.participants.find(
+        (p: EncounterParticipant) => p.characterId !== characterA.characterId
+      ).characterId
+    );
 
-  const distance = getDistance(
-    {
-      latitude: characterAtWorldA.coordinates.lat,
-      longitude: characterAtWorldA.coordinates.lng
-    },
-    {
-      latitude: characterAtWorldB.coordinates.lat,
-      longitude: characterAtWorldB.coordinates.lng
-    },
-    DISTANCE_ACCURACY
-  );
-
-  const characterA = characterStore.get(characterAtWorldA.characterId);
-  const characterB = characterStore.get(characterAtWorldB.characterId);
-
-  let canEncounter: boolean =
-    !characterA.encounterStartTime && !characterB.encounterStartTime;
-
-  if (characterA.encounterEndTime) {
-    const now = moment().valueOf();
-    canEncounter =
-      canEncounter &&
-      moment(characterA.encounterEndTime)
-        .add(ENCOUNTER_COOL_DOWN_TIME, 'second')
-        .diff(now) <= 0;
-  }
-
-  if (canEncounter && characterA.encounterEndTime) {
-    characterA.encounterEndTime = null;
+    characterA.encounterId = null;
+    characterA.page = NogPage.WORLD;
+    characterA.encounterEndTime = moment().valueOf();
+    characterA.encounterStartTime = null;
+    characterA.coordinates = encounter.coordinates;
     characterStore.set(characterA.characterId, {
       ...characterA
     });
-  }
 
-  if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
-    logger.info('Encounter', {
-      characterAtWorldA: {
-        characterId: characterAtWorldA.characterId,
-        nickname: characterAtWorldA.nickname
-      },
-      characterAtWorldB: {
-        characterId: characterAtWorldB.characterId,
-        nickname: characterAtWorldB.nickname
-      }
+    characterB.encounterId = null;
+    characterB.page = NogPage.WORLD;
+    characterB.encounterEndTime = moment().valueOf();
+    characterB.encounterStartTime = null;
+    characterB.coordinates = encounter.coordinates;
+    characterStore.set(characterB.characterId, {
+      ...characterB
     });
-    const center = computeCenter([
-      characterAtWorldA.coordinates,
-      characterAtWorldB.coordinates
-    ]);
 
-    if (center) {
-      const encounterId: NogEncounterId = nanoid();
-      const centerCoordinates = {
-        lat: center.latitude,
-        lng: center.longitude
-      };
+    encounterStore.delete(encounter.encounterId);
 
-      const encounterStartTime = moment().valueOf();
+    socket.emit(NogEvent.REDIRECT, {
+      page: NogPage.WORLD
+    });
 
-      characterA.page = NogPage.ENCOUNTER;
-      characterA.encounterId = encounterId;
-      characterA.coordinates = centerCoordinates;
-      characterA.encounterStartTime = encounterStartTime;
-      characterStore.set(characterA.characterId, { ...characterA });
+    encounterNamespace.to(characterB.characterId).emit(NogEvent.REDIRECT, {
+      page: NogPage.WORLD
+    });
+  };
 
-      characterB.page = NogPage.ENCOUNTER;
-      characterB.encounterId = encounterId;
-      characterB.coordinates = centerCoordinates;
-      characterB.encounterStartTime = encounterStartTime;
-      characterStore.set(characterB.characterId, { ...characterB });
+export const handleEncounterConnection =
+  (encounterNamespace: Namespace) => (socket: Socket) => {
+    logger.info('Encounter connected', { socketId: socket.id });
 
-      characterAtWorldStore.delete(characterAtWorldA.characterId);
-      characterAtWorldStore.delete(characterAtWorldB.characterId);
+    socket.on(NogEvent.INIT, handleEncounterInit(socket));
+    socket.on(NogEvent.EXIT, handleExit(socket, encounterNamespace));
+    socket.on(
+      NogEvent.DISCONNECT,
+      handleEncounterDisconnect(socket, encounterNamespace)
+    );
+  };
 
-      encounterStore.set(encounterId, {
-        encounterId,
-        encounterStartTime,
-        coordinates: centerCoordinates,
-        participants: [
-          {
-            characterId: characterAtWorldA.characterId,
-            nickname: characterAtWorldA.nickname
-          },
-          {
-            characterId: characterAtWorldB.characterId,
-            nickname: characterAtWorldB.nickname
-          }
-        ]
-      });
-
-      world
-        .to(characterAtWorldA.characterId)
-        .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
-      world
-        .to(characterAtWorldB.characterId)
-        .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
-    } else {
-      logger.error('Something is wrong with a center');
-    }
-  }
-}
+const handleEncounterDisconnect =
+  (socket: Socket, encounterNamespace: Namespace) => async () =>
+    await handleDisconnect(socket, encounterNamespace);
