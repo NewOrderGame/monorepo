@@ -12,55 +12,69 @@ if (!process.env.NOG_CORE_URL) {
 }
 const CORE_URL = process.env.NOG_CORE_URL;
 
-const auth = io(`${CORE_URL}/auth`, {
+const game = io(`${CORE_URL}/game`, {
   autoConnect: false
 });
 
-auth.auth = { npcServiceSecret: 'NPC_SERVICE_SECRET' };
+game.auth = { npcServiceSecret: 'NPC_SERVICE_SECRET' };
 
-logger.debug('Connecting to Auth...');
-auth.connect();
+logger.debug('Connecting to Game...');
+game.connect();
 
-auth.on(NogEvent.INIT, (npcList: CharacterAtWorld[]) => {
+game.on(NogEvent.CONNECT, () => {
+  logger.info('Connecting...');
+});
+
+game.on(NogEvent.DISCONNECT, () => {
+  logger.info('Disconnected');
+});
+
+game.on(NogEvent.CONNECTED, () => {
+  logger.info('Connected to Game namespace');
+});
+
+game.on(NogEvent.INIT_NPC, (npcList: CharacterAtWorld[]) => {
   npcList.forEach((npc) => {
     characterAtWorldStore.set(npc.characterId, npc);
-    logger.debug('npc', { npc });
   });
 });
 
-auth.on(NogEvent.DESTROY, (npcList: CharacterAtWorld[]) => {
+game.on(NogEvent.DESTROY_NPC, (npcList: CharacterAtWorld[]) => {
   npcList.forEach((npc) => {
     characterAtWorldStore.delete(npc.characterId);
   });
 });
 
-logger.info('Auth connected');
-
-/** */
-
-const world = io(`${CORE_URL}/world`, {
-  autoConnect: false
-});
-
-world.on(
+game.on(
   NogEvent.CHARACTERS_IN_SIGHT,
-  ({
-     characterId,
-     charactersInSight
-   }: {
-    characterId: string;
-    charactersInSight: CharacterInSight[];
-  }) => {
-    const character = characterAtWorldStore.get(characterId);
-    characterAtWorldStore.set(characterId, {
+  (event: { characterId: string; charactersInSight: CharacterInSight[] }) => {
+    const character = characterAtWorldStore.get(event.characterId);
+    characterAtWorldStore.set(event.characterId, {
       ...character,
-      charactersInSight: charactersInSight
+      charactersInSight: event.charactersInSight
     });
   }
 );
 
+/** NPC ENGINE */
 
-world.auth = { npcServiceSecret: 'NPC_SERVICE_SECRET' };
+setInterval(() => {
+  const characters = characterAtWorldStore.getAll();
 
-logger.debug('Connecting to World...');
-world.connect();
+  characters.forEach((character) => {
+    let friends: CharacterInSight[];
+    let enemies: CharacterInSight[];
+
+    character.charactersInSight.forEach((characterInSight) => {
+
+      logger.debug(character.characterId, {
+        isEnemy: characterInSight.isEnemy
+      });
+
+    });
+  });
+}, 1000);
+
+/** */
+
+logger.info('Game connected');

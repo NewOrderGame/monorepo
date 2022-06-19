@@ -32,12 +32,14 @@ const handleGameConnection =
   (gameNamespace: Namespace) => async (socket: Socket) => {
     logger.info('Game connected', { socketId: socket.id });
 
-    handleNpcServiceConnection(socket, gameNamespace);
+    handleNpcServiceConnection(socket);
     await handleUserConnection(socket);
 
     socket.on(NogEvent.DISCONNECT, () =>
       handleDisconnect(socket, gameNamespace)
     );
+
+    socket.emit(NogEvent.CONNECTED);
   };
 
 const handleUserConnection = async (socket: Socket) => {
@@ -82,7 +84,6 @@ const handleUserConnection = async (socket: Socket) => {
 
   socket.join(username);
 
-  socket.emit(NogEvent.CONNECTED);
   socket.emit(NogEvent.REDIRECT, {
     page
   });

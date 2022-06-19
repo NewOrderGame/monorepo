@@ -30,7 +30,8 @@ export declare enum NogEvent {
     INIT_ENCOUNTER = "init-encounter",
     EXIT_ENCOUNTER = "exit-encounter",
     DESTROY_ENCOUNTER = "destroy-encounter",
-    INIT_NPC = "init-npc"
+    INIT_NPC = "init-npc",
+    DESTROY_NPC = "destroy-npc"
 }
 export declare type Outlook = number[];
 export declare type CharacterStats = {

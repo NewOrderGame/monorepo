@@ -56,12 +56,13 @@ export const WorldMapEngine = () => {
 
 let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];
 const handleCharactersInSight =
-  (map: LeafletMap) => (characters: CharacterInSight[]) => {
+  (map: LeafletMap) =>
+  (event: { characterId: string; charactersInSight: CharacterInSight[] }) => {
     charactersInSight.forEach((character) => {
       character.marker.remove();
     });
     charactersInSight = [];
-    characters.forEach((character) => {
+    event.charactersInSight.forEach((character) => {
       charactersInSight.push({
         ...character,
         marker: marker(character.coordinates, {

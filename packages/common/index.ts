@@ -32,6 +32,7 @@ export enum NogEvent {
   EXIT_ENCOUNTER = 'exit-encounter',
   DESTROY_ENCOUNTER = 'destroy-encounter',
   INIT_NPC = 'init-npc',
+  DESTROY_NPC = 'destroy-npc',
 }
 
 export type Outlook = number[];

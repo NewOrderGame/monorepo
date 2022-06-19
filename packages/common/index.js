@@ -31,6 +31,7 @@ var NogEvent;
     NogEvent["EXIT_ENCOUNTER"] = "exit-encounter";
     NogEvent["DESTROY_ENCOUNTER"] = "destroy-encounter";
     NogEvent["INIT_NPC"] = "init-npc";
+    NogEvent["DESTROY_NPC"] = "destroy-npc";
 })(NogEvent = exports.NogEvent || (exports.NogEvent = {}));
 exports.DEFAULT_COORDINATES = {
     lat: 46.47705630400258,

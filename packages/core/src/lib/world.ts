@@ -160,7 +160,7 @@ export const sendCharactersInSight = (
   if (characterAtWorld.characterSightFlag) {
     gameNamespace
       .to(characterAtWorld.characterId)
-      .emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
+      .emit(NogEvent.CHARACTERS_IN_SIGHT, { characterId, charactersInSight });
   }
 
   if (!charactersInSight.length) {

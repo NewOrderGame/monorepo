@@ -12,14 +12,11 @@ import { computeDestinationPoint as computeDestination } from 'geolib';
 import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
 import characterAtWorldStore from '../store/character-at-world-store';
-import { Namespace, Socket } from 'socket.io';
+import { Socket } from 'socket.io';
 import logger from './utils/logger';
 import { getNpcSocket, setNpcSocket } from '../store/npc-socket-store';
 
-export const handleNpcServiceConnection = (
-  socket: Socket,
-  gameNamespace: Namespace
-) => {
+export const handleNpcServiceConnection = (socket: Socket) => {
   const isNpcService =
     socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
 
@@ -27,10 +24,11 @@ export const handleNpcServiceConnection = (
     return;
   }
 
-  logger.info('NPC service connected to Auth');
+  logger.info('NPC service connected');
   const allNpc = characterAtWorldStore.getAllNpc();
   setNpcSocket(socket);
   socket.emit(NogEvent.INIT_NPC, allNpc);
+  allNpc.forEach((npc) => socket.join(npc.characterId));
 };
 
 export const handleNpcGeneration = (
