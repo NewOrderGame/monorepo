@@ -12,9 +12,11 @@ const core = () => {
     autoConnect: false
   });
 
-  gameSocket.onAny((event, ...args) => {
-    logger.debug('event', { event, args });
-  });
+  /** Uncomment this if necessary */
+  // gameSocket.onAny((event, ...args) => {
+  //   logger.debug('event', { event, args });
+  // });
+  /** */
 
   return {
     gameSocket
