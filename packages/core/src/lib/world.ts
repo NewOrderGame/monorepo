@@ -360,7 +360,7 @@ export const handleCharactersEncounter = (
 
 export const handleInitCharacterAtWorld =
   (socket: Socket, characterId: string, nickname: string) => async () => {
-    logger.info('World init', { socketId: socket.id });
+    logger.info({ socketId: socket.id }, 'World init');
     const character = characterStore.get(characterId);
     if (!character) {
       socket.emit(NogEvent.REDIRECT, {

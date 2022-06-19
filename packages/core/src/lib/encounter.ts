@@ -13,14 +13,14 @@ import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider'
 import { getUser } from './utils/cognito';
 
 export const handleEncounterInit = (socket: Socket) => async () => {
-  logger.info('Encounter init', { socketId: socket.id });
+  logger.info({ socketId: socket.id }, 'Encounter init');
   const accessToken = socket.handshake.auth.accessToken;
 
   let user: GetUserResponse;
   try {
     user = await getUser(accessToken);
   } catch (error) {
-    logger.error('Error during getting user in Encounter Namespace', error);
+    logger.error(error, 'Error during getting user in Encounter Namespace');
     return;
   }
   const username = user?.Username;

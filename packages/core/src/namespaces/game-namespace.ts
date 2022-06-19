@@ -30,7 +30,7 @@ export const getGameNamespace = () => {
 
 const handleGameConnection =
   (gameNamespace: Namespace) => async (socket: Socket) => {
-    logger.info('Game connected', { socketId: socket.id });
+    logger.info({ socketId: socket.id }, 'Game connected');
 
     handleNpcServiceConnection(socket);
     await handleUserConnection(socket);
@@ -54,7 +54,7 @@ const handleUserConnection = async (socket: Socket) => {
   try {
     user = await getUser(accessToken);
   } catch (error) {
-    logger.error('Error during getting user in Auth Namespace', error);
+    logger.error(error, 'Error during getting user in Auth Namespace');
     return;
   }
 

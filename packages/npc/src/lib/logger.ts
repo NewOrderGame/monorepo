@@ -1,18 +1,15 @@
-import { transports, createLogger, format } from 'winston';
+import pino from 'pino';
 
-const logger = createLogger();
+const logger = pino({
+  transport: {
+    target: 'pino-pretty'
+  }
+});
 
-if (process.env.NODE_ENV === 'production') {
-  logger.add(
-    new transports.Console({ level: 'info', format: format.simple() })
-  );
-} else {
-  logger.add(
-    new transports.Console({
-      level: 'debug',
-      format: format.combine(format.simple(), format.colorize({ all: true }))
-    })
-  );
-}
+logger.on('level-change', (lvl, val, prevLvl, prevVal) => {
+  console.log('%s (%d) was changed to %s (%d)', prevLvl, prevVal, lvl, val);
+});
+
+logger.level = 'trace';
 
 export default logger;

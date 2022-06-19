@@ -9,9 +9,7 @@ import {
 import characterStore from '../store/character-store';
 import logger from './utils/logger';
 import { getUser } from './utils/cognito';
-import {
-  GetUserResponse
-} from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 export const createCharacter = ({
   characterId,
@@ -48,7 +46,7 @@ export const handleCreateCharacter = async ({
   try {
     user = await getUser(accessToken);
   } catch (error) {
-    logger.error('Error during getting user in Create Character', error);
+    logger.error(error, 'Error during getting user in Create Character');
     return;
   }
   const username = user?.Username;

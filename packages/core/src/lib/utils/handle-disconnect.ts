@@ -37,6 +37,8 @@ export const handleDisconnect = async (
     socket.handshake?.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
   if (isNpcService) {
     setNpcSocket(null);
-    logger.warn(`NPC service disconnected from ${gameNamespace.name}`);
+    logger.warn('NPC service disconnected', {
+      namespaceName: gameNamespace.name
+    });
   }
 };

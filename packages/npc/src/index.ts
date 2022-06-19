@@ -57,7 +57,6 @@ game.on(
 );
 
 /** NPC ENGINE */
-
 setInterval(() => {
   const characters = characterAtWorldStore.getAll();
 
@@ -66,15 +65,16 @@ setInterval(() => {
     let enemies: CharacterInSight[];
 
     character.charactersInSight.forEach((characterInSight) => {
-
-      logger.debug(character.characterId, {
-        isEnemy: characterInSight.isEnemy
-      });
-
+      logger.debug(
+        {
+          characterInSight: characterInSight.nickname,
+          isEnemy: characterInSight.isEnemy
+        },
+        character.characterId
+      );
     });
   });
 }, 1000);
-
 /** */
 
 logger.info('Game connected');

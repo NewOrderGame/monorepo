@@ -15,5 +15,5 @@ app.get('/stats', (request, response) => {
 });
 
 app.listen(PORT, () => {
-  logger.info('Started stats reader server', { PORT });
+  logger.info({ PORT }, 'Started stats reader server');
 });
