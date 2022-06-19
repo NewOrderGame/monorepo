@@ -10,9 +10,6 @@ export const RootPage = () => {
 
   useEffect(() => {
     console.log('Root Page init');
-    if (!connection.isConnected()) {
-      connection.connect();
-    }
 
     return () => {
       console.log('Root Page destroy');
@@ -24,4 +21,4 @@ export const RootPage = () => {
       <Loader />
     </Content>
   );
-}
+};

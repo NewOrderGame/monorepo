@@ -10,11 +10,7 @@ import {
   NogEvent,
   NogPage
 } from '@newordergame/common';
-import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
-import { getUser } from './utils/cognito';
 import characterStore from '../store/character-store';
-import { createCharacterAtWorld } from './character-at-world';
-import { handleDisconnect } from './utils/handle-disconnect';
 import {
   computeDestinationPoint as computeDestination,
   getCenter as computeCenter,
@@ -32,103 +28,7 @@ import { areEnemies } from './character';
 import encounterStore from '../store/encounter-store';
 import * as moment from 'moment';
 import { nanoid } from 'nanoid';
-import { handleNpcServiceWorldConnection } from './npc';
-
-const handleWorldInit = (socket: Socket, accessToken: string) => async () => {
-  logger.info('World init', { socketId: socket.id });
-  let user: GetUserResponse;
-  try {
-    user = await getUser(accessToken);
-  } catch (error) {
-    logger.error('Error during getting user in World Namespace', error);
-    return;
-  }
-  const username = user?.Username;
-  const nickname: string = user?.UserAttributes.find(
-    (a) => a.Name === 'nickname'
-  )?.Value;
-  socket.data.characterId = username;
-
-  let character = characterStore.get(username);
-  if (!character) {
-    socket.emit(NogEvent.REDIRECT, {
-      page: NogPage.CHARACTER
-    });
-    return;
-  }
-
-  if (character.page === NogPage.WORLD) {
-    let characterAtWorld: CharacterAtWorld = characterAtWorldStore.get(
-      character.characterId
-    );
-    if (!characterAtWorld) {
-      characterAtWorld = createCharacterAtWorld({
-        character: character,
-        isNpc: false
-      });
-      characterAtWorldStore.set(character.characterId, characterAtWorld);
-      logger.info('Created new characterAtWorld', {
-        nickname
-      });
-    }
-    socket.emit(NogEvent.INIT, {
-      coordinates: character.coordinates
-    });
-    characterStore.set(character.characterId, {
-      ...character,
-      connected: true
-    });
-    socket.join(character.characterId);
-  }
-};
-
-const handleConnection = (socket: Socket) => {
-  const accessToken = socket.handshake.auth.accessToken;
-
-  if (!accessToken) {
-    return;
-  }
-
-  socket.on(NogEvent.INIT, handleWorldInit(socket, accessToken));
-  socket.on(NogEvent.DESTROY, handleDestroy(socket));
-  socket.on(NogEvent.MOVE, (coordinates: { lat: number; lng: number }) =>
-    handleMoveEvent(socket, coordinates)
-  );
-};
-
-export const handleWorldConnection =
-  (worldNamespace: Namespace) => (socket: Socket) => {
-    logger.info('World connected', { socketId: socket.id });
-    handleNpcServiceWorldConnection(socket, worldNamespace);
-    handleConnection(socket);
-
-    socket.on(
-      NogEvent.DISCONNECT,
-      handleWorldDisconnect(socket, worldNamespace)
-    );
-  };
-
-const handleWorldDisconnect =
-  (socket: Socket, worldNamespace: Namespace) => async () => {
-    const isNpcService =
-      socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
-
-    if (!isNpcService) {
-      characterAtWorldStore.delete(socket.data?.characterId);
-    }
-    await handleDisconnect(socket, worldNamespace);
-  };
-
-const handleDestroy = (socket: Socket) => () => {
-  const character = characterStore.get(socket.data.sesssionId);
-  if (character) {
-    characterAtWorldStore.delete(socket.data.characterId);
-    logger.info('Removed character from world', {
-      socketId: socket.id,
-      characterId: socket.data.characterId
-    });
-  }
-};
+import { createCharacterAtWorld } from './character-at-world';
 
 export const moveCharacter = (characterId: NogCharacterId) => {
   const characterAtWorld = characterAtWorldStore.get(characterId);
@@ -183,44 +83,6 @@ export const moveCharacter = (characterId: NogCharacterId) => {
       ...characterAtWorld
     });
   }
-};
-
-export const handleMoveEvent = (
-  socket: Socket,
-  coordinates: { lat: number; lng: number }
-) => {
-  const character = characterStore.get(socket.data.characterId);
-  if (!character) {
-    logger.error('Character should exist');
-    return;
-  }
-
-  const characterAtWorld = characterAtWorldStore.get(character.characterId);
-
-  if (!characterAtWorld) {
-    logger.error('Character at world should exist');
-    return;
-  }
-
-  logger.info('Move', { nickname: character.nickname, characterId: character.characterId, coordinates });
-
-  characterAtWorld.movesTo = coordinates;
-  characterAtWorldStore.set(character.characterId, {
-    ...characterAtWorld
-  });
-
-  const distance = computeDistance(
-    {
-      latitude: characterAtWorld.coordinates.lat,
-      longitude: characterAtWorld.coordinates.lng
-    },
-    { latitude: coordinates.lat, longitude: coordinates.lng },
-    DISTANCE_ACCURACY
-  );
-
-  const duration = distance / characterAtWorld.stats.speed;
-
-  socket.emit(NogEvent.MOVE, { coordinates, duration, distance });
 };
 
 export const checkCharacterVisibility = (
@@ -288,7 +150,7 @@ export const checkCharacterVisibility = (
 export const sendCharactersInSight = (
   characterId: NogCharacterId,
   charactersInSight: CharacterInSight[],
-  world: Namespace
+  gameNamespace: Namespace
 ) => {
   const characterAtWorld = characterAtWorldStore.get(characterId);
   if (!characterAtWorld) {
@@ -296,7 +158,7 @@ export const sendCharactersInSight = (
   }
 
   if (characterAtWorld.characterSightFlag) {
-    world
+    gameNamespace
       .to(characterAtWorld.characterId)
       .emit(NogEvent.CHARACTERS_IN_SIGHT, charactersInSight);
   }
@@ -352,7 +214,7 @@ export const checkEncounterVisibility = (
 export const sendEncountersInSight = (
   characterId: NogCharacterId,
   encountersInSight: EncounterInSight[],
-  world: Namespace
+  gameNamespace: Namespace
 ) => {
   const characterAtWorld = characterAtWorldStore.get(characterId);
 
@@ -361,7 +223,7 @@ export const sendEncountersInSight = (
   }
 
   if (characterAtWorld.encounterSightFlag) {
-    world
+    gameNamespace
       .to(characterAtWorld.characterId)
       .emit(NogEvent.ENCOUNTERS_IN_SIGHT, encountersInSight);
   }
@@ -377,7 +239,7 @@ export const sendEncountersInSight = (
 export const handleCharactersEncounter = (
   characterIdA: NogCharacterId,
   characterIdB: NogCharacterId,
-  world: Namespace
+  gameNamespace: Namespace
 ) => {
   const characterAtWorldA = characterAtWorldStore.get(characterIdA);
   const characterAtWorldB = characterAtWorldStore.get(characterIdB);
@@ -484,14 +346,106 @@ export const handleCharactersEncounter = (
         ]
       });
 
-      world
+      gameNamespace
         .to(characterAtWorldA.characterId)
         .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
-      world
+      gameNamespace
         .to(characterAtWorldB.characterId)
         .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
     } else {
       logger.error('Something is wrong with a center');
     }
   }
+};
+
+export const handleInitCharacterAtWorld =
+  (socket: Socket, characterId: string, nickname: string) => async () => {
+    logger.info('World init', { socketId: socket.id });
+    const character = characterStore.get(characterId);
+    if (!character) {
+      socket.emit(NogEvent.REDIRECT, {
+        page: NogPage.CHARACTER
+      });
+      return;
+    }
+
+    if (character.page === NogPage.WORLD) {
+      let characterAtWorld: CharacterAtWorld = characterAtWorldStore.get(
+        character.characterId
+      );
+      if (!characterAtWorld) {
+        characterAtWorld = createCharacterAtWorld({
+          character: character,
+          isNpc: false
+        });
+        characterAtWorldStore.set(character.characterId, characterAtWorld);
+        logger.info('Created new characterAtWorld', {
+          nickname
+        });
+      }
+      socket.emit(NogEvent.INIT_CHARACTER_AT_WORLD, {
+        coordinates: character.coordinates
+      });
+      characterStore.set(character.characterId, {
+        ...character,
+        connected: true
+      });
+    }
+  };
+
+export const handleDestroyCharacterAtWorld = (socket: Socket) => () => {
+  const character = characterStore.get(socket.data.sesssionId);
+  if (character) {
+    characterAtWorldStore.delete(socket.data.characterId);
+    logger.info('Removed character from world', {
+      socketId: socket.id,
+      characterId: socket.data.characterId
+    });
+  }
+};
+
+export const handleMoveCharacterAtWorld = (
+  socket: Socket,
+  coordinates: { lat: number; lng: number }
+) => {
+  const character = characterStore.get(socket.data.characterId);
+  if (!character) {
+    logger.error('Character should exist');
+    return;
+  }
+
+  const characterAtWorld = characterAtWorldStore.get(character.characterId);
+
+  if (!characterAtWorld) {
+    logger.error('Character at world should exist');
+    return;
+  }
+
+  logger.info('Move', {
+    nickname: character.nickname,
+    characterId: character.characterId,
+    coordinates
+  });
+
+  characterAtWorld.movesTo = coordinates;
+  characterAtWorldStore.set(character.characterId, {
+    ...characterAtWorld
+  });
+
+  const distance = computeDistance(
+    {
+      latitude: characterAtWorld.coordinates.lat,
+      longitude: characterAtWorld.coordinates.lng
+    },
+    { latitude: coordinates.lat, longitude: coordinates.lng },
+    DISTANCE_ACCURACY
+  );
+
+  const duration = distance / characterAtWorld.stats.speed;
+
+  socket.emit(NogEvent.MOVE_CHARACTER_AT_WORLD, {
+    coordinates,
+    duration,
+    distance
+  });
 };

@@ -54,7 +54,7 @@ export const LoaderSvg = ({ className }: { className?: string }) => {
       </g>
     </svg>
   );
-}
+};
 
 export const Loader = styled(LoaderSvg)`
   .load2 path:nth-of-type(1),

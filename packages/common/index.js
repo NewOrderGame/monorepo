@@ -18,15 +18,19 @@ var NogEvent;
 (function (NogEvent) {
     NogEvent["CONNECTION"] = "connection";
     NogEvent["CONNECT"] = "connect";
+    NogEvent["CONNECTED"] = "connected";
     NogEvent["DISCONNECT"] = "disconnect";
-    NogEvent["INIT"] = "init";
-    NogEvent["DESTROY"] = "destroy";
     NogEvent["REDIRECT"] = "redirect";
-    NogEvent["MOVE"] = "move";
-    NogEvent["EXIT"] = "exit";
     NogEvent["ENCOUNTERS_IN_SIGHT"] = "encounters-in-sight";
     NogEvent["CHARACTERS_IN_SIGHT"] = "characters-in-sight";
     NogEvent["CREATE_CHARACTER"] = "create-character";
+    NogEvent["INIT_CHARACTER_AT_WORLD"] = "create-character-at-world";
+    NogEvent["DESTROY_CHARACTER_AT_WORLD"] = "destroy-character-at-world";
+    NogEvent["MOVE_CHARACTER_AT_WORLD"] = "move-character-at-world";
+    NogEvent["INIT_ENCOUNTER"] = "init-encounter";
+    NogEvent["EXIT_ENCOUNTER"] = "exit-encounter";
+    NogEvent["DESTROY_ENCOUNTER"] = "destroy-encounter";
+    NogEvent["INIT_NPC"] = "init-npc";
 })(NogEvent = exports.NogEvent || (exports.NogEvent = {}));
 exports.DEFAULT_COORDINATES = {
     lat: 46.47705630400258,

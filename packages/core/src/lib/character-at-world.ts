@@ -1,4 +1,4 @@
-import { CharacterAtWorld, Character } from '@newordergame/common';
+import { Character, CharacterAtWorld } from '@newordergame/common';
 
 export const createCharacterAtWorld = ({
   character,
@@ -19,4 +19,4 @@ export const createCharacterAtWorld = ({
     characterSightFlag: false,
     isNpc
   };
-}
+};

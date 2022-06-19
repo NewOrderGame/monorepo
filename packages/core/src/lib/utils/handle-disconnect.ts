@@ -1,14 +1,14 @@
 import { Namespace, Socket } from 'socket.io';
 import characterStore from '../../store/character-store';
 import logger from './logger';
-import npcSocketStore from '../../store/npc-socket-store';
+import { setNpcSocket } from '../../store/npc-socket-store';
 
 export const handleDisconnect = async (
   socket: Socket,
-  namespace: Namespace
+  gameNamespace: Namespace
 ) => {
   logger.info('Disconnected', {
-    namespaceName: namespace.name,
+    namespaceName: gameNamespace.name,
     socketId: socket.id
   });
   if (!socket) {
@@ -19,7 +19,7 @@ export const handleDisconnect = async (
     logger.info('Disconnected with character ID', {
       characterId: character.characterId
     });
-    const matchingSockets = await namespace
+    const matchingSockets = await gameNamespace
       .in(character.characterId)
       .allSockets();
     const isDisconnected = matchingSockets.size === 0;
@@ -36,7 +36,7 @@ export const handleDisconnect = async (
   const isNpcService =
     socket.handshake?.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
   if (isNpcService) {
-    npcSocketStore.set(namespace.name, null);
-    logger.warn(`NPC service disconnected from ${namespace.name}`);
+    setNpcSocket(null);
+    logger.warn(`NPC service disconnected from ${gameNamespace.name}`);
   }
 };

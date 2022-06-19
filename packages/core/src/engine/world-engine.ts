@@ -19,11 +19,11 @@ import {
 import { argv } from '../lib/utils/argv';
 import { withStats } from '../stats/writer';
 import { StatsGroups } from '../lib/utils/types';
-import { getWorld } from '../namespaces/world-namespace';
 import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from '../lib/npc';
+import { getGameNamespace } from '../namespaces/game-namespace';
 
-const doNextTick = (world: Namespace) => {
+const doNextTick = (gameNamespace: Namespace) => () => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();
   const encounters: Encounter[] = encounterStore.getAll();
 
@@ -65,7 +65,7 @@ const doNextTick = (world: Namespace) => {
       handleCharactersEncounter(
         characterAtWorldA.characterId,
         characterAtWorldB.characterId,
-        world
+        gameNamespace
       );
     }
     /** */
@@ -85,30 +85,32 @@ const doNextTick = (world: Namespace) => {
     sendCharactersInSight(
       characterAtWorldA.characterId,
       charactersInSight.get(characterAtWorldA.characterId),
-      world
+      gameNamespace
     );
     sendEncountersInSight(
       characterAtWorldA.characterId,
       encountersInSight.get(characterAtWorldA.characterId),
-      world
+      gameNamespace
     );
     /** */
+  }
+};
+const defineDoNextTick = (gameNamespace: Namespace) => {
+  if (argv.s || argv.stats) {
+    return withStats(() => doNextTick(gameNamespace)(), StatsGroups.TICK);
+  } else {
+    return () => doNextTick(gameNamespace)();
   }
 };
 
 let worldTimer: NodeJS.Timer;
 
-const defineDoNextTick = (world: Namespace) => {
-  if (argv.s || argv.stats) {
-    return withStats(() => doNextTick(world), StatsGroups.TICK);
-  } else {
-    return () => doNextTick(world);
-  }
-};
-
-export const startWorld = () => {
-  const world = getWorld();
-  worldTimer = setInterval(defineDoNextTick(world), SECOND / TICK_PER_SECOND);
+export const startGame = () => {
+  const gameNamespace = getGameNamespace();
+  worldTimer = setInterval(
+    defineDoNextTick(gameNamespace),
+    SECOND / TICK_PER_SECOND
+  );
 };
 
 export const stopWorld = () => {

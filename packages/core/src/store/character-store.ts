@@ -1,4 +1,4 @@
-import { NogCharacterId, Character } from '@newordergame/common';
+import { Character, NogCharacterId } from '@newordergame/common';
 import logger from '../lib/utils/logger';
 
 export class InMemoryCharacterStore {

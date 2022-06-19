@@ -14,26 +14,11 @@ import { nanoid } from 'nanoid';
 import characterAtWorldStore from '../store/character-at-world-store';
 import { Namespace, Socket } from 'socket.io';
 import logger from './utils/logger';
-import npcSocketStore from '../store/npc-socket-store';
+import { getNpcSocket, setNpcSocket } from '../store/npc-socket-store';
 
-
-export const handleNpcServiceWorldConnection = (
+export const handleNpcServiceConnection = (
   socket: Socket,
-  worldNamespace: Namespace
-) => {
-  const isNpcService =
-    socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
-
-  if (!isNpcService) {
-    return;
-  }
-
-  logger.info('NPC service connected to World');
-};
-
-export const handleNpcServiceAuthConnection = (
-  socket: Socket,
-  authNamespace: Namespace
+  gameNamespace: Namespace
 ) => {
   const isNpcService =
     socket.handshake.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
@@ -44,8 +29,8 @@ export const handleNpcServiceAuthConnection = (
 
   logger.info('NPC service connected to Auth');
   const allNpc = characterAtWorldStore.getAllNpc();
-  npcSocketStore.set(authNamespace.name, socket);
-  socket.emit(NogEvent.INIT, allNpc);
+  setNpcSocket(socket);
+  socket.emit(NogEvent.INIT_NPC, allNpc);
 };
 
 export const handleNpcGeneration = (
@@ -93,10 +78,10 @@ export const handleNpcGeneration = (
 
     characterAtWorldStore.set(npc.characterId, npc);
 
-    const npcAuthSocket = npcSocketStore.get('/auth');
+    const npcSocket = getNpcSocket();
 
-    if (npcAuthSocket) {
-      npcAuthSocket.emit(NogEvent.INIT, [npc]);
+    if (npcSocket) {
+      npcSocket.emit(NogEvent.INIT_NPC, [npc]);
     }
   }
 };

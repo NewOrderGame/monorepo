@@ -10,7 +10,7 @@ import { getFakeNamespace } from '../test/utils';
 import { handleCharactersEncounter } from './world';
 import moment = require('moment');
 
-jest.mock('../namespaces/world-namespace');
+jest.mock('../namespaces/game-namespace');
 
 const DEFAULT_CHARACTER_STATS: CharacterStats = {
   outlook: [0, 0, 0],

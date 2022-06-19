@@ -17,27 +17,27 @@ export const EncounterPage = () => {
   useEffect(() => {
     console.log('Encounter Page init');
 
-    connection.encounter.emit(NogEvent.INIT);
+    connection.gameSocket.emit(NogEvent.INIT_ENCOUNTER);
 
-    connection.encounter.on(NogEvent.INIT, ({ participants }) => {
+    connection.gameSocket.on(NogEvent.INIT_ENCOUNTER, ({ participants }) => {
       setParticipants(participants);
     });
 
-    connection.encounter.on(NogEvent.REDIRECT, ({ page }) => {
+    connection.gameSocket.on(NogEvent.REDIRECT, ({ page }) => {
       navigate(`/${page}`);
     });
 
     return () => {
       console.log('Encounter Page destroy');
-      connection.encounter.off(NogEvent.INIT);
-      connection.encounter.off(NogEvent.REDIRECT);
+      connection.gameSocket.off(NogEvent.INIT_ENCOUNTER);
+      connection.gameSocket.off(NogEvent.REDIRECT);
     };
-  }, [connection.encounter, navigate]);
+  }, [connection.gameSocket, navigate]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    connection.encounter.emit(NogEvent.EXIT);
-  }
+    connection.gameSocket.emit(NogEvent.EXIT_ENCOUNTER);
+  };
 
   const others = participants?.filter(
     (participant) => participant.characterId !== authenticator.user.username
@@ -63,4 +63,4 @@ export const EncounterPage = () => {
       )}
     </Content>
   );
-}
+};

@@ -2,8 +2,9 @@ import {
   icon,
   LatLng,
   LeafletMouseEvent,
-  marker,
+  Map as LeafletMap,
   Marker,
+  marker,
   ZoomPanOptions
 } from 'leaflet';
 import { useMap, useMapEvents } from 'react-leaflet';
@@ -19,84 +20,97 @@ export const WorldMapEngine = () => {
   useMapEvents({
     click(event: LeafletMouseEvent) {
       console.log('Request movement', event.latlng);
-      connection.world.emit(NogEvent.MOVE, event.latlng);
+      connection.gameSocket.emit(
+        NogEvent.MOVE_CHARACTER_AT_WORLD,
+        event.latlng
+      );
     }
   });
 
   useEffect(() => {
-    connection.world.on(
-      NogEvent.MOVE,
-      ({
-        coordinates,
-        duration,
-        distance
-      }: {
-        coordinates: LatLng;
-        duration: number;
-        distance: number;
-      }) => {
-        console.log(
-          'Commit movement',
-          coordinates,
-          '. Distance: ',
-          distance,
-          'meters'
-        );
-        map.flyTo(coordinates, 18, {
-          ...zoomPanOptions,
-          duration
-        });
-      }
+    connection.gameSocket.on(
+      NogEvent.MOVE_CHARACTER_AT_WORLD,
+      handleMoveCharacterAtWorld(map)
     );
 
-    let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];
-    connection.world.on(
-      NogEvent.CHARACTERS_IN_SIGHT,
-      (characters: CharacterInSight[]) => {
-        charactersInSight.forEach((character) => {
-          character.marker.remove();
-        });
-        charactersInSight = [];
-        characters.forEach((character) => {
-          charactersInSight.push({
-            ...character,
-            marker: marker(character.coordinates, {
-              icon: character.isEnemy ? enemyCharacterIcon : otherCharacterIcon
-            }).addTo(map)
-          });
-        });
-      }
-    );
-
-    let encountersInSight: (EncounterInSight & { marker: Marker })[] = [];
-    connection.world.on(
+    connection.gameSocket.on(
       NogEvent.ENCOUNTERS_IN_SIGHT,
-      (encounters: EncounterInSight[]) => {
-        encountersInSight.forEach((character) => {
-          character.marker.remove();
-        });
-        encountersInSight = [];
-        encounters.forEach((character) => {
-          encountersInSight.push({
-            ...character,
-            marker: marker(character.coordinates, {
-              icon: encounterIcon
-            }).addTo(map)
-          });
-        });
-      }
+      handleEncountersInSight(map)
+    );
+
+    connection.gameSocket.on(
+      NogEvent.CHARACTERS_IN_SIGHT,
+      handleCharactersInSight(map)
     );
 
     return () => {
-      connection.world.emit(NogEvent.DESTROY);
-      connection.world.off(NogEvent.MOVE);
-      connection.world.off(NogEvent.CHARACTERS_IN_SIGHT);
-      connection.world.off(NogEvent.ENCOUNTERS_IN_SIGHT);
+      connection.gameSocket.emit(NogEvent.DESTROY_CHARACTER_AT_WORLD);
+      connection.gameSocket.off(NogEvent.MOVE_CHARACTER_AT_WORLD);
+      connection.gameSocket.off(NogEvent.CHARACTERS_IN_SIGHT);
+      connection.gameSocket.off(NogEvent.ENCOUNTERS_IN_SIGHT);
     };
-  }, [connection.world, map]);
+  }, [connection.gameSocket, map]);
 
   return null;
-}
+};
+
+let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];
+const handleCharactersInSight =
+  (map: LeafletMap) => (characters: CharacterInSight[]) => {
+    charactersInSight.forEach((character) => {
+      character.marker.remove();
+    });
+    charactersInSight = [];
+    characters.forEach((character) => {
+      charactersInSight.push({
+        ...character,
+        marker: marker(character.coordinates, {
+          icon: character.isEnemy ? enemyCharacterIcon : otherCharacterIcon
+        }).addTo(map)
+      });
+    });
+  };
+
+let encountersInSight: (EncounterInSight & { marker: Marker })[] = [];
+const handleEncountersInSight =
+  (map: LeafletMap) => (encounters: EncounterInSight[]) => {
+    encountersInSight.forEach((character) => {
+      character.marker.remove();
+    });
+    encountersInSight = [];
+    encounters.forEach((character) => {
+      encountersInSight.push({
+        ...character,
+        marker: marker(character.coordinates, {
+          icon: encounterIcon
+        }).addTo(map)
+      });
+    });
+  };
+
+const handleMoveCharacterAtWorld =
+  (map: LeafletMap) =>
+  ({
+    coordinates,
+    duration,
+    distance
+  }: {
+    coordinates: LatLng;
+    duration: number;
+    distance: number;
+  }) => {
+    console.log(
+      'Commit movement',
+      coordinates,
+      '. Distance: ',
+      distance,
+      'meters'
+    );
+    map.flyTo(coordinates, 18, {
+      ...zoomPanOptions,
+      duration
+    });
+  };
 
 const otherCharacterIcon = icon({
   iconUrl: 'other-character.png',

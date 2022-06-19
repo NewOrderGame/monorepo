@@ -1,7 +1,7 @@
 import {
   Encounter,
-  NogEncounterId,
-  NogCharacterId
+  NogCharacterId,
+  NogEncounterId
 } from '@newordergame/common';
 import logger from '../lib/utils/logger';
 

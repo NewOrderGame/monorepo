@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FogOfWar } from '../components/FogOfWar';
 import { Loader } from '../components/Loader';
@@ -13,7 +12,6 @@ import { NogEvent } from '@newordergame/common';
 export const WorldPage = () => {
   console.log('World Page');
   const connection = useConnection();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
@@ -22,19 +20,22 @@ export const WorldPage = () => {
   useEffect(() => {
     console.log('World Page init');
 
-    connection.world.emit(NogEvent.INIT);
+    connection.gameSocket.emit(NogEvent.INIT_CHARACTER_AT_WORLD);
 
-    connection.world.on(NogEvent.INIT, ({ coordinates }) => {
-      setFirstCoordinates(coordinates);
-      setLoading(false);
-    });
+    connection.gameSocket.on(
+      NogEvent.INIT_CHARACTER_AT_WORLD,
+      ({ coordinates }) => {
+        setFirstCoordinates(coordinates);
+        setLoading(false);
+      }
+    );
 
     return () => {
       console.log('World Page destroy');
-      connection.world.emit(NogEvent.DESTROY);
-      connection.world.off(NogEvent.INIT);
+      connection.gameSocket.emit(NogEvent.DESTROY_CHARACTER_AT_WORLD);
+      connection.gameSocket.off(NogEvent.INIT_CHARACTER_AT_WORLD);
     };
-  }, [navigate]);
+  }, [connection]);
 
   const handleResize = useCallback(() => {
     setWindowWidth(window.innerWidth);
@@ -60,7 +61,7 @@ export const WorldPage = () => {
       <Loader />
     </Content>
   );
-}
+};
 
 const Character = styled.img`
   position: fixed;

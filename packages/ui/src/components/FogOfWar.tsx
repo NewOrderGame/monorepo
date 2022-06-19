@@ -34,7 +34,7 @@ const FogOfWarSvg = ({
       />
     </svg>
   );
-}
+};
 
 export const FogOfWar = styled(FogOfWarSvg)`
   z-index: 500;

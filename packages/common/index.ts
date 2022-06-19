@@ -19,15 +19,19 @@ export enum NogNamespace {
 export enum NogEvent {
   CONNECTION = 'connection',
   CONNECT = 'connect',
+  CONNECTED = 'connected',
   DISCONNECT = 'disconnect',
-  INIT = 'init',
-  DESTROY = 'destroy',
   REDIRECT = 'redirect',
-  MOVE = 'move',
-  EXIT = 'exit',
   ENCOUNTERS_IN_SIGHT = 'encounters-in-sight',
   CHARACTERS_IN_SIGHT = 'characters-in-sight',
-  CREATE_CHARACTER = 'create-character'
+  CREATE_CHARACTER = 'create-character',
+  INIT_CHARACTER_AT_WORLD = 'create-character-at-world',
+  DESTROY_CHARACTER_AT_WORLD = 'destroy-character-at-world',
+  MOVE_CHARACTER_AT_WORLD = 'move-character-at-world',
+  INIT_ENCOUNTER = 'init-encounter',
+  EXIT_ENCOUNTER = 'exit-encounter',
+  DESTROY_ENCOUNTER = 'destroy-encounter',
+  INIT_NPC = 'init-npc',
 }
 
 export type Outlook = number[];

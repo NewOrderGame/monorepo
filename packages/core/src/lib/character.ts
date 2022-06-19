@@ -9,7 +9,9 @@ import {
 import characterStore from '../store/character-store';
 import logger from './utils/logger';
 import { getUser } from './utils/cognito';
-import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
+import {
+  GetUserResponse
+} from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 export const createCharacter = ({
   characterId,
@@ -33,7 +35,7 @@ export const createCharacter = ({
   };
   characterStore.set(characterId, character);
   return character;
-}
+};
 
 export const handleCreateCharacter = async ({
   accessToken,
@@ -75,4 +77,4 @@ export const areEnemies = (outlookA: Outlook, outlookB: Outlook): boolean => {
     (outlookA[2] > 0 && outlookB[2] < 0) ||
     (outlookA[2] < 0 && outlookB[2] > 0)
   );
-}
+};

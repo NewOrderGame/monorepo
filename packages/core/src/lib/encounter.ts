@@ -11,7 +11,6 @@ import encounterStore from '../store/encounter-store';
 import { Namespace, Socket } from 'socket.io';
 import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { getUser } from './utils/cognito';
-import { handleDisconnect } from './utils/handle-disconnect';
 
 export const handleEncounterInit = (socket: Socket) => async () => {
   logger.info('Encounter init', { socketId: socket.id });
@@ -27,7 +26,7 @@ export const handleEncounterInit = (socket: Socket) => async () => {
   const username = user?.Username;
   socket.data.characterId = username;
 
-  let character = characterStore.get(username);
+  const character = characterStore.get(username);
   if (!character) {
     socket.emit(NogEvent.REDIRECT, {
       page: NogPage.CHARACTER
@@ -38,7 +37,7 @@ export const handleEncounterInit = (socket: Socket) => async () => {
   if (character.page === NogPage.ENCOUNTER) {
     const encounter: Encounter = encounterStore.get(character.encounterId);
     if (encounter) {
-      socket.emit(NogEvent.INIT, {
+      socket.emit(NogEvent.INIT_ENCOUNTER, {
         participants: encounter.participants
       });
     }
@@ -47,11 +46,10 @@ export const handleEncounterInit = (socket: Socket) => async () => {
     ...character,
     connected: true
   });
-  socket.join(character.characterId);
 };
 
-export const handleExit =
-  (socket: Socket, encounterNamespace: Namespace) => () => {
+export const handleExitEncounter =
+  (socket: Socket, gameNamespace: Namespace) => () => {
     if (!socket.data.characterId) {
       logger.error('There should be character ID');
     }
@@ -90,23 +88,17 @@ export const handleExit =
       page: NogPage.WORLD
     });
 
-    encounterNamespace.to(characterB.characterId).emit(NogEvent.REDIRECT, {
+    gameNamespace.to(characterB.characterId).emit(NogEvent.REDIRECT, {
       page: NogPage.WORLD
     });
+
+    socket.emit(NogEvent.INIT_CHARACTER_AT_WORLD, {
+      coordinates: characterA.coordinates
+    });
+
+    gameNamespace
+      .to(characterB.characterId)
+      .emit(NogEvent.INIT_CHARACTER_AT_WORLD, {
+        coordinates: characterB.coordinates
+      });
   };
-
-export const handleEncounterConnection =
-  (encounterNamespace: Namespace) => (socket: Socket) => {
-    logger.info('Encounter connected', { socketId: socket.id });
-
-    socket.on(NogEvent.INIT, handleEncounterInit(socket));
-    socket.on(NogEvent.EXIT, handleExit(socket, encounterNamespace));
-    socket.on(
-      NogEvent.DISCONNECT,
-      handleEncounterDisconnect(socket, encounterNamespace)
-    );
-  };
-
-const handleEncounterDisconnect =
-  (socket: Socket, encounterNamespace: Namespace) => async () =>
-    await handleDisconnect(socket, encounterNamespace);

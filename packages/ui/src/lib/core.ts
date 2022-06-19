@@ -7,35 +7,17 @@ if (!process.env.REACT_APP_NOG_CORE_URL) {
 const CORE_URL = process.env.REACT_APP_NOG_CORE_URL;
 
 const core = () => {
-  const auth: Socket = io(`${CORE_URL}/auth`, {
+  const gameSocket: Socket = io(`${CORE_URL}/game`, {
     autoConnect: false
   });
 
-  const world: Socket = io(`${CORE_URL}/world`, {
-    autoConnect: false
-  });
-
-  const encounter: Socket = io(`${CORE_URL}/encounter`, {
-    autoConnect: false
-  });
-
-  auth.onAny((event, ...args) => {
-    console.log('auth |', event, args);
-  });
-
-  world.onAny((event, ...args) => {
-    console.log('world |', event, args);
-  });
-
-  encounter.onAny((event, ...args) => {
-    console.log('encounter |', event, args);
+  gameSocket.onAny((event, ...args) => {
+    console.log('game |', event, args);
   });
 
   return {
-    auth,
-    world,
-    encounter
+    gameSocket
   };
-}
+};
 
 export default core();

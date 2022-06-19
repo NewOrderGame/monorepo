@@ -34,7 +34,7 @@ export const CharacterPage = () => {
       ?.getAccessToken()
       ?.getJwtToken();
 
-    connection.auth.emit(NogEvent.CREATE_CHARACTER, {
+    connection.gameSocket.emit(NogEvent.CREATE_CHARACTER, {
       accessToken,
       characterId: authenticator.user.username,
       stats: { outlook }
@@ -62,7 +62,7 @@ export const CharacterPage = () => {
       </Formik>
     </Content>
   );
-}
+};
 
 const CharacterForm = styled(Form)`
   display: flex;

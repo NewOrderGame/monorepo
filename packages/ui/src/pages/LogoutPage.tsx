@@ -17,4 +17,4 @@ export const LogoutPage = () => {
     };
   }, []);
   return null;
-}
+};

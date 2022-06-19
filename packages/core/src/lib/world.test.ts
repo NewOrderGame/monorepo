@@ -16,7 +16,7 @@ import {
 import {
   checkCharacterVisibility,
   checkEncounterVisibility,
-  handleMoveEvent,
+  handleMoveCharacterAtWorld,
   moveCharacter,
   sendCharactersInSight,
   sendEncountersInSight
@@ -314,16 +314,19 @@ describe('World', () => {
 
         socket.data.characterId = character.characterId;
 
-        handleMoveEvent(socket, movesTo);
+        handleMoveCharacterAtWorld(socket, movesTo);
 
         expect(
           characterAtWorldStore.get(characterAtWorld.characterId).movesTo
         ).toEqual(movesTo);
-        expect(socket.emit).toHaveBeenCalledWith(NogEvent.MOVE, {
-          coordinates: movesTo,
-          duration,
-          distance
-        });
+        expect(socket.emit).toHaveBeenCalledWith(
+          NogEvent.MOVE_CHARACTER_AT_WORLD,
+          {
+            coordinates: movesTo,
+            duration,
+            distance
+          }
+        );
       });
     });
   });
