@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 import { CharacterInSight, EncounterInSight } from '../../../common';
 import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
+import logger from '../lib/utils/logger';
 
 export const WorldMapEngine = () => {
   const map = useMap();
@@ -19,7 +20,7 @@ export const WorldMapEngine = () => {
 
   useMapEvents({
     click(event: LeafletMouseEvent) {
-      console.log('Request movement', event.latlng);
+      logger.info('Request movement', { coordinates: event.latlng });
       connection.gameSocket.emit(
         NogEvent.MOVE_CHARACTER_AT_WORLD,
         event.latlng
@@ -100,13 +101,10 @@ const handleMoveCharacterAtWorld =
     duration: number;
     distance: number;
   }) => {
-    console.log(
-      'Commit movement',
+    logger.info('Commit movement', {
       coordinates,
-      '. Distance: ',
-      distance,
-      'meters'
-    );
+      distance
+    });
     map.flyTo(coordinates, 18, {
       ...zoomPanOptions,
       duration

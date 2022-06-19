@@ -8,9 +8,10 @@ import { LatLng } from 'leaflet';
 import { Map } from '../components/Map';
 import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
+import logger from '../lib/utils/logger';
 
 export const WorldPage = () => {
-  console.log('World Page');
+  logger.info('World Page');
   const connection = useConnection();
   const [loading, setLoading] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
@@ -18,7 +19,7 @@ export const WorldPage = () => {
   const [firstCoordinates, setFirstCoordinates] = useState<LatLng | null>(null);
 
   useEffect(() => {
-    console.log('World Page init');
+    logger.info('World Page init');
 
     connection.gameSocket.emit(NogEvent.INIT_CHARACTER_AT_WORLD);
 
@@ -31,7 +32,7 @@ export const WorldPage = () => {
     );
 
     return () => {
-      console.log('World Page destroy');
+      logger.info('World Page destroy');
       connection.gameSocket.emit(NogEvent.DESTROY_CHARACTER_AT_WORLD);
       connection.gameSocket.off(NogEvent.INIT_CHARACTER_AT_WORLD);
     };

@@ -3,16 +3,17 @@ import { useEffect } from 'react';
 import { Content } from '../components/Content';
 import { Loader } from '../components/Loader';
 import { useConnection } from '../lib/connection';
+import logger from "../lib/utils/logger";
 
 export const RootPage = () => {
-  console.log('Root Page');
+  logger.info('Root Page');
   const connection = useConnection();
 
   useEffect(() => {
-    console.log('Root Page init');
+    logger.info('Root Page init');
 
     return () => {
-      console.log('Root Page destroy');
+      logger.info('Root Page destroy');
     };
   }, [connection]);
 

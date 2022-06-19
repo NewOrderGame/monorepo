@@ -5,9 +5,11 @@ import { WorldPage } from './pages/WorldPage';
 import { LogoutPage } from './pages/LogoutPage';
 import { EncounterPage } from './pages/EncounterPage';
 import { CharacterPage } from './pages/CharacterPage';
+import logger from './lib/utils/logger';
 
 const App = () => {
-  console.log('App');
+  logger.info('App');
+
   return (
     <Routes>
       <Route element={<Outlet />}>
@@ -20,6 +22,6 @@ const App = () => {
       </Route>
     </Routes>
   );
-}
+};
 
 export default App;

@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import logger from './utils/logger';
 
 if (!process.env.REACT_APP_NOG_CORE_URL) {
   throw new Error('Environment variable REACT_APP_NOG_CORE_URL is missing');
@@ -12,7 +13,7 @@ const core = () => {
   });
 
   gameSocket.onAny((event, ...args) => {
-    console.log('game |', event, args);
+    logger.debug('event', { event, args });
   });
 
   return {

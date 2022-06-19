@@ -6,16 +6,17 @@ import { useAuthenticator } from '@aws-amplify/ui-react';
 import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
 import { useConnection } from '../lib/connection';
+import logger from '../lib/utils/logger';
 
 export const EncounterPage = () => {
-  console.log('Encounter Page');
+  logger.info('Encounter Page');
   const connection = useConnection();
   const navigate = useNavigate();
   const authenticator = useAuthenticator();
   const [participants, setParticipants] = useState<EncounterParticipant[]>();
 
   useEffect(() => {
-    console.log('Encounter Page init');
+    logger.info('Encounter Page init');
 
     connection.gameSocket.emit(NogEvent.INIT_ENCOUNTER);
 
@@ -28,7 +29,7 @@ export const EncounterPage = () => {
     });
 
     return () => {
-      console.log('Encounter Page destroy');
+      logger.info('Encounter Page destroy');
       connection.gameSocket.off(NogEvent.INIT_ENCOUNTER);
       connection.gameSocket.off(NogEvent.REDIRECT);
     };

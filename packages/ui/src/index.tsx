@@ -34,7 +34,6 @@ Amplify.configure({
   }
 });
 
-console.log('Index');
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

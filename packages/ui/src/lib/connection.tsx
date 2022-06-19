@@ -5,6 +5,7 @@ import core from './core';
 import { Socket } from 'socket.io-client';
 import { NogEvent, NogPage } from '@newordergame/common';
 import { useNavigate } from 'react-router-dom';
+import logger from "./utils/logger";
 
 type ConnectionContextType = {
   gameSocket: Socket;
@@ -30,16 +31,16 @@ export const ConnectionProvider = ({
     ?.getJwtToken();
 
   const handleConnect = () => {
-    console.log('Connection started...');
+    logger.info('Connection started...');
   };
 
   const handleConnected = () => {
-    console.log('Connected!');
+    logger.info('Connected!');
     setConnected(true);
   };
 
   const handleDisconnect = () => {
-    console.log('Disconnected');
+    logger.info('Disconnected');
     setConnected(false);
     navigate('/');
   };
@@ -55,7 +56,7 @@ export const ConnectionProvider = ({
     core.gameSocket.auth = {
       accessToken
     };
-    console.log('Connecting to Game...');
+    logger.info('Connecting to Game...');
     core.gameSocket.on(NogEvent.CONNECT, handleConnect);
     core.gameSocket.on(NogEvent.CONNECTED, handleConnected);
     core.gameSocket.on(NogEvent.DISCONNECT, handleDisconnect);

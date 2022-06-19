@@ -7,18 +7,19 @@ import styled from 'styled-components';
 import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
 import { useAuthenticator } from '@aws-amplify/ui-react';
+import logger from "../lib/utils/logger";
 
 export const CharacterPage = () => {
-  console.log('Character Page');
+  logger.info('Character Page');
   const connection = useConnection();
   const navigate = useNavigate();
   const authenticator = useAuthenticator();
 
   useEffect(() => {
-    console.log('Character Page init');
+    logger.info('Character Page init');
 
     return () => {
-      console.log('Character Page destroy');
+      logger.info('Character Page destroy');
     };
   }, [navigate]);
 

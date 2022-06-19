@@ -8,6 +8,7 @@
     "aws-amplify": "^4.3.22",
     "formik": "^2.2.9",
     "leaflet": "^1.8.0",
+    "loglevel": "^1.8.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "react-leaflet": "^4.0.0",
