@@ -427,9 +427,9 @@ export const handleMoveCharacterAtWorld = (
     coordinates
   });
 
-  characterAtWorld.movesTo = coordinates;
   characterAtWorldStore.set(character.characterId, {
-    ...characterAtWorld
+    ...characterAtWorld,
+    movesTo: coordinates
   });
 
   const distance = computeDistance(

@@ -11,7 +11,7 @@ import { useMap, useMapEvents } from 'react-leaflet';
 import { useEffect } from 'react';
 import { CharacterInSight, EncounterInSight } from '../../../common';
 import { useConnection } from '../lib/connection';
-import { NogEvent } from '@newordergame/common';
+import { Coordinates, NogEvent } from '@newordergame/common';
 import logger from '../lib/utils/logger';
 
 export const WorldMapEngine = () => {
@@ -97,7 +97,7 @@ const handleMoveCharacterAtWorld =
     duration,
     distance
   }: {
-    coordinates: LatLng;
+    coordinates: Coordinates;
     duration: number;
     distance: number;
   }) => {

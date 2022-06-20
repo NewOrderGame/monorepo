@@ -1,4 +1,4 @@
-import { getBuildingsInSight, getRandomSpawnCoordinates } from './overpass';
+import { getBuildingsInSight, getRandomHouseEntryCoordinates } from './overpass';
 import logger from './utils/logger';
 
 describe('Overpass module', () => {
@@ -20,7 +20,7 @@ describe('Overpass module', () => {
   );
 
   test(`getRandomSpawnPoint. Should return random spawn point in character's sight`, async () => {
-    const spawnCoordinates = await getRandomSpawnCoordinates(
+    const spawnCoordinates = await getRandomHouseEntryCoordinates(
       {
         lat: 46.47698867216693,
         lng: 30.730540752410892

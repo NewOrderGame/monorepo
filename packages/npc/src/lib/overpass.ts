@@ -43,7 +43,7 @@ export const getBuildingsInSight = async (
     );
 };
 
-export const getRandomSpawnCoordinates = async (
+export const getRandomHouseEntryCoordinates = async (
   coordinates: Coordinates,
   sightRange: number
 ): Promise<Coordinates> => {

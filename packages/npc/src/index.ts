@@ -7,7 +7,7 @@ import {
   NogEvent
 } from '@newordergame/common';
 import characterAtWorldStore from './store/character-at-world-store';
-import { getRandomSpawnCoordinates } from './lib/overpass';
+import { getRandomHouseEntryCoordinates } from './lib/overpass';
 
 if (!process.env.NOG_CORE_URL) {
   throw new Error('Environment variable NOG_CORE_URL is missing');
@@ -37,6 +37,10 @@ game.on(NogEvent.CONNECTED, () => {
 });
 
 game.on(NogEvent.INIT_NPC, (npcList: CharacterAtWorld[]) => {
+  logger.info(
+    npcList.map((npc) => npc.characterId),
+    'Init NPC'
+  );
   npcList.forEach((npc) => {
     characterAtWorldStore.set(npc.characterId, npc);
   });
@@ -60,11 +64,34 @@ game.on(
 );
 
 game.on(
+  'move-npc-at-world',
+  (event: {
+    characterId: string;
+    coordinates: Coordinates;
+    duration: number;
+    distance: number;
+  }) => {
+    const character = characterAtWorldStore.get(event.characterId);
+    characterAtWorldStore.set(event.characterId, {
+      ...character,
+      movesTo: event.coordinates
+    });
+
+    setTimeout(() => {
+      characterAtWorldStore.set(event.characterId, {
+        ...character,
+        movesTo: null
+      });
+    }, event.duration * 1000);
+  }
+);
+
+game.on(
   'create-npc',
   async (event: { coordinates: Coordinates; sightRange: number }) => {
     logger.debug({ coordinates: event.coordinates }, 'create-npc');
 
-    const spawnCoordinates = await getRandomSpawnCoordinates(
+    const spawnCoordinates = await getRandomHouseEntryCoordinates(
       event.coordinates,
       event.sightRange
     );
@@ -74,17 +101,31 @@ game.on(
 );
 
 /** NPC ENGINE */
-// setInterval(() => {
-//   const characters = characterAtWorldStore.getAll();
-//
-//   characters.forEach((character) => {
-//     let friends: CharacterInSight[];
-//     let enemies: CharacterInSight[];
-//
-//     logger.debug(character.characterId);
-//     character.charactersInSight.forEach((characterInSight) => {});
-//   });
-// }, 1000);
+setInterval(() => {
+  const characters = characterAtWorldStore.getAll();
+
+  characters.forEach((character) => {
+    // let friends: CharacterInSight[] = character.charactersInSight.filter(
+    //   (c) => !c.isEnemy
+    // );
+    // let enemies: CharacterInSight[] = character.charactersInSight.filter(
+    //   (c) => c.isEnemy
+    // );
+    // character.charactersInSight.forEach((characterInSight) => {});
+
+    if (!character.movesTo) {
+      getRandomHouseEntryCoordinates(
+        character.coordinates,
+        character.stats.sightRange * 2
+      ).then((coordinates) => {
+        game.emit('move-npc-at-world', {
+          coordinates,
+          characterId: character.characterId
+        });
+      });
+    }
+  });
+}, 1000);
 /** */
 
 logger.info('Game connected');
