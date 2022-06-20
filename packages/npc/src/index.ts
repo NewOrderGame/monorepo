@@ -1,11 +1,13 @@
 import { io } from 'socket.io-client';
-import logger from './lib/logger';
+import logger from './lib/utils/logger';
 import {
   CharacterAtWorld,
   CharacterInSight,
+  Coordinates,
   NogEvent
 } from '@newordergame/common';
 import characterAtWorldStore from './store/character-at-world-store';
+import { getRandomSpawnCoordinates } from './lib/overpass';
 
 if (!process.env.NOG_CORE_URL) {
   throw new Error('Environment variable NOG_CORE_URL is missing');
@@ -26,6 +28,7 @@ game.on(NogEvent.CONNECT, () => {
 });
 
 game.on(NogEvent.DISCONNECT, () => {
+  characterAtWorldStore.clear();
   logger.info('Disconnected');
 });
 
@@ -56,25 +59,32 @@ game.on(
   }
 );
 
+game.on(
+  'create-npc',
+  async (event: { coordinates: Coordinates; sightRange: number }) => {
+    logger.debug({ coordinates: event.coordinates }, 'create-npc');
+
+    const spawnCoordinates = await getRandomSpawnCoordinates(
+      event.coordinates,
+      event.sightRange
+    );
+
+    game.emit('create-npc', spawnCoordinates);
+  }
+);
+
 /** NPC ENGINE */
-setInterval(() => {
-  const characters = characterAtWorldStore.getAll();
-
-  characters.forEach((character) => {
-    let friends: CharacterInSight[];
-    let enemies: CharacterInSight[];
-
-    character.charactersInSight.forEach((characterInSight) => {
-      logger.debug(
-        {
-          characterInSight: characterInSight.nickname,
-          isEnemy: characterInSight.isEnemy
-        },
-        character.characterId
-      );
-    });
-  });
-}, 1000);
+// setInterval(() => {
+//   const characters = characterAtWorldStore.getAll();
+//
+//   characters.forEach((character) => {
+//     let friends: CharacterInSight[];
+//     let enemies: CharacterInSight[];
+//
+//     logger.debug(character.characterId);
+//     character.charactersInSight.forEach((characterInSight) => {});
+//   });
+// }, 1000);
 /** */
 
 logger.info('Game connected');

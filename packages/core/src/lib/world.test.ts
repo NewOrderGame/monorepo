@@ -507,7 +507,7 @@ describe('World', () => {
         expect(world.to(characterAtWorld.characterId).emit).toBeCalled();
         expect(world.to(characterAtWorld.characterId).emit).toBeCalledWith(
           NogEvent.CHARACTERS_IN_SIGHT,
-          charactersInSight
+          { characterId: characterAtWorld.characterId, charactersInSight }
         );
       });
 

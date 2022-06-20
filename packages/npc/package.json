@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cp environment/.env.development .env && jest --collect-coverage | pino-pretty",
     "start": "cp environment/.env.development .env && nodemon",
     "update-common": "npm i -S @newordergame/common@latest"
   },
@@ -12,11 +12,16 @@
   "license": "ISC",
   "dependencies": {
     "@newordergame/common": "^1.0.42",
+    "@types/geolib": "^2.0.23",
+    "@types/jest": "^28.1.2",
+    "axios": "^0.27.2",
     "dotenv": "^16.0.1",
+    "geolib": "^3.3.3",
+    "jest": "^28.1.1",
     "pino": "^8.0.0",
     "pino-pretty": "^8.0.0",
     "socket.io-client": "^4.5.1",
-    "winston": "^3.7.2"
+    "ts-jest": "^28.0.5"
   },
   "devDependencies": {
     "nodemon": "^2.0.16",

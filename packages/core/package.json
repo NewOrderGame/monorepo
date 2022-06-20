@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cp environment/.env.development .env && nodemon",
     "start:stats-reader": "ts-node ./src/stats/reader",
-    "test": "cp environment/.env.development .env && jest --detect-open-handles --collect-coverage",
+    "test": "cp environment/.env.development .env && jest --detect-open-handles --collect-coverage | pino-pretty",
     "deploy": "npm run citadel:deploy",
     "citadel:deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push && npm run citadel:restart",
     "citadel:restart": "npm run citadel:stop; npm run citadel:rm; npm run citadel:pull && npm run citadel:start",

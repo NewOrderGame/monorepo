@@ -1,5 +1,6 @@
 import {
   CharacterAtWorld,
+  Coordinates,
   NogCharacterId,
   NogEvent,
   NogPage
@@ -29,32 +30,15 @@ export const handleNpcServiceConnection = (socket: Socket) => {
   setNpcSocket(socket);
   socket.emit(NogEvent.INIT_NPC, allNpc);
   allNpc.forEach((npc) => socket.join(npc.characterId));
-};
 
-export const handleNpcGeneration = (
-  characterAtWorld: CharacterAtWorld,
-  charactersInSightNumber: number
-) => {
-  if (
-    charactersInSightNumber < NPC_GENERATION_THRESHOLD &&
-    Math.random() < NPC_GENERATION_CHANCE_PER_TICK
-  ) {
-    const angle = Math.random() * 360;
-    const distance = Math.random() * characterAtWorld.stats.sightRange;
-
-    const npcCoordinates = computeDestination(
-      characterAtWorld.coordinates,
-      distance,
-      angle
-    );
-
+  socket.on('create-npc', (coordinates: Coordinates) => {
     const npc = createCharacterAtWorld({
       character: {
         characterId: `NPC-${nanoid()}` as NogCharacterId,
         nickname: nanoid(),
         coordinates: {
-          lat: npcCoordinates.latitude,
-          lng: npcCoordinates.longitude
+          lat: coordinates.lat,
+          lng: coordinates.lng
         },
         connected: true,
         encounterId: null,
@@ -75,11 +59,21 @@ export const handleNpcGeneration = (
     });
 
     characterAtWorldStore.set(npc.characterId, npc);
+  });
+};
 
+export const handleNpcGeneration = (
+  characterAtWorld: CharacterAtWorld,
+  charactersInSightNumber: number
+) => {
+  if (charactersInSightNumber < NPC_GENERATION_THRESHOLD) {
     const npcSocket = getNpcSocket();
 
     if (npcSocket) {
-      npcSocket.emit(NogEvent.INIT_NPC, [npc]);
+      npcSocket.emit('create-npc', {
+        coordinates: characterAtWorld.coordinates,
+        sightRange: characterAtWorld.stats.sightRange
+      });
     }
   }
 };
