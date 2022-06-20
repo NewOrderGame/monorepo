@@ -71,18 +71,19 @@ game.on(
     duration: number;
     distance: number;
   }) => {
-    const character = characterAtWorldStore.get(event.characterId);
+    const characterAtWorld = characterAtWorldStore.get(event.characterId);
     characterAtWorldStore.set(event.characterId, {
-      ...character,
+      ...characterAtWorld,
       movesTo: event.coordinates
     });
 
     setTimeout(() => {
       characterAtWorldStore.set(event.characterId, {
-        ...character,
+        ...characterAtWorld,
         movesTo: null
       });
-    }, event.duration * 1000);
+      game.emit(NogEvent.DESTROY_NPC, [characterAtWorld.characterId]);
+    }, event.duration * 1000 + 1000);
   }
 );
 
@@ -116,7 +117,7 @@ setInterval(() => {
     if (!character.movesTo) {
       getRandomHouseEntryCoordinates(
         character.coordinates,
-        character.stats.sightRange * 2
+        character.stats.sightRange * 3
       ).then((coordinates) => {
         game.emit('move-npc-at-world', {
           coordinates,

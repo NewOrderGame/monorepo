@@ -6,7 +6,11 @@ import {
   NogEvent,
   NogPage
 } from '@newordergame/common';
-import { DISTANCE_ACCURACY, NPC_GENERATION_THRESHOLD } from './utils/constants';
+import {
+  DISTANCE_ACCURACY,
+  NPC_GENERATION_CHANCE_PER_TICK,
+  NPC_GENERATION_THRESHOLD
+} from './utils/constants';
 import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
 import characterAtWorldStore from '../store/character-at-world-store';
@@ -64,6 +68,14 @@ export const handleNpcServiceConnection = (socket: Socket) => {
     socket.emit(NogEvent.INIT_NPC, [npc]);
   });
 
+  socket.on(NogEvent.DESTROY_NPC, (characterIds: string[]) => {
+    characterIds.forEach((characterId) => {
+      characterStore.delete(characterId);
+      characterAtWorldStore.delete(characterId);
+      socket.emit(NogEvent.DESTROY_NPC, [{ characterId }]);
+    });
+  });
+
   socket.on(
     'move-npc-at-world',
     ({
@@ -76,10 +88,6 @@ export const handleNpcServiceConnection = (socket: Socket) => {
       logger.info({ coordinates, characterId }, 'Move NPC at world');
 
       const characterAtWorld = characterAtWorldStore.get(characterId);
-      characterAtWorldStore.set(characterId, {
-        ...characterAtWorld,
-        movesTo: coordinates
-      });
 
       if (!characterAtWorld) {
         logger.error(
@@ -88,6 +96,11 @@ export const handleNpcServiceConnection = (socket: Socket) => {
         );
         return;
       }
+
+      characterAtWorldStore.set(characterId, {
+        ...characterAtWorld,
+        movesTo: coordinates
+      });
 
       const distance = computeDistance(
         {
@@ -118,7 +131,10 @@ export const handleNpcGeneration = (
     return;
   }
 
-  if (charactersInSightNumber < NPC_GENERATION_THRESHOLD) {
+  if (
+    charactersInSightNumber < NPC_GENERATION_THRESHOLD &&
+    Math.random() < NPC_GENERATION_CHANCE_PER_TICK
+  ) {
     const npcSocket = getNpcSocket();
 
     if (npcSocket) {

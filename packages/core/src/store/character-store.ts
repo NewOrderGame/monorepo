@@ -17,6 +17,10 @@ export class InMemoryCharacterStore {
     this._characters.set(id, character);
   }
 
+  delete(id: NogCharacterId) {
+    this._characters.delete(id);
+  }
+
   clear() {
     this._characters.clear();
   }

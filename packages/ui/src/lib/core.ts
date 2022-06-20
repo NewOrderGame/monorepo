@@ -13,9 +13,9 @@ const core = () => {
   });
 
   /** Uncomment this if necessary */
-  // gameSocket.onAny((event, ...args) => {
-  //   logger.debug('event', { event, args });
-  // });
+  gameSocket.onAny((event, ...args) => {
+    logger.debug('event', { event, args });
+  });
   /** */
 
   return {
