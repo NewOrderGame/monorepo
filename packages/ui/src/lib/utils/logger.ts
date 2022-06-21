@@ -41,12 +41,17 @@ class DevLogger implements Logger {
 
   trace(message: string, meta?: any) {
     const now = Date.now();
-    console.debug('%ctrace:', 'color: pink; background-color: grey', message, {
-      timestamp: now,
-      lastTraceTime: this.lastTraceTime,
-      diff: now - this.lastTraceTime,
-      ...meta
-    });
+    (meta?.showCallStack ? console.trace : console.debug)(
+      '%ctrace:',
+      'color: pink;' + ' background-color: grey',
+      message,
+      {
+        timestamp: now,
+        lastTraceTime: this.lastTraceTime,
+        diff: now - this.lastTraceTime,
+        ...meta
+      }
+    );
     this.lastTraceTime = now;
   }
 }
