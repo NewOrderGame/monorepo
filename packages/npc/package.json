@@ -6,26 +6,46 @@
   "scripts": {
     "test": "cp environment/.env.development .env && jest --collect-coverage | pino-pretty",
     "start": "cp environment/.env.development .env && nodemon",
-    "update-common": "npm i -S @newordergame/common@latest"
+    "deploy": "npm run citadel:deploy",
+    "docker:build": "docker build -t npc-service .",
+    "docker:login": "docker login",
+    "docker:tag": "docker tag npc-service devlysh/newordergame-npc",
+    "docker:push": "docker push devlysh/newordergame-npc",
+    "docker:pull": "docker pull devlysh/newordergame-npc",
+    "citadel:deploy": "npm run docker:build && npm run docker:tag && npm run docker:login && npm run docker:push && npm run citadel:restart",
+    "citadel:restart": "npm run citadel:stop; npm run citadel:rm; npm run citadel:pull && npm run citadel:start",
+    "citadel:start": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker run -d --name newordergame-npc devlysh/newordergame-npc",
+    "citadel:stop": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker stop newordergame-npc",
+    "citadel:rm": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker rm newordergame-npc",
+    "citadel:login": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker login",
+    "citadel:pull": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker pull devlysh/newordergame-npc",
+    "update-common": "npm i -S @newordergame/common@latest",
+    "webpack:build": "cp environment/.env.production .env && webpack --mode=production --node-env=production",
+    "webpack:watch": "cp environment/.env.development .env && webpack --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@newordergame/common": "^1.0.42",
-    "@types/geolib": "^2.0.23",
-    "@types/jest": "^28.1.2",
     "axios": "^0.27.2",
-    "dotenv": "^16.0.1",
     "geolib": "^3.3.3",
-    "jest": "^28.1.1",
     "pino": "^8.0.0",
-    "pino-pretty": "^8.0.0",
-    "socket.io-client": "^4.5.1",
-    "ts-jest": "^28.0.5"
+    "socket.io-client": "^4.5.1"
   },
   "devDependencies": {
+    "@types/geolib": "^2.0.23",
+    "@types/jest": "^28.1.2",
     "nodemon": "^2.0.16",
     "prettier": "^2.7.0",
-    "ts-node": "^10.8.1"
+    "ts-loader": "^9.3.0",
+    "ts-node": "^10.8.1",
+    "webpack": "^5.73.0",
+    "webpack-cli": "^4.10.0",
+    "ts-jest": "^28.0.5",
+    "pino-pretty": "^8.0.0",
+    "dotenv": "^16.0.1",
+    "dotenv-webpack": "^7.1.0",
+    "copy-webpack-plugin": "^11.0.0",
+    "jest": "^28.1.1"
   }
 }
