@@ -49,6 +49,11 @@ export const getRandomHouseEntryCoordinates = async (
 ): Promise<Coordinates> => {
   const data = await getBuildingsInSight(coordinates, sightRange);
 
+  if (!data) {
+    logger.error('Data is missing');
+    return;
+  }
+
   const ways = data.elements.filter(
     (element: OverpassElement) => element.type === 'way'
   );
