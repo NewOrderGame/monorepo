@@ -5,7 +5,7 @@ import core from './core';
 import { Socket } from 'socket.io-client';
 import { NogEvent, NogPage } from '@newordergame/common';
 import { useNavigate } from 'react-router-dom';
-import logger from "./utils/logger";
+import logger from './utils/logger';
 
 type ConnectionContextType = {
   gameSocket: Socket;
@@ -48,6 +48,7 @@ export const ConnectionProvider = ({
   const handleRedirect = ({ page }: { page: NogPage }) => {
     const path = `/${page}`;
     if (window.location.pathname !== path) {
+      logger.trace('Redirect', { page });
       navigate(path);
     }
   };
@@ -61,6 +62,13 @@ export const ConnectionProvider = ({
     core.gameSocket.on(NogEvent.CONNECTED, handleConnected);
     core.gameSocket.on(NogEvent.DISCONNECT, handleDisconnect);
     core.gameSocket.on(NogEvent.REDIRECT, handleRedirect);
+
+    /** Comment/Uncomment this if necessary */
+    // core.gameSocket.onAny((event, ...args) => {
+    //   logger.debug('event', { event, args });
+    // });
+    /** */
+
     core.gameSocket.connect();
 
     return () => {

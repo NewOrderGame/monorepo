@@ -7,7 +7,7 @@ import { createCharacter } from './character';
 import { CharacterAtWorld, CharacterStats } from '@newordergame/common';
 import { ENCOUNTER_COOL_DOWN_TIME } from './utils/constants';
 import { getFakeNamespace } from '../test/utils';
-import { handleCharactersEncounter } from './world';
+import { handleCharactersEncounter } from './encounter';
 import moment = require('moment');
 
 jest.mock('../namespaces/game-namespace');

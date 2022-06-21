@@ -5,10 +5,9 @@
     "auth": "bin/auth.js"
   },
   "scripts": {
-    "deploy": "cdk deploy",
+    "deploy": "cdk bootstrap && cdk deploy",
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "jest",
     "cdk": "cdk"
   },
   "devDependencies": {

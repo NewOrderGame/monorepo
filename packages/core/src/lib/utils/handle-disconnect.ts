@@ -2,23 +2,19 @@ import { Namespace, Socket } from 'socket.io';
 import characterStore from '../../store/character-store';
 import logger from './logger';
 import { setNpcSocket } from '../../store/npc-socket-store';
+import characterAtWorldStore from '../../store/character-at-world-store';
 
 export const handleDisconnect = async (
   socket: Socket,
   gameNamespace: Namespace
 ) => {
-  logger.info('Disconnected', {
-    namespaceName: gameNamespace.name,
-    socketId: socket.id
-  });
   if (!socket) {
     throw new Error('Socket is missing');
   }
   const character = characterStore.get(socket.data?.characterId);
+  const characterAtWorld = characterAtWorldStore.get(socket.data?.characterId);
+
   if (character) {
-    logger.info('Disconnected with character ID', {
-      characterId: character.characterId
-    });
     const matchingSockets = await gameNamespace
       .in(character.characterId)
       .allSockets();
@@ -29,8 +25,17 @@ export const handleDisconnect = async (
         connected: false
       });
     }
+
+    logger.info({
+      characterId: character.characterId,
+      nickname: character.nickname
+    }, 'Disconnected character');
   } else {
     logger.info('Disconnected without character ID');
+  }
+
+  if (characterAtWorld) {
+    characterAtWorldStore.delete(characterAtWorld.characterId);
   }
 
   const isNpcService =

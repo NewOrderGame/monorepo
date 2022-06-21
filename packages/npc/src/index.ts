@@ -64,7 +64,7 @@ game.on(
 );
 
 game.on(
-  'move-npc-at-world',
+  NogEvent.MOVE_NPC_AT_WORLD,
   (event: {
     characterId: string;
     coordinates: Coordinates;
@@ -88,7 +88,7 @@ game.on(
 );
 
 game.on(
-  'create-npc',
+  NogEvent.CREATE_NPC,
   async (event: { coordinates: Coordinates; sightRange: number }) => {
     logger.debug({ coordinates: event.coordinates }, 'create-npc');
 
@@ -119,7 +119,7 @@ setInterval(() => {
         character.coordinates,
         character.stats.sightRange * 3
       ).then((coordinates) => {
-        game.emit('move-npc-at-world', {
+        game.emit(NogEvent.MOVE_NPC_AT_WORLD, {
           coordinates,
           characterId: character.characterId
         });

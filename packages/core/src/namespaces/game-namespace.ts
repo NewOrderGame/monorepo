@@ -8,10 +8,10 @@ import { getUser } from '../lib/utils/cognito';
 import characterStore from '../store/character-store';
 import { determinePage } from '../lib/utils/determine-page';
 import { handleCreateCharacter } from '../lib/character';
-import { handleEncounterInit, handleExitEncounter } from '../lib/encounter';
+import { handleInitEncounterPage, handleExitEncounter } from '../lib/encounter';
 import {
   handleDestroyCharacterAtWorld,
-  handleInitCharacterAtWorld,
+  handleInitWorldPage,
   handleMoveCharacterAtWorld
 } from '../lib/world';
 import { handleNpcServiceConnection } from '../lib/npc';
@@ -54,7 +54,7 @@ const handleUserConnection = async (socket: Socket) => {
   try {
     user = await getUser(accessToken);
   } catch (error) {
-    logger.error(error, 'Error during getting user in Auth Namespace');
+    logger.error(error, 'Error during getting user in Game Namespace');
     return;
   }
 
@@ -68,10 +68,7 @@ const handleUserConnection = async (socket: Socket) => {
   const character = characterStore.get(username);
   const page = determinePage(character);
 
-  addGameEventListeners(socket, {
-    characterId: username,
-    nickname
-  });
+  addGameEventListeners(socket, username, nickname);
 
   if (character) {
     characterStore.set(character.characterId, {
@@ -87,16 +84,17 @@ const handleUserConnection = async (socket: Socket) => {
   socket.emit(NogEvent.REDIRECT, {
     page
   });
-  logger.info('Sent redirect', {
+  logger.info({
     page,
     characterId: username,
     nickname: character?.nickname
-  });
+  }, 'Sent redirect');
 };
 
 const addGameEventListeners = (
   socket: Socket,
-  options: { characterId: string; nickname: string }
+  characterId: string,
+  nickname: string
 ) => {
   socket.on(NogEvent.CREATE_CHARACTER, async (props) => {
     await handleCreateCharacter(props);
@@ -106,13 +104,8 @@ const addGameEventListeners = (
   });
 
   socket.on(
-    NogEvent.INIT_CHARACTER_AT_WORLD,
-    handleInitCharacterAtWorld(socket, options.characterId, options.nickname)
-  );
-
-  socket.on(
-    NogEvent.DESTROY_CHARACTER_AT_WORLD,
-    handleDestroyCharacterAtWorld(socket)
+    NogEvent.INIT_WORLD_PAGE,
+    handleInitWorldPage(socket, characterId, nickname)
   );
 
   socket.on(
@@ -121,7 +114,10 @@ const addGameEventListeners = (
       handleMoveCharacterAtWorld(socket, coordinates)
   );
 
-  socket.on(NogEvent.INIT_ENCOUNTER, handleEncounterInit(socket));
+  socket.on(
+    NogEvent.INIT_ENCOUNTER_PAGE,
+    handleInitEncounterPage(socket, characterId)
+  );
 
   socket.on(
     NogEvent.EXIT_ENCOUNTER,

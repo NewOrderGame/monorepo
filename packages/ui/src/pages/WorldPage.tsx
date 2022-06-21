@@ -21,20 +21,16 @@ export const WorldPage = () => {
   useEffect(() => {
     logger.info('World Page init');
 
-    connection.gameSocket.emit(NogEvent.INIT_CHARACTER_AT_WORLD);
+    connection.gameSocket.emit(NogEvent.INIT_WORLD_PAGE);
 
-    connection.gameSocket.on(
-      NogEvent.INIT_CHARACTER_AT_WORLD,
-      ({ coordinates }) => {
-        setFirstCoordinates(coordinates);
-        setLoading(false);
-      }
-    );
+    connection.gameSocket.on(NogEvent.INIT_WORLD_PAGE, ({ coordinates }) => {
+      setFirstCoordinates(coordinates);
+      setLoading(false);
+    });
 
     return () => {
       logger.info('World Page destroy');
-      connection.gameSocket.emit(NogEvent.DESTROY_CHARACTER_AT_WORLD);
-      connection.gameSocket.off(NogEvent.INIT_CHARACTER_AT_WORLD);
+      connection.gameSocket.off(NogEvent.INIT_WORLD_PAGE);
     };
   }, [connection]);
 

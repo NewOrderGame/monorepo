@@ -1,14 +1,13 @@
 {
   "name": "@newordergame/common",
-  "version": "1.0.42",
+  "version": "1.0.43",
   "description": "",
   "main": "index.js",
   "module": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx tsc",
-    "deploy": "npm version patch && npm run build && npm publish",
+    "deploy-package": "npm version patch && npm run build && npm publish",
     "update-common": "cd ../core && npm run update-common; cd ../ui && npm run update-common; cd ../common ",
     "prettier": "npx prettier --write ."
   },

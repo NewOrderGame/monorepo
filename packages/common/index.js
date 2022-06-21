@@ -21,17 +21,17 @@ var NogEvent;
     NogEvent["CONNECTED"] = "connected";
     NogEvent["DISCONNECT"] = "disconnect";
     NogEvent["REDIRECT"] = "redirect";
+    NogEvent["INIT_ENCOUNTER_PAGE"] = "init-encounter-page";
+    NogEvent["INIT_WORLD_PAGE"] = "init-world-page";
+    NogEvent["CREATE_CHARACTER"] = "create-character";
+    NogEvent["MOVE_CHARACTER_AT_WORLD"] = "move-character-at-world";
     NogEvent["ENCOUNTERS_IN_SIGHT"] = "encounters-in-sight";
     NogEvent["CHARACTERS_IN_SIGHT"] = "characters-in-sight";
-    NogEvent["CREATE_CHARACTER"] = "create-character";
-    NogEvent["INIT_CHARACTER_AT_WORLD"] = "create-character-at-world";
-    NogEvent["DESTROY_CHARACTER_AT_WORLD"] = "destroy-character-at-world";
-    NogEvent["MOVE_CHARACTER_AT_WORLD"] = "move-character-at-world";
-    NogEvent["INIT_ENCOUNTER"] = "init-encounter";
-    NogEvent["EXIT_ENCOUNTER"] = "exit-encounter";
-    NogEvent["DESTROY_ENCOUNTER"] = "destroy-encounter";
     NogEvent["INIT_NPC"] = "init-npc";
     NogEvent["DESTROY_NPC"] = "destroy-npc";
+    NogEvent["EXIT_ENCOUNTER"] = "exit-encounter";
+    NogEvent["MOVE_NPC_AT_WORLD"] = "move-npc-at-world";
+    NogEvent["CREATE_NPC"] = "create-npc";
 })(NogEvent = exports.NogEvent || (exports.NogEvent = {}));
 exports.DEFAULT_COORDINATES = {
     lat: 46.47705630400258,

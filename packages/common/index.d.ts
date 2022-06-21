@@ -21,17 +21,17 @@ export declare enum NogEvent {
     CONNECTED = "connected",
     DISCONNECT = "disconnect",
     REDIRECT = "redirect",
+    INIT_ENCOUNTER_PAGE = "init-encounter-page",
+    INIT_WORLD_PAGE = "init-world-page",
+    CREATE_CHARACTER = "create-character",
+    MOVE_CHARACTER_AT_WORLD = "move-character-at-world",
     ENCOUNTERS_IN_SIGHT = "encounters-in-sight",
     CHARACTERS_IN_SIGHT = "characters-in-sight",
-    CREATE_CHARACTER = "create-character",
-    INIT_CHARACTER_AT_WORLD = "create-character-at-world",
-    DESTROY_CHARACTER_AT_WORLD = "destroy-character-at-world",
-    MOVE_CHARACTER_AT_WORLD = "move-character-at-world",
-    INIT_ENCOUNTER = "init-encounter",
-    EXIT_ENCOUNTER = "exit-encounter",
-    DESTROY_ENCOUNTER = "destroy-encounter",
     INIT_NPC = "init-npc",
-    DESTROY_NPC = "destroy-npc"
+    DESTROY_NPC = "destroy-npc",
+    EXIT_ENCOUNTER = "exit-encounter",
+    MOVE_NPC_AT_WORLD = "move-npc-at-world",
+    CREATE_NPC = "create-npc"
 }
 export declare type Outlook = number[];
 export declare type CharacterStats = {

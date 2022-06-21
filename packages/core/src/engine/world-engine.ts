@@ -11,7 +11,6 @@ import encounterStore from '../store/encounter-store';
 import {
   checkCharacterVisibility,
   checkEncounterVisibility,
-  handleCharactersEncounter,
   moveCharacter,
   sendCharactersInSight,
   sendEncountersInSight
@@ -22,6 +21,7 @@ import { StatsGroups } from '../lib/utils/types';
 import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from '../lib/npc';
 import { getGameNamespace } from '../namespaces/game-namespace';
+import { handleCharactersEncounter } from '../lib/encounter';
 
 const doNextTick = (gameNamespace: Namespace) => () => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();

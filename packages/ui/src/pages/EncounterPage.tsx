@@ -18,20 +18,18 @@ export const EncounterPage = () => {
   useEffect(() => {
     logger.info('Encounter Page init');
 
-    connection.gameSocket.emit(NogEvent.INIT_ENCOUNTER);
+    connection.gameSocket.emit(NogEvent.INIT_ENCOUNTER_PAGE);
 
-    connection.gameSocket.on(NogEvent.INIT_ENCOUNTER, ({ participants }) => {
-      setParticipants(participants);
-    });
-
-    connection.gameSocket.on(NogEvent.REDIRECT, ({ page }) => {
-      navigate(`/${page}`);
-    });
+    connection.gameSocket.on(
+      NogEvent.INIT_ENCOUNTER_PAGE,
+      ({ participants }) => {
+        setParticipants(participants);
+      }
+    );
 
     return () => {
       logger.info('Encounter Page destroy');
-      connection.gameSocket.off(NogEvent.INIT_ENCOUNTER);
-      connection.gameSocket.off(NogEvent.REDIRECT);
+      connection.gameSocket.off(NogEvent.INIT_ENCOUNTER_PAGE);
     };
   }, [connection.gameSocket, navigate]);
 

@@ -12,10 +12,10 @@ export const determinePage = (character: Character): NogPage => {
   } else {
     page = NogPage.WORLD;
   }
-  logger.info('Determine page', {
+  logger.info({
     page,
     characterId: character?.characterId,
     nickname: character?.nickname
-  });
+  }, 'Determine page');
   return page;
 };

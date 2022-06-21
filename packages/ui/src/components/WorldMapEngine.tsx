@@ -45,7 +45,6 @@ export const WorldMapEngine = () => {
     );
 
     return () => {
-      connection.gameSocket.emit(NogEvent.DESTROY_CHARACTER_AT_WORLD);
       connection.gameSocket.off(NogEvent.MOVE_CHARACTER_AT_WORLD);
       connection.gameSocket.off(NogEvent.CHARACTERS_IN_SIGHT);
       connection.gameSocket.off(NogEvent.ENCOUNTERS_IN_SIGHT);

@@ -34,7 +34,7 @@ export const handleNpcServiceConnection = (socket: Socket) => {
   socket.emit(NogEvent.INIT_NPC, allNpc);
   allNpc.forEach((npc) => socket.join(npc.characterId));
 
-  socket.on('create-npc', (coordinates: Coordinates) => {
+  socket.on(NogEvent.CREATE_NPC, (coordinates: Coordinates) => {
     const defaultNpc: Character = {
       characterId: `NPC-${nanoid()}` as NogCharacterId,
       nickname: nanoid(),
@@ -77,7 +77,7 @@ export const handleNpcServiceConnection = (socket: Socket) => {
   });
 
   socket.on(
-    'move-npc-at-world',
+    NogEvent.MOVE_NPC_AT_WORLD,
     ({
       coordinates,
       characterId
@@ -113,7 +113,7 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
       const duration = distance / characterAtWorld.stats.speed;
 
-      socket.emit('move-npc-at-world', {
+      socket.emit(NogEvent.MOVE_NPC_AT_WORLD, {
         coordinates,
         characterId,
         duration,
@@ -138,7 +138,7 @@ export const handleNpcGeneration = (
     const npcSocket = getNpcSocket();
 
     if (npcSocket) {
-      npcSocket.emit('create-npc', {
+      npcSocket.emit(NogEvent.CREATE_NPC, {
         coordinates: characterAtWorld.coordinates,
         sightRange: characterAtWorld.stats.sightRange
       });

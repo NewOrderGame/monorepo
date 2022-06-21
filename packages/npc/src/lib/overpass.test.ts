@@ -1,4 +1,7 @@
-import { getBuildingsInSight, getRandomHouseEntryCoordinates } from './overpass';
+import {
+  getBuildingsInSight,
+  getRandomHouseEntryCoordinates
+} from './overpass';
 import logger from './utils/logger';
 
 describe('Overpass module', () => {
