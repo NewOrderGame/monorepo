@@ -18,9 +18,5 @@
   "bugs": {
     "url": "https://github.com/NewOrderGame/monorepo/issues"
   },
-  "homepage": "https://github.com/NewOrderGame/monorepo#readme",
-  "workspaces": [
-    "./packages/*"
-  ],
-  "private": true
+  "homepage": "https://github.com/NewOrderGame/monorepo#readme"
 }
