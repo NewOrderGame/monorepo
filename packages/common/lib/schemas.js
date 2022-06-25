@@ -11,9 +11,9 @@ exports.coordinatesSchema = (0, yup_1.object)({
     lng: (0, yup_1.number)()
 });
 exports.outlookSchema = (0, yup_1.object)({
-    0: (0, yup_1.number)(),
-    1: (0, yup_1.number)(),
-    2: (0, yup_1.number)()
+    0: (0, yup_1.number)().min(-100).max(100),
+    1: (0, yup_1.number)().min(-100).max(100),
+    2: (0, yup_1.number)().min(-100).max(100)
 });
 exports.characterStatsSchema = (0, yup_1.object)({
     speed: (0, yup_1.number)(),

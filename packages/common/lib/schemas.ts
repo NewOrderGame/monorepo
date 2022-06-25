@@ -12,9 +12,9 @@ export const coordinatesSchema = object({
 });
 
 export const outlookSchema = object({
-  0: number(),
-  1: number(),
-  2: number()
+  0: number().min(-100).max(100),
+  1: number().min(-100).max(100),
+  2: number().min(-100).max(100)
 });
 
 export const characterStatsSchema = object({
