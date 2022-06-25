@@ -147,6 +147,7 @@ game.on(
         error,
         'Error during creating NPC, getting random house entry coordinates'
       );
+      return;
     }
 
     game.emit(NogEvent.CREATE_NPC, spawnCoordinates);
