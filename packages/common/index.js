@@ -1,39 +1,20 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.DEFAULT_COORDINATES = exports.NogEvent = exports.NogNamespace = exports.NogPage = void 0;
-var NogPage;
-(function (NogPage) {
-    NogPage["ROOT"] = "";
-    NogPage["CHARACTER"] = "character";
-    NogPage["WORLD"] = "world";
-    NogPage["ENCOUNTER"] = "encounter";
-})(NogPage = exports.NogPage || (exports.NogPage = {}));
-var NogNamespace;
-(function (NogNamespace) {
-    NogNamespace["AUTH"] = "auth";
-    NogNamespace["WORLD"] = "world";
-    NogNamespace["ENCOUNTER"] = "encounter";
-})(NogNamespace = exports.NogNamespace || (exports.NogNamespace = {}));
-var NogEvent;
-(function (NogEvent) {
-    NogEvent["CONNECTION"] = "connection";
-    NogEvent["CONNECT"] = "connect";
-    NogEvent["CONNECTED"] = "connected";
-    NogEvent["DISCONNECT"] = "disconnect";
-    NogEvent["REDIRECT"] = "redirect";
-    NogEvent["INIT_ENCOUNTER_PAGE"] = "init-encounter-page";
-    NogEvent["INIT_WORLD_PAGE"] = "init-world-page";
-    NogEvent["CREATE_CHARACTER"] = "create-character";
-    NogEvent["MOVE_CHARACTER_AT_WORLD"] = "move-character-at-world";
-    NogEvent["ENCOUNTERS_IN_SIGHT"] = "encounters-in-sight";
-    NogEvent["CHARACTERS_IN_SIGHT"] = "characters-in-sight";
-    NogEvent["INIT_NPC"] = "init-npc";
-    NogEvent["DESTROY_NPC"] = "destroy-npc";
-    NogEvent["EXIT_ENCOUNTER"] = "exit-encounter";
-    NogEvent["MOVE_NPC_AT_WORLD"] = "move-npc-at-world";
-    NogEvent["CREATE_NPC"] = "create-npc";
-})(NogEvent = exports.NogEvent || (exports.NogEvent = {}));
-exports.DEFAULT_COORDINATES = {
-    lat: 46.47705630400258,
-    lng: 30.730369681615272
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __exportStar = (this && this.__exportStar) || function(m, exports) {
+    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
+Object.defineProperty(exports, "__esModule", { value: true });
+__exportStar(require("./src/defaults"), exports);
+__exportStar(require("./src/enums"), exports);
+__exportStar(require("./src/schemas"), exports);
+__exportStar(require("./src/types"), exports);
