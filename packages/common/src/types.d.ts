@@ -5,7 +5,11 @@ export declare type Coordinates = {
 };
 export declare type NogCharacterId = string;
 export declare type NogEncounterId = string;
-export declare type Outlook = number[];
+export declare type Outlook = {
+    0: number;
+    1: number;
+    2: number;
+};
 export declare type CharacterStats = {
     speed: number;
     sightRange: number;

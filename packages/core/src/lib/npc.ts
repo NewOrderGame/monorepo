@@ -1,10 +1,14 @@
 import {
   Character,
   CharacterAtWorld,
+  characterAtWorldSchema,
+  characterIdSchema,
   Coordinates,
+  coordinatesSchema,
   NogCharacterId,
   NogEvent,
-  NogPage
+  NogPage,
+  numberSchema
 } from '@newordergame/common';
 import {
   DISTANCE_ACCURACY,
@@ -35,6 +39,15 @@ export const handleNpcServiceConnection = (socket: Socket) => {
   allNpc.forEach((npc) => socket.join(npc.characterId));
 
   socket.on(NogEvent.CREATE_NPC, (coordinates: Coordinates) => {
+    logger.info({ coordinates }, 'Create NPC');
+
+    try {
+      coordinatesSchema.validateSync(coordinates);
+    } catch (error) {
+      logger.error(error, 'Error during handling Create NPC event');
+      return;
+    }
+
     const defaultNpc: Character = {
       characterId: `NPC-${nanoid()}` as NogCharacterId,
       nickname: nanoid(),
@@ -50,11 +63,11 @@ export const handleNpcServiceConnection = (socket: Socket) => {
       stats: {
         sightRange: 100,
         speed: 30,
-        outlook: [
-          Math.random() * 200 - 100,
-          Math.random() * 200 - 100,
-          Math.random() * 200 - 100
-        ]
+        outlook: {
+          0: Math.random() * 200 - 100,
+          1: Math.random() * 200 - 100,
+          2: Math.random() * 200 - 100
+        }
       }
     };
 
@@ -70,6 +83,15 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
   socket.on(NogEvent.DESTROY_NPC, (characterIds: string[]) => {
     characterIds.forEach((characterId) => {
+      logger.info({ characterId }, 'Destroy NPC');
+
+      try {
+        characterIdSchema.validateSync(characterId);
+      } catch (error) {
+        logger.error(error, 'Error during destroying NPC');
+        return;
+      }
+
       characterStore.delete(characterId);
       characterAtWorldStore.delete(characterId);
       socket.emit(NogEvent.DESTROY_NPC, [{ characterId }]);
@@ -86,6 +108,14 @@ export const handleNpcServiceConnection = (socket: Socket) => {
       characterId: string;
     }) => {
       logger.info({ coordinates, characterId }, 'Move NPC at world');
+
+      try {
+        coordinatesSchema.validateSync(coordinates);
+        characterIdSchema.validateSync(characterId);
+      } catch (error) {
+        logger.error(error, 'Error during move NPC at world');
+        return;
+      }
 
       const characterAtWorld = characterAtWorldStore.get(characterId);
 
@@ -127,9 +157,19 @@ export const handleNpcGeneration = (
   characterAtWorld: CharacterAtWorld,
   charactersInSightNumber: number
 ) => {
+  try {
+    characterAtWorldSchema.validateSync(characterAtWorld);
+    numberSchema.validateSync(charactersInSightNumber);
+  } catch (error) {
+    logger.error(error, 'Error during handling NPC generation');
+    return;
+  }
+
+  /** Comment for the stress test */
   if (characterAtWorld.isNpc) {
     return;
   }
+  /** */
 
   if (
     charactersInSightNumber < NPC_GENERATION_THRESHOLD &&

@@ -5,7 +5,7 @@
     "auth": "bin/auth.js"
   },
   "scripts": {
-    "deploy": "cdk bootstrap && cdk deploy",
+    "deploy": "cdk deploy --profile devlysh",
     "build": "tsc",
     "watch": "tsc -w",
     "cdk": "cdk"

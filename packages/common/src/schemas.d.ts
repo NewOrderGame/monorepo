@@ -1,3 +1,6 @@
+export declare const numberSchema: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+export declare const stringSchema: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+export declare const booleanSchema: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
 export declare const characterIdSchema: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
 export declare const coordinatesSchema: import("yup/lib/object").OptionalObjectSchema<{
     lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
@@ -5,6 +8,47 @@ export declare const coordinatesSchema: import("yup/lib/object").OptionalObjectS
 }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
     lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
     lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+}>>;
+export declare const outlookSchema: import("yup/lib/object").OptionalObjectSchema<{
+    0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+}, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+    0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+}>>;
+export declare const characterStatsSchema: import("yup/lib/object").OptionalObjectSchema<{
+    speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    outlook: import("yup/lib/object").OptionalObjectSchema<{
+        0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>>;
+}, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+    speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    outlook: import("yup/lib/object").OptionalObjectSchema<{
+        0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>>;
+}>>;
+export declare const encounterParticipantSchema: import("yup/lib/object").OptionalObjectSchema<{
+    characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+}, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+    characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
 }>>;
 export declare const characterInSightSchema: import("yup/lib/object").OptionalObjectSchema<{
     characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
@@ -30,6 +74,47 @@ export declare const characterInSightSchema: import("yup/lib/object").OptionalOb
     nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
     distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     isEnemy: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
+}>>;
+export declare const encounterInSightSchema: import("yup/lib/object").OptionalObjectSchema<{
+    coordinates: import("yup/lib/object").OptionalObjectSchema<{
+        lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>>;
+    encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+        characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    }>>, any, import("yup/lib/object").TypeOfShape<{
+        characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    }>[]>;
+    distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+}, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+    coordinates: import("yup/lib/object").OptionalObjectSchema<{
+        lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>>;
+    encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+        characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    }>>, any, import("yup/lib/object").TypeOfShape<{
+        characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+    }>[]>;
+    distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
 }>>;
 export declare const characterAtWorldSchema: import("yup/lib/object").OptionalObjectSchema<{
     characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
@@ -74,9 +159,93 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
         isEnemy: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
     }>>;
     characterSightFlag: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
-    encountersInSight: import("yup/lib/object").OptionalObjectSchema<import("yup/lib/object").ObjectShape, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<import("yup/lib/object").ObjectShape>>;
+    encountersInSight: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+        coordinates: import("yup/lib/object").OptionalObjectSchema<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+        encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>>, any, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>[]>;
+        distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        coordinates: import("yup/lib/object").OptionalObjectSchema<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+        encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>>, any, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>[]>;
+        distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>>, import("yup/lib/types").AnyObject, import("yup/lib/object").TypeOfShape<{
+        coordinates: import("yup/lib/object").OptionalObjectSchema<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+        encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>>, any, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>[]>;
+        distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>[]>;
     encounterSightFlag: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
-    stats: import("yup/lib/object").OptionalObjectSchema<import("yup/lib/object").ObjectShape, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<import("yup/lib/object").ObjectShape>>;
+    stats: import("yup/lib/object").OptionalObjectSchema<{
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        outlook: import("yup/lib/object").OptionalObjectSchema<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        outlook: import("yup/lib/object").OptionalObjectSchema<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+    }>>;
     isNpc: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
 }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
     characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
@@ -121,8 +290,92 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
         isEnemy: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
     }>>;
     characterSightFlag: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
-    encountersInSight: import("yup/lib/object").OptionalObjectSchema<import("yup/lib/object").ObjectShape, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<import("yup/lib/object").ObjectShape>>;
+    encountersInSight: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+        coordinates: import("yup/lib/object").OptionalObjectSchema<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+        encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>>, any, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>[]>;
+        distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        coordinates: import("yup/lib/object").OptionalObjectSchema<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+        encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>>, any, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>[]>;
+        distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>>, import("yup/lib/types").AnyObject, import("yup/lib/object").TypeOfShape<{
+        coordinates: import("yup/lib/object").OptionalObjectSchema<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            lng: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+        encounterId: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        participants: import("yup/lib/array").OptionalArraySchema<import("yup/lib/object").OptionalObjectSchema<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>>, any, import("yup/lib/object").TypeOfShape<{
+            characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+            nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
+        }>[]>;
+        distance: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    }>[]>;
     encounterSightFlag: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
-    stats: import("yup/lib/object").OptionalObjectSchema<import("yup/lib/object").ObjectShape, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<import("yup/lib/object").ObjectShape>>;
+    stats: import("yup/lib/object").OptionalObjectSchema<{
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        outlook: import("yup/lib/object").OptionalObjectSchema<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+    }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        outlook: import("yup/lib/object").OptionalObjectSchema<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
+            0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+            2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        }>>;
+    }>>;
     isNpc: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
 }>>;

@@ -43,7 +43,7 @@ class DevLogger implements Logger {
     const now = Date.now();
     (meta?.showCallStack ? console.trace : console.debug)(
       '%ctrace:',
-      'color: pink;' + ' background-color: grey',
+      'color: pink; background-color: grey',
       message,
       {
         timestamp: now,

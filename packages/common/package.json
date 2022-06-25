@@ -1,12 +1,13 @@
 {
   "name": "@newordergame/common",
-  "version": "1.0.43",
+  "version": "1.0.44",
   "description": "",
-  "main": "src/index.js",
+  "main": "index.js",
   "module": "src/index.js",
   "types": "index.d.ts",
   "scripts": {
     "build": "npx tsc",
+    "watch": "npx tsc --watch",
     "deploy-package": "npm version patch && npm run build && npm publish",
     "update-common": "cd ../core && npm run update-common; cd ../ui && npm run update-common; cd ../common ",
     "prettier": "npx prettier --write ."

@@ -10,7 +10,8 @@
     "start": "lerna run start --stream",
     "deploy": "lerna run deploy --stream",
     "test": "lerna run test",
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "update-common": "lerna run update-common"
   },
   "repository": "git+https://github.com/NewOrderGame/monorepo.git",
   "author": "Artem Devlysh <artem@devlysh.com>",

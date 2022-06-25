@@ -18,7 +18,7 @@ const OVERPASS_API_BUILDINGS_SKELS_QUERY = `
 
 type OverpassElement = { type: string; id: number };
 
-export const getBuildingsInSight = async (
+export const getBuildingsInSight = (
   coordinates: Coordinates,
   sightRange: number
 ) => {
@@ -35,31 +35,22 @@ export const getBuildingsInSight = async (
 
   const uri = `${OVERPASS_API_URL}${OVERPASS_API_INTERPRETER_PATH}?data=${OVERPASS_API_BUILDINGS_SKELS_QUERY}&bbox=${min.longitude},${min.latitude},${max.longitude},${max.latitude}`;
 
-  return await axios
-    .get(uri)
-    .then((response) => response.data)
-    .catch((error) =>
-      logger.error({ error, uri }, 'During requesting boundary box')
-    );
+  return axios
+    .get(uri.replace(/[\s\n]+/g, ' '))
+    .then((response) => response.data);
 };
 
 export const getRandomHouseEntryCoordinates = async (
   coordinates: Coordinates,
-  sightRange: number
+  range: number
 ): Promise<Coordinates> => {
-  const data = await getBuildingsInSight(coordinates, sightRange);
-
-  if (!data) {
-    logger.error('Data is missing');
-    return;
-  }
+  const data = await getBuildingsInSight(coordinates, range);
 
   const ways = data.elements.filter(
     (element: OverpassElement) => element.type === 'way'
   );
 
   const way = ways[Math.floor(Math.random() * ways.length)];
-
   const index = Math.floor(Math.random() * way.geometry.length);
   const nodes: { lat: number; lon: number }[] = [];
   nodes.push(way.geometry[index]);
@@ -72,7 +63,10 @@ export const getRandomHouseEntryCoordinates = async (
   const center = getCenter(nodes);
 
   if (!center) {
-    logger.error({ center, coordinates, sightRange }, 'Could not find center');
+    logger.error(
+      { center, coordinates, sightRange: range },
+      'Could not find center'
+    );
     return;
   }
 

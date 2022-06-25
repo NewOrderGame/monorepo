@@ -1,10 +1,31 @@
-import { boolean, number, object, string } from 'yup';
+import { array, boolean, number, object, string } from 'yup';
+
+export const numberSchema = number();
+export const stringSchema = string();
+export const booleanSchema = boolean();
 
 export const characterIdSchema = string();
 
 export const coordinatesSchema = object({
   lat: string(),
   lng: number()
+});
+
+export const outlookSchema = object({
+  0: number(),
+  1: number(),
+  2: number()
+});
+
+export const characterStatsSchema = object({
+  speed: number(),
+  sightRange: number(),
+  outlook: outlookSchema
+});
+
+export const encounterParticipantSchema = object({
+  characterId: characterIdSchema,
+  nickname: string()
 });
 
 export const characterInSightSchema = object({
@@ -15,15 +36,22 @@ export const characterInSightSchema = object({
   isEnemy: boolean()
 });
 
+export const encounterInSightSchema = object({
+  coordinates: coordinatesSchema,
+  encounterId: numberSchema,
+  participants: array(encounterParticipantSchema),
+  distance: number()
+});
+
 export const characterAtWorldSchema = object({
   characterId: characterIdSchema,
   nickname: string(),
   coordinates: coordinatesSchema,
   movesTo: coordinatesSchema.nullable(),
-  charactersInSight: characterInSightSchema,
+  charactersInSight: characterInSightSchema.nullable(),
   characterSightFlag: boolean(),
-  encountersInSight: object(),
+  encountersInSight: array(encounterInSightSchema).nullable(),
   encounterSightFlag: boolean(),
-  stats: object(),
+  stats: characterStatsSchema,
   isNpc: boolean()
 });

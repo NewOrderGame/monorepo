@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
@@ -16,6 +16,12 @@ export const ConnectionContext = React.createContext<ConnectionContextType>(
   {} as ConnectionContextType
 );
 
+declare global {
+  interface Window {
+    signOut: () => void;
+  }
+}
+
 export const ConnectionProvider = ({
   children
 }: {
@@ -25,13 +31,15 @@ export const ConnectionProvider = ({
   const navigate = useNavigate();
   const [connected, setConnected] = useState(false);
 
+  window.signOut = authenticator.signOut;
+
   const accessToken = authenticator.user
     .getSignInUserSession()
     ?.getAccessToken()
     ?.getJwtToken();
 
   const handleConnect = () => {
-    logger.info('Connection started...');
+    logger.info('Starting connection...');
   };
 
   const handleConnected = () => {
@@ -53,7 +61,7 @@ export const ConnectionProvider = ({
     }
   };
 
-  const connect = () => {
+  const connect = useCallback(() => {
     core.gameSocket.auth = {
       accessToken
     };
@@ -77,7 +85,7 @@ export const ConnectionProvider = ({
       core.gameSocket.off(NogEvent.DISCONNECT);
       core.gameSocket.off(NogEvent.REDIRECT);
     };
-  };
+  }, [accessToken, core.gameSocket]);
 
   const disconnect = () => {
     core.gameSocket.disconnect();
@@ -89,7 +97,7 @@ export const ConnectionProvider = ({
     return () => {
       disconnect();
     };
-  }, [accessToken]);
+  }, [accessToken, connect]);
 
   const value = {
     gameSocket: core.gameSocket,

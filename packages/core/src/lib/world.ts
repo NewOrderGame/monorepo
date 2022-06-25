@@ -6,28 +6,18 @@ import {
   CharacterInSight,
   EncounterInSight,
   NogCharacterId,
-  NogEncounterId,
   NogEvent,
   NogPage
 } from '@newordergame/common';
 import characterStore from '../store/character-store';
 import {
   computeDestinationPoint as computeDestination,
-  getCenter as computeCenter,
-  getDistance,
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import {
-  DISTANCE_ACCURACY,
-  ENCOUNTER_COOL_DOWN_TIME,
-  ENCOUNTER_DISTANCE,
-  TICK_PER_SECOND
-} from './utils/constants';
+import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
 import { areEnemies } from './character';
 import encounterStore from '../store/encounter-store';
-import * as moment from 'moment';
-import { nanoid } from 'nanoid';
 import { createCharacterAtWorld } from './character-at-world';
 
 export const moveCharacter = (characterId: NogCharacterId) => {
@@ -257,10 +247,13 @@ export const handleInitWorldPage =
           isNpc: false
         });
         characterAtWorldStore.set(character.characterId, characterAtWorld);
-        logger.info({
-          characterId: character.characterId,
-          nickname
-        }, 'Created new characterAtWorld');
+        logger.info(
+          {
+            characterId: character.characterId,
+            nickname
+          },
+          'Created new characterAtWorld'
+        );
       }
       socket.emit(NogEvent.INIT_WORLD_PAGE, {
         coordinates: character.coordinates
@@ -273,9 +266,9 @@ export const handleInitWorldPage =
   };
 
 export const handleDestroyCharacterAtWorld = (socket: Socket) => () => {
-  logger.debug('Destroying character at world', {
+  logger.info({
     characterId: socket.data.characterId
-  });
+  }, 'Destroying character at world');
 
   const character = characterStore.get(socket.data.characterId);
   const characterAtWorld = characterAtWorldStore.get(socket.data.characterId);
@@ -288,10 +281,13 @@ export const handleDestroyCharacterAtWorld = (socket: Socket) => () => {
 
   if (character) {
     characterAtWorldStore.delete(socket.data.characterId);
-    logger.info({
-      socketId: socket.id,
-      characterId: socket.data.characterId
-    }, 'Removed character from world');
+    logger.info(
+      {
+        socketId: socket.id,
+        characterId: socket.data.characterId
+      },
+      'Removed character from world'
+    );
   }
 };
 
@@ -312,11 +308,14 @@ export const handleMoveCharacterAtWorld = (
     return;
   }
 
-  logger.info({
-    nickname: character.nickname,
-    characterId: character.characterId,
-    coordinates
-  }, 'Move');
+  logger.info(
+    {
+      nickname: character.nickname,
+      characterId: character.characterId,
+      coordinates
+    },
+    'Move'
+  );
 
   characterAtWorldStore.set(character.characterId, {
     ...characterAtWorld,

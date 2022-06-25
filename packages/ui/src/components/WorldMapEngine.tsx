@@ -1,6 +1,5 @@
 import {
   icon,
-  LatLng,
   LeafletMouseEvent,
   Map as LeafletMap,
   Marker,

@@ -6,13 +6,18 @@ export type NogCharacterId = string;
 
 export type NogEncounterId = string;
 
-export type Outlook = number[];
+export type Outlook = {
+  0: number;
+  1: number;
+  2: number;
+};
 
 export type CharacterStats = {
   speed: number; // m/s
   sightRange: number; // m
   outlook: Outlook;
 };
+
 export type Character = {
   characterId: NogCharacterId;
   nickname: string;

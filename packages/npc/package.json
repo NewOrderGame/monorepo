@@ -27,7 +27,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "file:../",
+    "@newordergame/common": "^1.0.44",
     "axios": "^0.27.2",
     "geolib": "^3.3.3",
     "pino": "^8.0.0",

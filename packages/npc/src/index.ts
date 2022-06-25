@@ -2,9 +2,12 @@ import { io } from 'socket.io-client';
 import logger from './lib/utils/logger';
 import {
   CharacterAtWorld,
+  characterIdSchema,
   CharacterInSight,
   Coordinates,
-  NogEvent
+  coordinatesSchema,
+  NogEvent,
+  numberSchema
 } from '@newordergame/common';
 import characterAtWorldStore from './store/character-at-world-store';
 import { getRandomHouseEntryCoordinates } from './lib/overpass';
@@ -20,7 +23,7 @@ const game = io(`${CORE_URL}/game`, {
 
 game.auth = { npcServiceSecret: 'NPC_SERVICE_SECRET' };
 
-logger.debug('Connecting to Game...');
+logger.info('Connecting to Game...');
 game.connect();
 
 game.on(NogEvent.CONNECT, () => {
@@ -54,50 +57,99 @@ game.on(NogEvent.DESTROY_NPC, (npcList: CharacterAtWorld[]) => {
 
 game.on(
   NogEvent.CHARACTERS_IN_SIGHT,
-  (event: { characterId: string; charactersInSight: CharacterInSight[] }) => {
-    const character = characterAtWorldStore.get(event.characterId);
-    characterAtWorldStore.set(event.characterId, {
+  ({
+    characterId,
+    charactersInSight
+  }: {
+    characterId: string;
+    charactersInSight: CharacterInSight[];
+  }) => {
+    const character = characterAtWorldStore.get(characterId);
+    characterAtWorldStore.set(characterId, {
       ...character,
-      charactersInSight: event.charactersInSight
+      charactersInSight
     });
   }
 );
 
 game.on(
   NogEvent.MOVE_NPC_AT_WORLD,
-  (event: {
+  ({
+    characterId,
+    coordinates,
+    duration,
+    distance
+  }: {
     characterId: string;
     coordinates: Coordinates;
     duration: number;
     distance: number;
   }) => {
-    const characterAtWorld = characterAtWorldStore.get(event.characterId);
-    characterAtWorldStore.set(event.characterId, {
+    logger.info(
+      { characterId, coordinates, duration, distance },
+      'Move NPC at world'
+    );
+
+    try {
+      characterIdSchema.validateSync(characterId);
+      coordinatesSchema.validateSync(coordinates);
+      numberSchema.validateSync(duration);
+      numberSchema.validateSync(distance);
+    } catch (error) {
+      logger.error(error, 'Error during moving NPC at world');
+      return;
+    }
+
+    const characterAtWorld = characterAtWorldStore.get(characterId);
+    characterAtWorldStore.set(characterId, {
       ...characterAtWorld,
-      movesTo: event.coordinates
+      movesTo: coordinates
     });
 
     setTimeout(() => {
-      characterAtWorldStore.set(event.characterId, {
+      characterAtWorldStore.set(characterId, {
         ...characterAtWorld,
         movesTo: null
       });
+      /** Comment for the stress test */
       game.emit(NogEvent.DESTROY_NPC, [characterAtWorld.characterId]);
-    }, event.duration * 1000 + 1000);
+      /** */
+    }, duration * 1000 + 1000);
   }
 );
 
 game.on(
   NogEvent.CREATE_NPC,
-  async (event: { coordinates: Coordinates; sightRange: number }) => {
-    logger.debug({ coordinates: event.coordinates }, 'create-npc');
+  async ({
+    coordinates,
+    sightRange
+  }: {
+    coordinates: Coordinates;
+    sightRange: number;
+  }) => {
+    logger.info({ coordinates }, 'Create NPC');
 
-    const spawnCoordinates = await getRandomHouseEntryCoordinates(
-      event.coordinates,
-      event.sightRange
-    );
+    try {
+      coordinatesSchema.validateSync(coordinates);
+    } catch (error) {
+      logger.error(error, 'Error during creating NPC');
+      return;
+    }
 
-    game.emit('create-npc', spawnCoordinates);
+    let spawnCoordinates: Coordinates;
+    try {
+      spawnCoordinates = await getRandomHouseEntryCoordinates(
+        coordinates,
+        sightRange
+      );
+    } catch (error) {
+      logger.error(
+        error,
+        'Error during creating NPC, getting random house entry coordinates'
+      );
+    }
+
+    game.emit(NogEvent.CREATE_NPC, spawnCoordinates);
   }
 );
 
@@ -106,27 +158,21 @@ setInterval(() => {
   const characters = characterAtWorldStore.getAll();
 
   characters.forEach((character) => {
-    // let friends: CharacterInSight[] = character.charactersInSight.filter(
-    //   (c) => !c.isEnemy
-    // );
-    // let enemies: CharacterInSight[] = character.charactersInSight.filter(
-    //   (c) => c.isEnemy
-    // );
-    // character.charactersInSight.forEach((characterInSight) => {});
-
     if (!character.movesTo) {
       getRandomHouseEntryCoordinates(
         character.coordinates,
         character.stats.sightRange * 3
-      ).then((coordinates) => {
-        game.emit(NogEvent.MOVE_NPC_AT_WORLD, {
-          coordinates,
-          characterId: character.characterId
+      )
+        .then((coordinates) => {
+          game.emit(NogEvent.MOVE_NPC_AT_WORLD, {
+            coordinates,
+            characterId: character.characterId
+          });
+        })
+        .catch((error) => {
+          logger.error(error, 'Error during moving NPC');
         });
-      });
     }
   });
 }, 1000);
 /** */
-
-logger.info('Game connected');
