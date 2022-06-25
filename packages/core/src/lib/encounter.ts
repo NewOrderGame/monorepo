@@ -2,6 +2,7 @@ import characterStore from '../store/character-store';
 import * as moment from 'moment';
 import logger from './utils/logger';
 import {
+  Character,
   Encounter,
   EncounterParticipant,
   NogCharacterId,
@@ -36,8 +37,20 @@ export const handleCharactersEncounter = (
     return;
   }
 
-  if (characterAtWorldA.isNpc || characterAtWorldB.isNpc) {
-    return;
+  // if (characterAtWorldA.isNpc || characterAtWorldB.isNpc) {
+  //   return;
+  // }
+
+  if (characterAtWorldA.isNpc) {
+    gameNamespace
+      .to(characterAtWorldA.characterId)
+      .emit(NogEvent.DESTROY_NPC, [characterAtWorldA.characterId]);
+  }
+
+  if (characterAtWorldB.isNpc) {
+    gameNamespace
+      .to(characterAtWorldB.characterId)
+      .emit(NogEvent.DESTROY_NPC, [characterAtWorldB.characterId]);
   }
 
   const distance = getDistance(
@@ -121,7 +134,7 @@ export const handleCharactersEncounter = (
     characterAtWorldStore.delete(characterAtWorldA.characterId);
     characterAtWorldStore.delete(characterAtWorldB.characterId);
 
-    encounterStore.set(encounterId, {
+    const encounter = {
       encounterId,
       encounterStartTime,
       coordinates: centerCoordinates,
@@ -135,7 +148,9 @@ export const handleCharactersEncounter = (
           nickname: characterAtWorldB.nickname
         }
       ]
-    });
+    };
+
+    encounterStore.set(encounterId, encounter);
 
     gameNamespace
       .to(characterAtWorldA.characterId)
@@ -145,8 +160,56 @@ export const handleCharactersEncounter = (
       .to(characterAtWorldB.characterId)
       .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
 
-    logger.trace('Send redirect on create encounter');
+    setTimeout(() => {
+      exitEncounter({ encounter, characterA, characterB, gameNamespace });
+    }, 5000);
   }
+};
+
+export const exitEncounter = ({
+  encounter,
+  characterA,
+  characterB,
+  gameNamespace
+}: {
+  encounter: Encounter;
+  characterA: Character;
+  characterB: Character;
+  gameNamespace: Namespace;
+}) => {
+  if (characterA) {
+    characterA.encounterId = null;
+    characterA.page = NogPage.WORLD;
+    characterA.encounterEndTime = moment().valueOf();
+    characterA.encounterStartTime = null;
+    characterA.coordinates = encounter.coordinates;
+
+    characterStore.set(characterA.characterId, {
+      ...characterA
+    });
+
+    gameNamespace.to(characterA.characterId).emit(NogEvent.REDIRECT, {
+      page: NogPage.WORLD
+    });
+  }
+
+  if (characterB) {
+    characterB.encounterId = null;
+    characterB.page = NogPage.WORLD;
+    characterB.encounterEndTime = moment().valueOf();
+    characterB.encounterStartTime = null;
+    characterB.coordinates = encounter.coordinates;
+
+    characterStore.set(characterB.characterId, {
+      ...characterB
+    });
+
+    gameNamespace.to(characterB.characterId).emit(NogEvent.REDIRECT, {
+      page: NogPage.WORLD
+    });
+  }
+
+  encounterStore.delete(encounter.encounterId);
 };
 
 export const handleExitEncounter =
@@ -156,44 +219,19 @@ export const handleExitEncounter =
     }
     const characterA = characterStore.get(socket.data.characterId);
     const encounter = encounterStore.get(characterA.encounterId);
+
     if (!encounter) {
-      return logger.error('There should be an encounter');
+      logger.error('There should be an encounter');
+      return;
     }
+
     const characterB = characterStore.get(
       encounter.participants.find(
         (p: EncounterParticipant) => p.characterId !== characterA.characterId
       ).characterId
     );
 
-    characterA.encounterId = null;
-    characterA.page = NogPage.WORLD;
-    characterA.encounterEndTime = moment().valueOf();
-    characterA.encounterStartTime = null;
-    characterA.coordinates = encounter.coordinates;
-    characterStore.set(characterA.characterId, {
-      ...characterA
-    });
-
-    characterB.encounterId = null;
-    characterB.page = NogPage.WORLD;
-    characterB.encounterEndTime = moment().valueOf();
-    characterB.encounterStartTime = null;
-    characterB.coordinates = encounter.coordinates;
-    characterStore.set(characterB.characterId, {
-      ...characterB
-    });
-
-    encounterStore.delete(encounter.encounterId);
-
-    gameNamespace.to(characterA.characterId).emit(NogEvent.REDIRECT, {
-      page: NogPage.WORLD
-    });
-
-    gameNamespace.to(characterB.characterId).emit(NogEvent.REDIRECT, {
-      page: NogPage.WORLD
-    });
-
-    logger.trace({ timestamp: Date.now() }, 'Send redirect on exit');
+    exitEncounter({ encounter, characterA, characterB, gameNamespace });
   };
 
 export const handleInitEncounterPage =

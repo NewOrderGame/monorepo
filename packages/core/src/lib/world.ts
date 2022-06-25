@@ -266,9 +266,12 @@ export const handleInitWorldPage =
   };
 
 export const handleDestroyCharacterAtWorld = (socket: Socket) => () => {
-  logger.info({
-    characterId: socket.data.characterId
-  }, 'Destroying character at world');
+  logger.info(
+    {
+      characterId: socket.data.characterId
+    },
+    'Destroying character at world'
+  );
 
   const character = characterStore.get(socket.data.characterId);
   const characterAtWorld = characterAtWorldStore.get(socket.data.characterId);

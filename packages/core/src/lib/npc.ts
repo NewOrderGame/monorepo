@@ -78,6 +78,7 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
     characterStore.set(defaultNpc.characterId, defaultNpc);
     characterAtWorldStore.set(npc.characterId, npc);
+    socket.join(npc.characterId);
     socket.emit(NogEvent.INIT_NPC, [npc]);
   });
 
@@ -94,6 +95,7 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
       characterStore.delete(characterId);
       characterAtWorldStore.delete(characterId);
+      socket.leave(characterId);
       socket.emit(NogEvent.DESTROY_NPC, [{ characterId }]);
     });
   });

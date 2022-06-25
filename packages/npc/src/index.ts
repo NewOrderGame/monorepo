@@ -6,6 +6,7 @@ import {
   CharacterInSight,
   Coordinates,
   coordinatesSchema,
+  NogCharacterId,
   NogEvent,
   numberSchema
 } from '@newordergame/common';
@@ -39,6 +40,11 @@ game.on(NogEvent.CONNECTED, () => {
   logger.info('Connected to Game namespace');
 });
 
+const npcListToDestroy = new Map<
+  NogCharacterId,
+  CharacterAtWorld & { timeout: NodeJS.Timeout }
+>();
+
 game.on(NogEvent.INIT_NPC, (npcList: CharacterAtWorld[]) => {
   logger.info(
     npcList.map((npc) => npc.characterId),
@@ -46,12 +52,22 @@ game.on(NogEvent.INIT_NPC, (npcList: CharacterAtWorld[]) => {
   );
   npcList.forEach((npc) => {
     characterAtWorldStore.set(npc.characterId, npc);
+    const timeout = setTimeout(() => {
+      game.emit(NogEvent.DESTROY_NPC, [npc.characterId]);
+    }, 10000);
+
+    npcListToDestroy.set(npc.characterId, { ...npc, timeout });
   });
 });
 
 game.on(NogEvent.DESTROY_NPC, (npcList: CharacterAtWorld[]) => {
   npcList.forEach((npc) => {
     characterAtWorldStore.delete(npc.characterId);
+    const timeout = npcListToDestroy.get(npc.characterId)?.timeout;
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    npcListToDestroy.delete(npc.characterId);
   });
 });
 
@@ -105,16 +121,6 @@ game.on(
       ...characterAtWorld,
       movesTo: coordinates
     });
-
-    setTimeout(() => {
-      characterAtWorldStore.set(characterId, {
-        ...characterAtWorld,
-        movesTo: null
-      });
-      /** Comment for the stress test */
-      game.emit(NogEvent.DESTROY_NPC, [characterAtWorld.characterId]);
-      /** */
-    }, duration * 1000 + 1000);
   }
 );
 
@@ -159,6 +165,23 @@ setInterval(() => {
   const characters = characterAtWorldStore.getAll();
 
   characters.forEach((character) => {
+    const enemies: CharacterInSight[] = character.charactersInSight.filter(
+      (characterInSight) => characterInSight.isEnemy
+    );
+
+    if (enemies.length) {
+      const closest: CharacterInSight = enemies.reduce((pEnemy, cEnemy) => {
+        return pEnemy.distance < cEnemy.distance ? pEnemy : cEnemy;
+      });
+
+      game.emit(NogEvent.MOVE_NPC_AT_WORLD, {
+        coordinates: closest.coordinates,
+        characterId: character.characterId
+      });
+
+      return;
+    }
+
     if (!character.movesTo) {
       getRandomHouseEntryCoordinates(
         character.coordinates,
