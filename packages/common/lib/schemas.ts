@@ -20,9 +20,9 @@ export const outlookSchema = object({
 });
 
 export const characterStatsSchema = object({
+  outlook: outlookSchema,
   speed: number(),
-  sightRange: number(),
-  outlook: outlookSchema
+  sightRange: number()
 });
 
 export const encounterParticipantSchema = object({

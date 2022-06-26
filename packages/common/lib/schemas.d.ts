@@ -21,8 +21,6 @@ export declare const outlookSchema: import("yup/lib/object").OptionalObjectSchem
     2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
 }>>;
 export declare const characterStatsSchema: import("yup/lib/object").OptionalObjectSchema<{
-    speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
-    sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     outlook: import("yup/lib/object").OptionalObjectSchema<{
         0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
@@ -32,9 +30,9 @@ export declare const characterStatsSchema: import("yup/lib/object").OptionalObje
         1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     }>>;
+    speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
 }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
-    speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
-    sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     outlook: import("yup/lib/object").OptionalObjectSchema<{
         0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
@@ -44,6 +42,8 @@ export declare const characterStatsSchema: import("yup/lib/object").OptionalObje
         1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     }>>;
+    speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+    sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
 }>>;
 export declare const encounterParticipantSchema: import("yup/lib/object").OptionalObjectSchema<{
     characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
@@ -122,8 +122,6 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
     characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
     nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
     stats: import("yup/lib/object").OptionalObjectSchema<{
-        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
-        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         outlook: import("yup/lib/object").OptionalObjectSchema<{
             0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
@@ -133,9 +131,9 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         }>>;
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
-        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
-        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         outlook: import("yup/lib/object").OptionalObjectSchema<{
             0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
@@ -145,6 +143,8 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         }>>;
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     }>>;
     coordinates: import("yup/lib/object").OptionalObjectSchema<{
         lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
@@ -253,8 +253,6 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
     characterId: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
     nickname: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;
     stats: import("yup/lib/object").OptionalObjectSchema<{
-        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
-        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         outlook: import("yup/lib/object").OptionalObjectSchema<{
             0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
@@ -264,9 +262,9 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         }>>;
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     }, import("yup/lib/object").AnyObject, import("yup/lib/object").TypeOfShape<{
-        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
-        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         outlook: import("yup/lib/object").OptionalObjectSchema<{
             0: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
@@ -276,6 +274,8 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
             1: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
             2: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
         }>>;
+        speed: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+        sightRange: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
     }>>;
     coordinates: import("yup/lib/object").OptionalObjectSchema<{
         lat: import("yup").StringSchema<string, import("yup/lib/types").AnyObject, string>;

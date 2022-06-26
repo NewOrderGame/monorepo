@@ -18,9 +18,9 @@ exports.outlookSchema = (0, yup_1.object)({
     2: (0, yup_1.number)().min(-100).max(100)
 });
 exports.characterStatsSchema = (0, yup_1.object)({
+    outlook: exports.outlookSchema,
     speed: (0, yup_1.number)(),
-    sightRange: (0, yup_1.number)(),
-    outlook: exports.outlookSchema
+    sightRange: (0, yup_1.number)()
 });
 exports.encounterParticipantSchema = (0, yup_1.object)({
     characterId: exports.characterIdSchema,
