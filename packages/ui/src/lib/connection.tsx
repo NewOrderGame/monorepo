@@ -38,28 +38,31 @@ export const ConnectionProvider = ({
     ?.getAccessToken()
     ?.getJwtToken();
 
-  const handleConnect = () => {
+  const handleConnect = useCallback(() => {
     logger.info('Starting connection...');
-  };
+  }, []);
 
-  const handleConnected = () => {
+  const handleConnected = useCallback(() => {
     logger.info('Connected!');
     setConnected(true);
-  };
+  }, []);
 
-  const handleDisconnect = () => {
+  const handleDisconnect = useCallback(() => {
     logger.info('Disconnected');
     setConnected(false);
     navigate('/');
-  };
+  }, []);
 
-  const handleRedirect = ({ page }: { page: NogPage }) => {
-    const path = `/${page}`;
-    if (window.location.pathname !== path) {
-      logger.trace('Redirect', { page });
-      navigate(path);
-    }
-  };
+  const handleRedirect = useCallback(
+    ({ page }: { page: NogPage }) => {
+      const path = `/${page}`;
+      if (window.location.pathname !== path) {
+        logger.trace('Redirect', { page });
+        navigate(path);
+      }
+    },
+    [navigate]
+  );
 
   const connect = useCallback(() => {
     core.gameSocket.auth = {
