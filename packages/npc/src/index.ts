@@ -178,7 +178,6 @@ setInterval(() => {
         coordinates: closest.coordinates,
         characterId: character.characterId
       });
-
       return;
     }
 
@@ -187,12 +186,12 @@ setInterval(() => {
         character.coordinates,
         character.stats.sightRange * 3
       )
-        .then((coordinates) => {
+        .then((coordinates) =>
           game.emit(NogEvent.MOVE_NPC_AT_WORLD, {
             coordinates,
             characterId: character.characterId
-          });
-        })
+          })
+        )
         .catch((error) => {
           logger.error(error, 'Error during moving NPC');
         });
