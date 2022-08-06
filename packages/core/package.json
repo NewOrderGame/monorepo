@@ -37,6 +37,7 @@
   "license": "ISC",
   "dependencies": {
     "@newordergame/common": "^1.0.44",
+    "axios": "^0.27.2",
     "cognito-user-pool": "^0.1.13",
     "express": "^4.18.1",
     "geolib": "^3.3.3",

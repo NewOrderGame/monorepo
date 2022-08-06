@@ -8,13 +8,10 @@ import { getUser } from '../lib/utils/cognito';
 import characterStore from '../store/character-store';
 import { determinePage } from '../lib/utils/determine-page';
 import { handleCreateCharacter } from '../lib/character';
-import { handleInitEncounterPage, handleExitEncounter } from '../lib/encounter';
-import {
-  handleDestroyCharacterAtWorld,
-  handleInitWorldPage,
-  handleMoveCharacterAtWorld
-} from '../lib/world';
+import { handleExitEncounter, handleInitEncounterPage } from '../lib/encounter';
+import { handleInitWorldPage, handleMoveCharacterAtWorld } from '../lib/world';
 import { handleNpcServiceConnection } from '../lib/npc';
+import { handleEnterBuilding } from '../lib/building';
 
 let gameNamespace: Namespace;
 
@@ -84,11 +81,14 @@ const handleUserConnection = async (socket: Socket) => {
   socket.emit(NogEvent.REDIRECT, {
     page
   });
-  logger.info({
-    page,
-    characterId: username,
-    nickname: character?.nickname
-  }, 'Sent redirect');
+  logger.info(
+    {
+      page,
+      characterId: username,
+      nickname: character?.nickname
+    },
+    'Sent redirect'
+  );
 };
 
 const addGameEventListeners = (
@@ -123,4 +123,6 @@ const addGameEventListeners = (
     NogEvent.EXIT_ENCOUNTER,
     handleExitEncounter(socket, gameNamespace)
   );
+
+  socket.on('enter-building', handleEnterBuilding(socket, gameNamespace));
 };

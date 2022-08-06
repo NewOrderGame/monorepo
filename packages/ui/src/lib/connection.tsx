@@ -7,7 +7,7 @@ import { NogEvent, NogPage } from '@newordergame/common';
 import { useNavigate } from 'react-router-dom';
 import logger from './utils/logger';
 
-type ConnectionContextType = {
+export type ConnectionContextType = {
   gameSocket: Socket;
   connect: () => void;
 };
@@ -51,13 +51,12 @@ export const ConnectionProvider = ({
     logger.info('Disconnected');
     setConnected(false);
     navigate('/');
-  }, []);
+  }, [navigate]);
 
   const handleRedirect = useCallback(
     ({ page }: { page: NogPage }) => {
       const path = `/${page}`;
       if (window.location.pathname !== path) {
-        logger.trace('Redirect', { page });
         navigate(path);
       }
     },

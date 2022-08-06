@@ -10,12 +10,12 @@ body,
   height: 100%;
 }
 
-.leaflet-container {
-  height: 100%;
+a[href="https://leafletjs.com"] {
+  display: none;
 }
 
-.leaflet-control {
-  display: none;
+.leaflet-container {
+  height: 100%;
 }
 
 .leaflet-marker-icon {

@@ -5,7 +5,7 @@ import { FogOfWar } from '../components/FogOfWar';
 import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
 import { LatLng } from 'leaflet';
-import { Map } from '../components/Map';
+import { World } from '../components/World';
 import { useConnection } from '../lib/connection';
 import { NogEvent } from '@newordergame/common';
 import logger from '../lib/utils/logger';
@@ -49,7 +49,7 @@ export const WorldPage = () => {
 
   return !loading && firstCoordinates ? (
     <>
-      <Map firstCoordinates={firstCoordinates} />
+      <World firstCoordinates={firstCoordinates} />
       <Character src="/character.png" />
       <FogOfWar width={windowWidth} height={windowHeight} />
     </>

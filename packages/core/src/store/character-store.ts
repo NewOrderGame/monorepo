@@ -5,7 +5,7 @@ export class InMemoryCharacterStore {
   private _characters: Map<NogCharacterId, Character>;
 
   constructor() {
-    logger.info('Creating Character At World Store');
+    logger.info('Creating Character At World store');
     this._characters = new Map<NogCharacterId, Character>();
   }
 

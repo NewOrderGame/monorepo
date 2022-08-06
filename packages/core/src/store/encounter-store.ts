@@ -9,7 +9,7 @@ export class InMemoryEncounterStore {
   private _encounters: Map<NogCharacterId, Encounter>;
 
   constructor() {
-    logger.info('Creating Encounter Store');
+    logger.info('Creating Encounter store');
     this._encounters = new Map<NogEncounterId, Encounter>();
   }
 

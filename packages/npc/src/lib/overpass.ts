@@ -24,20 +24,18 @@ export const getBuildingsInSight = (
 ) => {
   const min = computeDestinationPoint(
     coordinates,
-    sightRange / 2,
+    sightRange * 2,
     225 // bottom left
   );
   const max = computeDestinationPoint(
     coordinates,
-    sightRange / 2,
+    sightRange * 2,
     45 // top right
   );
 
   const uri = `${OVERPASS_API_URL}${OVERPASS_API_INTERPRETER_PATH}?data=${OVERPASS_API_BUILDINGS_SKELS_QUERY}&bbox=${min.longitude},${min.latitude},${max.longitude},${max.latitude}`;
 
-  return axios
-    .get(uri.replace(/[\s\n]+/g, ' '))
-    .then((response) => response.data);
+  return axios.get(uri).then((response) => response.data);
 };
 
 export const getRandomHouseEntryCoordinates = async (
