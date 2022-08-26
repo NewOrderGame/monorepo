@@ -1,16 +1,22 @@
 import { Namespace, Socket } from 'socket.io';
 import logger from './utils/logger';
 import { Coordinates } from '@newordergame/common';
-import { computeDestinationPoint, getDistance, isPointInPolygon } from 'geolib';
+import {
+  computeDestinationPoint,
+  getDistance,
+  getGreatCircleBearing,
+  isPointInPolygon
+} from 'geolib';
 import axios from 'axios';
 
 const OVERPASS_API_URL = 'https://overpass.hochburg.devlysh.com';
 const OVERPASS_API_INTERPRETER_PATH = '/api/interpreter';
 
+const SIGHT_RANGE = 24;
+
 const OVERPASS_API_BUILDINGS_SKELS_QUERY = `
   [bbox][out:json];
   (
-    node;
     way["building"];
   );
   
@@ -18,57 +24,86 @@ const OVERPASS_API_BUILDINGS_SKELS_QUERY = `
 `;
 
 type OverpassElement = { type: string; id: number };
-type NodeOverpassElement = { lat: number; lon: number } & OverpassElement;
+
 type WayOverpassElement = {
   bounds: any;
   nodes: number[];
-  geometry: any[];
+  geometry: { lat: number; lon: number }[];
 } & OverpassElement;
+
+type PlainBuilding = {
+  x: number;
+  y: number;
+}[];
 
 export const handleEnterBuilding =
   (socket: Socket, gameNamespace: Namespace) =>
   async (coordinates: Coordinates) => {
-    const sightRange = 30;
-    let buildings;
     try {
-      buildings = await getBuildingsInSight(coordinates, sightRange);
+      const buildingsInSight = await getBuildingsInSight(
+        coordinates,
+        SIGHT_RANGE
+      );
+      const elements = buildingsInSight?.elements;
 
-      const nodes = buildings?.elements.filter(
-        (element: OverpassElement) => element.type === 'node'
+      const building: WayOverpassElement = determineBuilding(
+        coordinates,
+        elements
       );
 
-      const ways = buildings?.elements.filter(
-        (element: OverpassElement) => element.type === 'way'
-      );
+      if (building) {
+        const plainBuilding = convertToPlainBuilding(building);
 
-      const closestNode: NodeOverpassElement = nodes.reduce(
-        (accumulator: number[], node: NodeOverpassElement, index: number) => {
-          accumulator[index] = getDistance(coordinates, node, 0.1);
-
-          if (index === nodes.length - 1) {
-            const min = Math.min(...accumulator);
-            const indexOfMin = accumulator.indexOf(min);
-            return nodes[indexOfMin];
-          }
-
-          return accumulator;
-        },
-        []
-      );
-
-      const closestWays = ways.filter((way: WayOverpassElement) => {
-        return way.nodes.includes(closestNode.id);
-      });
-
-      let contains = false;
-      closestWays.forEach((way: WayOverpassElement) => {
-        contains = contains || isPointInPolygon(coordinates, way.geometry);
-      });
-      logger.debug({ contains }, 'CONTAINS');
+        socket.emit('enter-building', plainBuilding);
+        logger.trace('sent enter-building', plainBuilding);
+      }
     } catch (error) {
-      logger.error({ error, coordinates, sightRange });
+      logger.error({ error, coordinates, sightRange: SIGHT_RANGE });
     }
   };
+
+export const convertToPlainBuilding = (
+  building: WayOverpassElement
+): PlainBuilding => {
+  const longestWallNodeIndex = determineLongestWallIndex(building);
+  const longestWallNode = building.geometry[longestWallNodeIndex];
+
+  const longestWallBearing = getGreatCircleBearing(
+    building.geometry[longestWallNodeIndex],
+    building.geometry[longestWallNodeIndex + 1]
+  );
+
+  return building.geometry.map((node) => {
+    const distance = getDistance(longestWallNode, node);
+    const bearing = getGreatCircleBearing(longestWallNode, node);
+    const bearingDelta = bearing - longestWallBearing;
+
+    return {
+      x: distance * Math.cos((bearingDelta * Math.PI) / 180),
+      y: distance * Math.sin((bearingDelta * Math.PI) / 180)
+    };
+  });
+};
+
+export const determineBuilding = (
+  coordinates: Coordinates,
+  elements: WayOverpassElement[]
+) => {
+  return elements.find((way: WayOverpassElement) => {
+    return isPointInPolygon(coordinates, way.geometry);
+  });
+};
+
+export const determineLongestWallIndex = (
+  buiding: WayOverpassElement
+): number => {
+  const geometry = buiding.geometry.slice(0, buiding.geometry.length - 1);
+  const distances = geometry.map((node, index) => {
+    const next = index === geometry.length - 1 ? 0 : index + 1;
+    return getDistance(node, geometry[next], 1);
+  });
+  return distances.indexOf(Math.max(...distances));
+};
 
 export const getBuildingsInSight = (
   coordinates: Coordinates,

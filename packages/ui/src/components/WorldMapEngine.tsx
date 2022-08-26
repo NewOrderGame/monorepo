@@ -43,14 +43,21 @@ export const WorldMapEngine = () => {
       handleCharactersInSight(map)
     );
 
+    connection.gameSocket.on('enter-building', handleEnterBuilding);
+
     return () => {
       connection.gameSocket.off(NogEvent.MOVE_CHARACTER_AT_WORLD);
       connection.gameSocket.off(NogEvent.CHARACTERS_IN_SIGHT);
       connection.gameSocket.off(NogEvent.ENCOUNTERS_IN_SIGHT);
+      connection.gameSocket.off('enter-building');
     };
   }, [connection.gameSocket, map]);
 
   return null;
+};
+
+const handleEnterBuilding = (building: any) => {
+  logger.info('Commit building', { building });
 };
 
 let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];
