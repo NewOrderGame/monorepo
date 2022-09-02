@@ -11,7 +11,10 @@ import { handleCreateCharacter } from '../lib/character';
 import { handleExitEncounter, handleInitEncounterPage } from '../lib/encounter';
 import { handleInitWorldPage, handleMoveCharacterAtWorld } from '../lib/world';
 import { handleNpcServiceConnection } from '../lib/npc';
-import { handleEnterBuilding } from '../lib/building';
+import {
+  handleEnterBuilding,
+  handleLocationSiteServiceConnection
+} from '../lib/location-site';
 
 let gameNamespace: Namespace;
 
@@ -30,6 +33,7 @@ const handleGameConnection =
     logger.info({ socketId: socket.id }, 'Game connected');
 
     handleNpcServiceConnection(socket);
+    handleLocationSiteServiceConnection(socket, gameNamespace);
     await handleUserConnection(socket);
 
     socket.on(NogEvent.DISCONNECT, () =>
@@ -124,5 +128,5 @@ const addGameEventListeners = (
     handleExitEncounter(socket, gameNamespace)
   );
 
-  socket.on('enter-building', handleEnterBuilding(socket, gameNamespace));
+  socket.on('enter-building', handleEnterBuilding(socket));
 };

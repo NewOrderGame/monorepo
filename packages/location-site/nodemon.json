@@ -1,0 +1,6 @@
+{
+  "watch": ["src"],
+  "ext": "ts,json",
+  "ignore": [],
+  "exec": "ts-node -r dotenv/config ./src/index.ts | pino-pretty"
+}

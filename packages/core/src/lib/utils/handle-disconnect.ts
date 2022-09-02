@@ -3,6 +3,7 @@ import characterStore from '../../store/character-store';
 import logger from './logger';
 import { setNpcSocket } from '../../store/npc-socket-store';
 import characterAtWorldStore from '../../store/character-at-world-store';
+import { setLocationSiteSocket } from '../../store/location-site-socket-store';
 
 export const handleDisconnect = async (
   socket: Socket,
@@ -26,10 +27,13 @@ export const handleDisconnect = async (
       });
     }
 
-    logger.info({
-      characterId: character.characterId,
-      nickname: character.nickname
-    }, 'Disconnected character');
+    logger.info(
+      {
+        characterId: character.characterId,
+        nickname: character.nickname
+      },
+      'Disconnected character'
+    );
   } else {
     logger.info('Disconnected without character ID');
   }
@@ -43,6 +47,15 @@ export const handleDisconnect = async (
   if (isNpcService) {
     setNpcSocket(null);
     logger.warn('NPC service disconnected', {
+      namespaceName: gameNamespace.name
+    });
+  }
+
+  const isLocationSiteService =
+    socket.handshake?.auth.locationSiteServiceSecret === 'LOCATION_SITE_SERVICE_SECRET';
+  if (isLocationSiteService) {
+    setLocationSiteSocket(null);
+    logger.warn('Location Site service disconnected', {
       namespaceName: gameNamespace.name
     });
   }

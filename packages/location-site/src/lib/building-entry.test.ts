@@ -1,4 +1,4 @@
-import { getBuildingsInSight } from './building';
+import { getBuildingsInSight } from './building-entry';
 
 describe('Building module', () => {
   describe('getBuildingsInSight', () => {

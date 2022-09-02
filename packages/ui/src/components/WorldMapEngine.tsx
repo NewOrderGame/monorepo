@@ -57,7 +57,7 @@ export const WorldMapEngine = () => {
 };
 
 const handleEnterBuilding = (building: any) => {
-  logger.info('Commit building', { building });
+  logger.info('Commit building entry', { building });
 };
 
 let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];

@@ -1,4 +1,4 @@
-import { PlainBuildingNode } from './location-site';
+import { PlainBuildingNode } from './types';
 
 export class Cell {
   readonly isWall: boolean;
@@ -9,10 +9,6 @@ export class Cell {
     options?: { isWall: boolean }
   ) {
     this.isWall = options?.isWall || false;
-  }
-
-  public getIsWall() {
-    return this.isWall;
   }
 }
 

@@ -28,7 +28,7 @@ const menuControl = (connection: ConnectionContextType) => {
 
     const coordinates = map.getCenter();
 
-    logger.info('Request enter building');
+    logger.info('Request building entry');
     connection.gameSocket.emit('enter-building', coordinates);
   };
 

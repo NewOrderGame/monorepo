@@ -37,10 +37,6 @@ export const handleCharactersEncounter = (
     return;
   }
 
-  // if (characterAtWorldA.isNpc || characterAtWorldB.isNpc) {
-  //   return;
-  // }
-
   if (characterAtWorldA.isNpc) {
     gameNamespace
       .to(characterAtWorldA.characterId)
