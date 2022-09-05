@@ -7,6 +7,7 @@ var NogPage;
     NogPage["CHARACTER"] = "character";
     NogPage["WORLD"] = "world";
     NogPage["ENCOUNTER"] = "encounter";
+    NogPage["LOCATION_SITE"] = "location-site";
 })(NogPage = exports.NogPage || (exports.NogPage = {}));
 var NogNamespace;
 (function (NogNamespace) {
@@ -23,6 +24,7 @@ var NogEvent;
     NogEvent["REDIRECT"] = "redirect";
     NogEvent["INIT_ENCOUNTER_PAGE"] = "init-encounter-page";
     NogEvent["INIT_WORLD_PAGE"] = "init-world-page";
+    NogEvent["INIT_LOCATION_SITE_PAGE"] = "init-location-site-page";
     NogEvent["CREATE_CHARACTER"] = "create-character";
     NogEvent["MOVE_CHARACTER_AT_WORLD"] = "move-character-at-world";
     NogEvent["ENCOUNTERS_IN_SIGHT"] = "encounters-in-sight";

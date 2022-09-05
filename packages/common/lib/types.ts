@@ -28,6 +28,7 @@ export type Character = {
   encounterStartTime: number | null;
   page: NogPage;
   stats: CharacterStats;
+  buildingId: number | null;
 };
 
 export type Encounter = {

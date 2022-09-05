@@ -17,7 +17,10 @@ export class Building {
   readonly maxX: number;
   readonly maxY: number;
 
-  constructor(plainBuildingNodes: PlainBuildingNode[]) {
+  constructor(
+    readonly id: number,
+    plainBuildingNodes: PlainBuildingNode[],
+  ) {
     this.maxX = Math.max(...plainBuildingNodes.map((node) => node.x));
     this.maxY = Math.max(...plainBuildingNodes.map((node) => node.y));
 

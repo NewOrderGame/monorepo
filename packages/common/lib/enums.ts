@@ -2,7 +2,8 @@ export enum NogPage {
   ROOT = '',
   CHARACTER = 'character',
   WORLD = 'world',
-  ENCOUNTER = 'encounter'
+  ENCOUNTER = 'encounter',
+  LOCATION_SITE = 'location-site'
 }
 
 export enum NogNamespace {
@@ -21,6 +22,7 @@ export enum NogEvent {
 
   INIT_ENCOUNTER_PAGE = 'init-encounter-page',
   INIT_WORLD_PAGE = 'init-world-page',
+  INIT_LOCATION_SITE_PAGE = 'init-location-site-page',
 
   CREATE_CHARACTER = 'create-character',
   MOVE_CHARACTER_AT_WORLD = 'move-character-at-world',

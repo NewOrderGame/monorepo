@@ -1,4 +1,4 @@
-import { NogPage, Character } from '@newordergame/common';
+import { Character, NogPage } from '@newordergame/common';
 import logger from './logger';
 
 export const determinePage = (character: Character): NogPage => {
@@ -9,13 +9,19 @@ export const determinePage = (character: Character): NogPage => {
     page = NogPage.CHARACTER;
   } else if (character.encounterId) {
     page = NogPage.ENCOUNTER;
+  } else if (character.buildingId) {
+    page = NogPage.LOCATION_SITE;
   } else {
     page = NogPage.WORLD;
   }
-  logger.info({
-    page,
-    characterId: character?.characterId,
-    nickname: character?.nickname
-  }, 'Determine page');
+
+  logger.info(
+    {
+      page,
+      characterId: character?.characterId,
+      nickname: character?.nickname
+    },
+    'Determine page'
+  );
   return page;
 };

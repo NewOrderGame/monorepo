@@ -29,6 +29,7 @@ import {
 } from 'geolib';
 import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
 import { getFakeNamespace, getFakeSocket } from '../test/utils';
+import CharacterStore from '../store/character-store';
 
 const DEFAULT_CHARACTER_STATS: CharacterStats = {
   outlook: [0, 0, 0],
@@ -51,7 +52,7 @@ const DEFAULT_ENCOUNTER = {
             outlook: [0, 0, 0],
             sightRange: 100,
             speed: 30
-          }
+          } as CharacterStats
         } as Character,
         isNpc: false
       }),
@@ -68,7 +69,7 @@ const DEFAULT_ENCOUNTER = {
             outlook: [0, 0, 0],
             sightRange: 100,
             speed: 30
-          }
+          } as CharacterStats
         } as Character,
         isNpc: false
       }),
@@ -352,7 +353,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),
@@ -370,7 +371,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           })
@@ -414,7 +415,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),
@@ -431,7 +432,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           })
@@ -477,7 +478,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),
@@ -525,7 +526,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),
@@ -569,7 +570,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),
@@ -621,7 +622,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),
@@ -676,7 +677,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),
@@ -723,7 +724,7 @@ describe('World', () => {
                 outlook: [0, 0, 0],
                 sightRange: 100,
                 speed: 30
-              }
+              } as CharacterStats
             } as Character,
             isNpc: false
           }),

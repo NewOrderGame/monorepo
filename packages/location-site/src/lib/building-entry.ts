@@ -1,5 +1,5 @@
 import logger from './utils/logger';
-import { Coordinates } from '@newordergame/common';
+import { Coordinates, NogEvent } from '@newordergame/common';
 import {
   computeDestinationPoint,
   getDistance,
@@ -16,6 +16,7 @@ import {
   SIGHT_RANGE
 } from './constants';
 import { PlainBuildingNode, WayOverpassElement } from './types';
+import buildingStore from '../store/building-store';
 
 export const handleEnterBuilding =
   (socket: Socket) =>
@@ -33,29 +34,44 @@ export const handleEnterBuilding =
       );
       const elements = buildingsInSight?.elements;
 
-      const wayBuilding: WayOverpassElement = determineBuilding(
+      const wayBuilding: WayOverpassElement | null = determineBuilding(
         coordinates,
         elements
       );
 
       if (wayBuilding) {
-        const plainBuildingNodes: PlainBuildingNode[] =
-          convertWayToPlainBuildingNodes(wayBuilding);
+        const buildingId = wayBuilding.id;
+        let building: Building = buildingStore.get(buildingId);
+        if (!building) {
+          const plainBuildingNodes: PlainBuildingNode[] =
+            convertWayToPlainBuildingNodes(wayBuilding);
+          building = new Building(buildingId, plainBuildingNodes);
+          buildingStore.set(buildingId, building);
+          logger.info({ buildingId }, 'Created new building');
+        }
 
-        const building = new Building(plainBuildingNodes);
-
-        socket.emit('enter-building-commit', {
-          characterId,
-          map: building.getMap()
-        });
-        logger.trace('Sent "enter-building-commit" event', {
-          characterId,
-          map: building.getMap()
-        });
+        socket.emit('enter-building-commit', { characterId, buildingId });
       }
     } catch (error) {
       logger.error({ error, coordinates, sightRange: SIGHT_RANGE });
     }
+  };
+
+export const handleInitLocationSitePage =
+  (socket: Socket) =>
+  ({
+    characterId,
+    buildingId
+  }: {
+    characterId: string;
+    buildingId: number;
+  }) => {
+    const building = buildingStore.get(buildingId);
+    socket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, { characterId, building });
+    logger.info(
+      { characterId, buildingId },
+      'Sent "init-location-site-page-commit" event'
+    );
   };
 
 export const convertWayToPlainBuildingNodes = (
@@ -70,7 +86,7 @@ export const convertWayToPlainBuildingNodes = (
   );
 
   const rawPlainBuilding = building.geometry.map((node) => {
-    const distance = getDistance(longestWallNode, node);
+    const distance = getDistance(longestWallNode, node, 0.01);
     const bearing = getGreatCircleBearing(longestWallNode, node);
     const bearingDelta = bearing - longestWallBearing;
 
@@ -93,9 +109,11 @@ export const determineBuilding = (
   coordinates: Coordinates,
   elements: WayOverpassElement[]
 ) => {
-  return elements.find((way: WayOverpassElement) => {
-    return isPointInPolygon(coordinates, way.geometry);
-  });
+  return (
+    elements.find((way: WayOverpassElement) => {
+      return isPointInPolygon(coordinates, way.geometry);
+    }) || null
+  );
 };
 
 export const determineLongestWallIndex = (
@@ -104,7 +122,7 @@ export const determineLongestWallIndex = (
   const geometry = building.geometry.slice(0, building.geometry.length - 1);
   const distances = geometry.map((node, index) => {
     const next = index === geometry.length - 1 ? 0 : index + 1;
-    return getDistance(node, geometry[next], 0.01);
+    return getDistance(node, geometry[next]);
   });
   return distances.indexOf(Math.max(...distances));
 };

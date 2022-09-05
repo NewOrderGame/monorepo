@@ -1,4 +1,4 @@
-import { PlainBuildingNode } from './location-site';
+import { PlainBuildingNode } from '../../../location-site/src/lib/types';
 
 export class Cell {
   readonly isWall: boolean;
@@ -6,7 +6,7 @@ export class Cell {
   constructor(
     readonly x: number,
     readonly y: number,
-    options?: { isWall: boolean }
+    options: { isWall: boolean }
   ) {
     this.isWall = options?.isWall || false;
   }
@@ -25,14 +25,8 @@ export class Building {
     this.maxX = Math.max(...plainBuildingNodes.map((node) => node.x));
     this.maxY = Math.max(...plainBuildingNodes.map((node) => node.y));
 
-    const wallNodesMap: boolean[][] = plainBuildingNodes.reduce(
-      (a: boolean[][], node) => {
-        if (!a[node.x]) a[node.x] = [];
-        a[node.x][node.y] = true;
-        return a;
-      },
-      []
-    );
+    const wallNodesMap: boolean[][] =
+      this.buildWallNodesMap(plainBuildingNodes);
 
     this.map = [];
     for (let x = 0; x < this.maxX + 1; x++) {
@@ -51,5 +45,15 @@ export class Building {
     if (x > this.maxX || y > this.maxY)
       throw new Error('The cell is out of boundaries');
     return this.map[x][y];
+  }
+
+  private buildWallNodesMap(
+    plainBuildingNodes: PlainBuildingNode[]
+  ): boolean[][] {
+    return plainBuildingNodes.reduce((a: boolean[][], node) => {
+      if (!a[node.x]) a[node.x] = [];
+      a[node.x][node.y] = true;
+      return a;
+    }, []);
   }
 }

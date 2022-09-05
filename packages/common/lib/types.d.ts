@@ -25,6 +25,7 @@ export declare type Character = {
     encounterStartTime: number | null;
     page: NogPage;
     stats: CharacterStats;
+    buildingId: number | null;
 };
 export declare type Encounter = {
     encounterId: NogEncounterId;

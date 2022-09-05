@@ -26,6 +26,7 @@ export const createCharacter = ({
     coordinates: DEFAULT_COORDINATES,
     connected: true,
     encounterId: null,
+    buildingId: null,
     encounterEndTime: null,
     encounterStartTime: null,
     page: NogPage.WORLD,

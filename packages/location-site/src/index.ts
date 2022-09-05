@@ -1,7 +1,10 @@
 import { io } from 'socket.io-client';
 import logger from './lib/utils/logger';
 import { NogEvent } from '@newordergame/common';
-import { handleEnterBuilding } from './lib/building-entry';
+import {
+  handleEnterBuilding,
+  handleInitLocationSitePage
+} from './lib/building-entry';
 
 if (!process.env.NOG_CORE_URL) {
   throw new Error('Environment variable NOG_CORE_URL is missing');
@@ -30,3 +33,5 @@ game.on(NogEvent.CONNECTED, () => {
 });
 
 game.on('enter-building', handleEnterBuilding(game));
+
+game.on('init-location-site-page', handleInitLocationSitePage(game));

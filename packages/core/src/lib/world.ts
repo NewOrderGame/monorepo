@@ -265,35 +265,6 @@ export const handleInitWorldPage =
     }
   };
 
-export const handleDestroyCharacterAtWorld = (socket: Socket) => () => {
-  logger.info(
-    {
-      characterId: socket.data.characterId
-    },
-    'Destroying character at world'
-  );
-
-  const character = characterStore.get(socket.data.characterId);
-  const characterAtWorld = characterAtWorldStore.get(socket.data.characterId);
-  if (characterAtWorld) {
-    characterStore.set(character.characterId, {
-      ...character,
-      coordinates: characterAtWorld.coordinates
-    });
-  }
-
-  if (character) {
-    characterAtWorldStore.delete(socket.data.characterId);
-    logger.info(
-      {
-        socketId: socket.id,
-        characterId: socket.data.characterId
-      },
-      'Removed character from world'
-    );
-  }
-};
-
 export const handleMoveCharacterAtWorld = (
   socket: Socket,
   coordinates: { lat: number; lng: number }

@@ -20,7 +20,6 @@ import { withStats } from '../stats/writer';
 import { StatsGroups } from '../lib/utils/types';
 import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from '../lib/npc';
-import { getGameNamespace } from '../namespaces/game-namespace';
 import { handleCharactersEncounter } from '../lib/encounter';
 
 const doNextTick = (gameNamespace: Namespace) => () => {
@@ -95,6 +94,7 @@ const doNextTick = (gameNamespace: Namespace) => () => {
     /** */
   }
 };
+
 const defineDoNextTick = (gameNamespace: Namespace) => {
   if (argv.s || argv.stats) {
     return withStats(() => doNextTick(gameNamespace)(), StatsGroups.TICK);
@@ -103,16 +103,6 @@ const defineDoNextTick = (gameNamespace: Namespace) => {
   }
 };
 
-let worldTimer: NodeJS.Timer;
-
-export const startGame = () => {
-  const gameNamespace = getGameNamespace();
-  worldTimer = setInterval(
-    defineDoNextTick(gameNamespace),
-    SECOND / TICK_PER_SECOND
-  );
-};
-
-export const stopWorld = () => {
-  clearInterval(worldTimer);
+export const startGame = (gameNamespace: Namespace): NodeJS.Timer => {
+  return setInterval(defineDoNextTick(gameNamespace), SECOND / TICK_PER_SECOND);
 };
