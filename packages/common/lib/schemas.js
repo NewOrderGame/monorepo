@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.characterAtWorldSchema = exports.encounterInSightSchema = exports.characterInSightSchema = exports.encounterParticipantSchema = exports.characterStatsSchema = exports.outlookSchema = exports.coordinatesSchema = exports.nicknameSchema = exports.encounterIdSchema = exports.characterIdSchema = exports.booleanSchema = exports.stringSchema = exports.numberSchema = void 0;
+exports.hexZSchema = exports.hexYSchema = exports.hexXSchema = exports.characterAtWorldSchema = exports.encounterInSightSchema = exports.characterInSightSchema = exports.encounterParticipantSchema = exports.characterStatsSchema = exports.outlookSchema = exports.coordinatesSchema = exports.nicknameSchema = exports.encounterIdSchema = exports.characterIdSchema = exports.booleanSchema = exports.stringSchema = exports.numberSchema = void 0;
 var yup_1 = require("yup");
 exports.numberSchema = (0, yup_1.number)();
 exports.stringSchema = (0, yup_1.string)();
@@ -51,3 +51,6 @@ exports.characterAtWorldSchema = (0, yup_1.object)({
     encounterSightFlag: (0, yup_1.boolean)(),
     isNpc: (0, yup_1.boolean)()
 });
+exports.hexXSchema = (0, yup_1.number)();
+exports.hexYSchema = (0, yup_1.number)();
+exports.hexZSchema = (0, yup_1.number)().nullable(true);

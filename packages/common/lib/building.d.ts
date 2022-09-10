@@ -8,4 +8,5 @@ export declare class Building {
     constructor(id: number, plainBuildingNodes: PlainBuildingNode[]);
     getMap(): Cell[][];
     getCell(x: number, y: number): Cell;
+    private collectWallNodesMap;
 }

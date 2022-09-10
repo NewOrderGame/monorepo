@@ -8,12 +8,7 @@ var Building = /** @class */ (function () {
         this.id = id;
         this.maxX = Math.max.apply(Math, plainBuildingNodes.map(function (node) { return node.x; }));
         this.maxY = Math.max.apply(Math, plainBuildingNodes.map(function (node) { return node.y; }));
-        var wallNodesMap = plainBuildingNodes.reduce(function (a, node) {
-            if (!a[node.x])
-                a[node.x] = [];
-            a[node.x][node.y] = true;
-            return a;
-        }, []);
+        var wallNodesMap = this.collectWallNodesMap(plainBuildingNodes);
         this.map = [];
         for (var x = 0; x < this.maxX + 1; x++) {
             if (!this.map[x])
@@ -30,6 +25,15 @@ var Building = /** @class */ (function () {
         if (x > this.maxX || y > this.maxY)
             throw new Error('The cell is out of boundaries');
         return this.map[x][y];
+    };
+    Building.prototype.collectWallNodesMap = function (plainBuildingNodes) {
+        var wallNodesMap = plainBuildingNodes.reduce(function (a, node) {
+            if (!a[node.x])
+                a[node.x] = [];
+            a[node.x][node.y] = true;
+            return a;
+        }, []);
+        return wallNodesMap;
     };
     return Building;
 }());

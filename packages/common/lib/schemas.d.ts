@@ -381,3 +381,6 @@ export declare const characterAtWorldSchema: import("yup/lib/object").OptionalOb
     encounterSightFlag: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
     isNpc: import("yup").BooleanSchema<boolean, import("yup/lib/types").AnyObject, boolean>;
 }>>;
+export declare const hexXSchema: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+export declare const hexYSchema: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;
+export declare const hexZSchema: import("yup").NumberSchema<number, import("yup/lib/types").AnyObject, number>;

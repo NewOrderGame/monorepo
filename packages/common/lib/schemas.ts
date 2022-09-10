@@ -57,3 +57,7 @@ export const characterAtWorldSchema = object({
   encounterSightFlag: boolean(),
   isNpc: boolean()
 });
+
+export const hexXSchema = number();
+export const hexYSchema = number();
+export const hexZSchema = number().nullable(true);

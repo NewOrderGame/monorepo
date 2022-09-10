@@ -15,20 +15,15 @@ export const ConnectionContext = React.createContext<Connection>(
   {} as Connection
 );
 
-declare global {
-  interface Window {
-    signOut: () => void;
-  }
-}
-
 export const ConnectionProvider = ({
   children
 }: {
   children: React.ReactNode;
 }) => {
+  const [connected, setConnected] = useState(false);
   const authenticator = useAuthenticator();
   const navigate = useNavigate();
-  const [connected, setConnected] = useState(false);
+  const gameSocket = core.gameSocket;
 
   window.signOut = authenticator.signOut;
 
@@ -39,12 +34,12 @@ export const ConnectionProvider = ({
       ?.getJwtToken() || '';
 
   const value = {
-    gameSocket: core.gameSocket
+    gameSocket
   };
 
   useInitConnection(
-    connect(accessToken, core.gameSocket, setConnected, navigate),
-    disconnect(core.gameSocket)
+    connect(accessToken, gameSocket, navigate, setConnected),
+    disconnect(gameSocket)
   );
 
   return (
@@ -71,10 +66,11 @@ const connect =
   (
     accessToken: string,
     gameSocket: Socket,
-    setConnected: (connected: boolean) => void,
-    navigate: NavigateFunction
+    navigate: NavigateFunction,
+    setConnected: (connected: boolean) => void
   ) =>
-  () => {
+  (
+  ) => {
     gameSocket.auth = {
       accessToken
     };

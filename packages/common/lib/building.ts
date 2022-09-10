@@ -13,14 +13,7 @@ export class Building {
     this.maxX = Math.max(...plainBuildingNodes.map((node) => node.x));
     this.maxY = Math.max(...plainBuildingNodes.map((node) => node.y));
 
-    const wallNodesMap: boolean[][] = plainBuildingNodes.reduce(
-      (a: boolean[][], node) => {
-        if (!a[node.x]) a[node.x] = [];
-        a[node.x][node.y] = true;
-        return a;
-      },
-      []
-    );
+    const wallNodesMap: boolean[][] = this.collectWallNodesMap(plainBuildingNodes);
 
     this.map = [];
     for (let x = 0; x < this.maxX + 1; x++) {
@@ -39,5 +32,18 @@ export class Building {
     if (x > this.maxX || y > this.maxY)
       throw new Error('The cell is out of boundaries');
     return this.map[x][y];
+  }
+
+  private collectWallNodesMap(plainBuildingNodes: PlainBuildingNode[]) {
+    const wallNodesMap = plainBuildingNodes.reduce(
+      (a: boolean[][], node) => {
+        if (!a[node.x]) a[node.x] = [];
+        a[node.x][node.y] = true;
+        return a;
+      },
+      []
+    )
+
+    return wallNodesMap;
   }
 }
