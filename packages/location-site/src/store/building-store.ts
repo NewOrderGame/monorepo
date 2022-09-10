@@ -1,7 +1,5 @@
+import { Building, NogBuildingId } from '@newordergame/common';
 import logger from '../lib/utils/logger';
-import { Building } from '../lib/building';
-
-type NogBuildingId = number;
 
 export class InMemoryBuildingStore {
   private _characters: Map<NogBuildingId, Building>;

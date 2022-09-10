@@ -2,10 +2,9 @@ import * as React from 'react';
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
 import { Content } from '../components/Content';
 import logger from '../lib/utils/logger';
-import { ConnectionContextType, useConnection } from '../lib/connection';
-import { NogEvent } from '@newordergame/common';
+import { Connection, useConnection } from '../lib/connection';
+import { Building, NogEvent } from '@newordergame/common';
 import { Application, Point, Sprite } from 'pixi.js';
-import { Building } from '../../../location-site/src/lib/building';
 import {
   BLACK_HEXAGON,
   HEXAGON_TEXTURE_HEIGHT,
@@ -51,12 +50,9 @@ const handleInitLocationSitePage =
     for (let x = 0; x <= building.maxX; x++) {
       for (let y = 0; y <= building.maxY; y++) {
         const cell = building.map[x][y];
-        let hexagon: Sprite;
-        if (cell.isWall) {
-          hexagon = new Sprite(BLACK_HEXAGON);
-        } else {
-          hexagon = new Sprite(WHITE_HEXAGON);
-        }
+        const hexagon: Sprite = new Sprite(
+          cell.isWall ? BLACK_HEXAGON : WHITE_HEXAGON
+        );
         hexagon.x = (building.maxY - y + x) * HEXAGON_TEXTURE_WIDTH;
         hexagon.y = ((x + y) * HEXAGON_TEXTURE_HEIGHT) / 2;
         hexagon.interactive = true;
@@ -66,7 +62,7 @@ const handleInitLocationSitePage =
           HEXAGON_TEXTURE_HEIGHT / 100
         );
         hexagon.on('pointerdown', () =>
-          logger.trace('Hexagon', { hexagon, x, y })
+          logger.trace('Hexagon pointer down', { hexagon, x, y })
         );
         pixiAppRef.current.stage.addChild(hexagon);
       }
@@ -74,14 +70,14 @@ const handleInitLocationSitePage =
     containerRef.current?.appendChild(pixiAppRef.current.view);
   };
 
-const useEmitInitLocationSitePage = (connection: ConnectionContextType) => {
+const useEmitInitLocationSitePage = (connection: Connection) => {
   useEffect(() => {
     connection.gameSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE);
   }, []);
 };
 
 const useOnInitLocationSitePage = (
-  connection: ConnectionContextType,
+  connection: Connection,
   containerRef: RefObject<HTMLDivElement>
 ) => {
   const pixiAppRef = useRef<Application>(null);

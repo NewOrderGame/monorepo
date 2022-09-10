@@ -1,5 +1,5 @@
 import logger from './utils/logger';
-import { Coordinates, NogEvent } from '@newordergame/common';
+import { Building, Coordinates, NogEvent } from '@newordergame/common';
 import {
   computeDestinationPoint,
   getDistance,
@@ -7,7 +7,6 @@ import {
   isPointInPolygon
 } from 'geolib';
 import axios from 'axios';
-import { Building } from './building';
 import { Socket } from 'socket.io-client';
 import {
   OVERPASS_API_BUILDINGS_SKELS_QUERY,
@@ -15,7 +14,7 @@ import {
   OVERPASS_API_URL,
   SIGHT_RANGE
 } from './constants';
-import { PlainBuildingNode, WayOverpassElement } from './types';
+import { PlainBuildingNode, WayOverpassElement } from '@newordergame/common';
 import buildingStore from '../store/building-store';
 
 export const handleEnterBuilding =

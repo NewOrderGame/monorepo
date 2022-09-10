@@ -7,5 +7,6 @@ export const setLocationSiteSocket = (socket: Socket) => {
 };
 
 export const getLocationSiteSocket = () => {
+  if (!locationSiteSocket) throw new Error('Location site socket is missing');
   return locationSiteSocket;
 };

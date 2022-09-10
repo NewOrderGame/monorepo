@@ -9,7 +9,7 @@ import {
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useEffect } from 'react';
 import { CharacterInSight, EncounterInSight } from '../../../common';
-import { useConnection } from '../lib/connection';
+import { Connection, useConnection } from '../lib/connection';
 import { Coordinates, NogEvent } from '@newordergame/common';
 import logger from '../lib/utils/logger';
 
@@ -27,6 +27,15 @@ export const WorldMapEngine = () => {
     }
   });
 
+  useAddConnectionSocketsEventListeners(connection, map);
+
+  return null;
+};
+
+const useAddConnectionSocketsEventListeners = (
+  connection: Connection,
+  map: LeafletMap
+) => {
   useEffect(() => {
     connection.gameSocket.on(
       NogEvent.MOVE_CHARACTER_AT_WORLD,
@@ -52,8 +61,6 @@ export const WorldMapEngine = () => {
       connection.gameSocket.off('enter-building');
     };
   }, [connection.gameSocket, map]);
-
-  return null;
 };
 
 const handleEnterBuilding = (building: any) => {

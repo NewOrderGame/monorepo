@@ -18,3 +18,5 @@ __exportStar(require("./lib/defaults"), exports);
 __exportStar(require("./lib/enums"), exports);
 __exportStar(require("./lib/schemas"), exports);
 __exportStar(require("./lib/types"), exports);
+__exportStar(require("./lib/building"), exports);
+__exportStar(require("./lib/cell"), exports);

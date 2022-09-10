@@ -1,4 +1,4 @@
-import { PlainBuildingNode } from '../../../location-site/src/lib/types';
+import { PlainBuildingNode } from '@newordergame/common';
 
 export class Cell {
   readonly isWall: boolean;

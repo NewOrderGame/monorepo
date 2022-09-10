@@ -1,16 +1,5 @@
 import { PlainBuildingNode } from './types';
-
-export class Cell {
-  readonly isWall: boolean;
-
-  constructor(
-    readonly x: number,
-    readonly y: number,
-    options?: { isWall: boolean }
-  ) {
-    this.isWall = options?.isWall || false;
-  }
-}
+import { Cell } from "./cell";
 
 export class Building {
   readonly map: Cell[][];

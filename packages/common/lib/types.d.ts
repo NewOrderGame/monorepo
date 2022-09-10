@@ -5,6 +5,7 @@ export declare type Coordinates = {
 };
 export declare type NogCharacterId = string;
 export declare type NogEncounterId = string;
+export declare type NogBuildingId = number;
 export declare type Outlook = {
     0: number;
     1: number;
@@ -61,4 +62,20 @@ export declare type CharacterInSight = {
     nickname: string;
     distance: number;
     isEnemy: boolean;
+};
+export declare type OverpassElement = {
+    type: string;
+    id: number;
+};
+export declare type WayOverpassElement = {
+    bounds: any;
+    nodes: number[];
+    geometry: {
+        lat: number;
+        lon: number;
+    }[];
+} & OverpassElement;
+export declare type PlainBuildingNode = {
+    x: number;
+    y: number;
 };
