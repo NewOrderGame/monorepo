@@ -11,6 +11,7 @@ import {
   HEXAGON_TEXTURE_WIDTH,
   WHITE_HEXAGON
 } from '../lib/constants';
+import { Socket } from 'socket.io-client';
 
 export const LocationSitePage = () => {
   logger.info('Location Site Page');
@@ -22,8 +23,15 @@ export const LocationSitePage = () => {
   return (
     <Content>
       <div ref={containerRef}></div>
+      <button onClick={exitLocationSite(connection.gameSocket)}>
+        Let me out!
+      </button>
     </Content>
   );
+};
+
+const exitLocationSite = (gameSocket: Socket) => () => {
+  gameSocket.emit(NogEvent.EXIT_LOCATION_SITE);
 };
 
 const handleInitLocationSitePage =
@@ -70,7 +78,7 @@ const handleInitLocationSitePage =
     containerRef.current?.appendChild(pixiAppRef.current.view);
   };
 
-const useEmitInitLocationSitePage = (connection: Connection) => {
+const useEmitInitLocationSitePage = (connection: any) => {
   useEffect(() => {
     connection.gameSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE);
   }, []);

@@ -6,6 +6,7 @@ import {
   setLocationSiteSocket
 } from '../store/location-site-socket-store';
 import characterStore from '../store/character-store';
+import characterAtWorldStore from '../store/character-at-world-store';
 
 export const handleLocationSiteServiceConnection = (
   socket: Socket,
@@ -39,10 +40,7 @@ export const handleInitLocationSitePageInternal =
     gameNamespace
       .to(characterId)
       .emit(NogEvent.INIT_LOCATION_SITE_PAGE, building);
-    logger.info(
-      { characterId },
-      'Sent "init-location-site-page-commit"'
-    );
+    logger.info({ characterId }, 'Sent "init-location-site-page-commit"');
   };
 
 export const handleEnterBuilding =
@@ -69,6 +67,18 @@ export const handleInitLocationSitePage = (socket: Socket) => () => {
   });
 };
 
+export const handleExitLocationSite = (socket: Socket) => () => {
+  logger.debug('Exit location site');
+  const characterId = socket.data.characterId;
+  const character = characterStore.get(characterId);
+  characterStore.set(characterId, {
+    ...character,
+    buildingId: null
+  });
+  socket.emit(NogEvent.REDIRECT, { page: NogPage.WORLD });
+  2;
+};
+
 export const handleEnterBuildingCommit =
   (socket: Socket, gameNamespace: Namespace) =>
   ({
@@ -84,6 +94,7 @@ export const handleEnterBuildingCommit =
       ...character,
       buildingId
     });
+    characterAtWorldStore.delete(character.characterId);
     gameNamespace
       .to(characterId)
       .emit(NogEvent.REDIRECT, { page: NogPage.LOCATION_SITE });

@@ -7,7 +7,7 @@ import {
 
 describe('Reader module', () => {
   describe('getTickTimeStats', () => {
-    it('Gets data from files and parses it', () => {
+    test('Gets data from files and parses it', () => {
       const stats = getTickTimeStats(resolve(__dirname, 'test'));
 
       // expect(stats).toEqual(expectedResult);
@@ -15,7 +15,7 @@ describe('Reader module', () => {
   });
 
   describe('getRawStatsFromFile', () => {
-    it('Gets data from files and parses it', () => {
+    test('Gets data from files and parses it', () => {
       const stats = getRawStatsFromFile(
         resolve(__dirname, 'test', '1653429529491')
       );
@@ -266,7 +266,7 @@ describe('Reader module', () => {
   });
 
   describe('calculateQuantityChart', () => {
-    it('Gets data from files and parses it', () => {
+    test('Gets data from files and parses it', () => {
       const data = [
         [0, 0, 0],
         [0, 0, 0],

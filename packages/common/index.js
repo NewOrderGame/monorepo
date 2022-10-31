@@ -20,3 +20,4 @@ __exportStar(require("./lib/schemas"), exports);
 __exportStar(require("./lib/types"), exports);
 __exportStar(require("./lib/building"), exports);
 __exportStar(require("./lib/cell"), exports);
+__exportStar(require("./lib/hex-utils"), exports);

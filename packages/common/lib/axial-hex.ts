@@ -1,25 +1,19 @@
 import { hexXSchema, hexYSchema, hexZSchema } from './schemas';
-import logger from './utils/logger';
 import { CubicHex } from './cubic-hex';
 
 export class AxialHex {
-  readonly x: number;
-  readonly y: number;
+  private x: number;
+  private y: number;
 
   public constructor(x: number, y: number, z?: number) {
-    try {
-      hexXSchema.validateSync(x);
-      hexYSchema.validateSync(y);
-      hexZSchema.validateSync(z);
-    } catch (error) {
-      logger.error(error, 'AxialHex coordinates are invalid');
-      return;
-    }
+    hexXSchema.validateSync(x);
+    hexYSchema.validateSync(y);
+    hexZSchema.validateSync(z);
 
-    if (x && y && z) {
+    if (typeof z === 'number') {
       this.x = -y;
       this.y = z;
-    } else if (x && y) {
+    } else {
       this.x = x;
       this.y = y;
     }

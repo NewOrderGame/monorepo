@@ -32,6 +32,7 @@ var NogEvent;
     NogEvent["INIT_NPC"] = "init-npc";
     NogEvent["DESTROY_NPC"] = "destroy-npc";
     NogEvent["EXIT_ENCOUNTER"] = "exit-encounter";
+    NogEvent["EXIT_LOCATION_SITE"] = "exit-location-site";
     NogEvent["MOVE_NPC_AT_WORLD"] = "move-npc-at-world";
     NogEvent["CREATE_NPC"] = "create-npc";
 })(NogEvent = exports.NogEvent || (exports.NogEvent = {}));

@@ -9,7 +9,7 @@ import { handleCreateCharacter } from './character';
 import { handleExitEncounter, handleInitEncounterPage } from './encounter';
 import { handleInitWorldPage, handleMoveCharacterAtWorld } from './world';
 import {
-  handleEnterBuilding,
+  handleEnterBuilding, handleExitLocationSite,
   handleInitLocationSitePage
 } from './location-site';
 
@@ -107,5 +107,10 @@ const addUserEventListeners = (
   socket.on(
     NogEvent.INIT_LOCATION_SITE_PAGE,
     handleInitLocationSitePage(socket)
+  );
+
+  socket.on(
+    NogEvent.EXIT_LOCATION_SITE,
+    handleExitLocationSite(socket)
   );
 };

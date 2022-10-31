@@ -1,27 +1,21 @@
 import { AxialHex } from './axial-hex';
 import { hexXSchema, hexYSchema, hexZSchema } from './schemas';
-import logger from './utils/logger';
 
 export class CubicHex {
-  readonly x: number;
-  readonly y: number;
-  readonly z: number;
+  private x: number;
+  private y: number;
+  private z: number;
 
   public constructor(x: number, y: number, z?: number) {
-    try {
-      hexXSchema.validateSync(x);
-      hexYSchema.validateSync(y);
-      hexZSchema.validateSync(z);
-    } catch (error) {
-      logger.error(error, 'CubicHex coordinates are invalid');
-      return;
-    }
+    hexXSchema.validateSync(x);
+    hexYSchema.validateSync(y);
+    hexZSchema.validateSync(z);
 
-    if (x && y && z) {
+    if (typeof z === 'number') {
       this.x = x;
       this.y = y;
       this.z = z;
-    } else if (x && y) {
+    } else {
       this.x = x - y;
       this.y = -x;
       this.z = y;
@@ -29,7 +23,7 @@ export class CubicHex {
   }
 
   public toAxial(): AxialHex {
-    return new AxialHex(this.x, this.y);
+    return new AxialHex(this.x, this.y, this.z);
   }
 
   public getX(): number {
