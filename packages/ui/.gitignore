@@ -13,7 +13,11 @@
 
 # misc
 .DS_Store
-.env*
+
+# Files with environment varilables
+.env
+.env.development
+.env.production
 
 npm-debug.log*
 yarn-debug.log*
