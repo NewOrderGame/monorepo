@@ -16,6 +16,16 @@ import {
 } from './constants';
 import { PlainBuildingNode, WayOverpassElement } from '@newordergame/common';
 import buildingStore from '../store/building-store';
+import {
+  round,
+  min,
+  max,
+  abs,
+  evaluate,
+  add,
+  multiply,
+  subtract
+} from 'mathjs';
 
 jest.mock("axios");
 
@@ -89,20 +99,20 @@ export const convertWayToPlainBuildingNodes = (
   const rawPlainBuilding = building.geometry.map((node) => {
     const distance = getDistance(longestWallNode, node, 0.00001);
     const bearing = getGreatCircleBearing(longestWallNode, node);
-    const bearingDelta = bearing - longestWallBearing;
+    const bearingDelta = subtract(bearing, longestWallBearing);
 
     return {
-      x: Math.round(distance * Math.cos((bearingDelta * Math.PI) / 180)),
-      y: Math.round(distance * Math.sin((bearingDelta * Math.PI) / 180))
+      x: round(evaluate(`${distance} * cos(${bearingDelta} deg)`)),
+      y: round(evaluate(`${distance} * sin(${bearingDelta} deg)`))
     };
   });
 
-  const minX = Math.min(...rawPlainBuilding.map((node) => node.x));
-  const minY = Math.min(...rawPlainBuilding.map((node) => node.y));
+  const minX = min(...rawPlainBuilding.map((node) => node.x));
+  const minY = min(...rawPlainBuilding.map((node) => node.y));
 
   return rawPlainBuilding.map((node) => ({
-    x: node.x + Math.abs(minX),
-    y: node.y + Math.abs(minY)
+    x: add(node.x, abs(minX)),
+    y: add(node.y, abs(minY))
   }));
 };
 
@@ -125,7 +135,7 @@ export const determineLongestWallIndex = (
     const next = index === geometry.length - 1 ? 0 : index + 1;
     return getDistance(node, geometry[next]);
   });
-  return distances.indexOf(Math.max(...distances));
+  return distances.indexOf(max(...distances));
 };
 
 export const getBuildingsInSight = (
@@ -134,12 +144,12 @@ export const getBuildingsInSight = (
 ) => {
   const min = computeDestinationPoint(
     coordinates,
-    sightRange * 2,
+    multiply(sightRange, 2),
     225 // bottom left
   );
   const max = computeDestinationPoint(
     coordinates,
-    sightRange * 2,
+    multiply(sightRange, 2),
     45 // top right
   );
 
