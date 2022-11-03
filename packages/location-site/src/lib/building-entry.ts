@@ -87,7 +87,7 @@ export const convertWayToPlainBuildingNodes = (
   );
 
   const rawPlainBuilding = building.geometry.map((node) => {
-    const distance = getDistance(longestWallNode, node, 0.01);
+    const distance = getDistance(longestWallNode, node, 0.00001);
     const bearing = getGreatCircleBearing(longestWallNode, node);
     const bearingDelta = bearing - longestWallBearing;
 

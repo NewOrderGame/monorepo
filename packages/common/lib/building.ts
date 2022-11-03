@@ -1,6 +1,6 @@
 import { PlainBuildingNode } from './types';
 import { Cell } from './cell';
-import { calculateLine } from './hex-utils';
+import { drawLine } from './hex-utils';
 import { CubicHex } from './cubic-hex';
 
 export class Building {
@@ -40,13 +40,13 @@ export class Building {
     return plainBuildingNodes.reduce(
       (a: boolean[][], currentNode: PlainBuildingNode, index, array) => {
         if (index === array.length - 1) return a;
-        const line = calculateLine(
+        const line = drawLine(
           new CubicHex(currentNode.x, currentNode.y),
           new CubicHex(array[index + 1].x, array[index + 1].y)
         );
         line.forEach((hex) => {
-          const x = hex.toAxial().getX();
-          const y = hex.toAxial().getY();
+          const x = hex.toMapCoordinates().x;
+          const y = hex.toMapCoordinates().y;
           if (!a[x]) {
             a[x] = [];
           }

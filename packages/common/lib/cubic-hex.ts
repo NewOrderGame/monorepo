@@ -1,5 +1,6 @@
-import { AxialHex } from './axial-hex';
 import { hexXSchema, hexYSchema, hexZSchema } from './schemas';
+import { MapCoordinates } from './types';
+import { evaluate } from 'mathjs';
 
 export class CubicHex {
   private x: number;
@@ -12,18 +13,21 @@ export class CubicHex {
     hexZSchema.validateSync(z);
 
     if (typeof z === 'number') {
-      this.x = x;
-      this.y = y;
-      this.z = z;
+      this.x = evaluate(`${x}`);
+      this.y = evaluate(`${y}`);
+      this.z = evaluate(`${z}`);
     } else {
-      this.x = x - y;
-      this.y = -x;
-      this.z = y;
+      this.x = evaluate(`${x}`);
+      this.y = evaluate(`${-y}`);
+      this.z = evaluate(`${y - x}`);
     }
   }
 
-  public toAxial(): AxialHex {
-    return new AxialHex(this.x, this.y, this.z);
+  public toMapCoordinates(): MapCoordinates {
+    return {
+      x: this.x,
+      y: -this.y
+    };
   }
 
   public getX(): number {

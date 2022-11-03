@@ -1,24 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.calculateLine = exports.calculateDistance = void 0;
+exports.drawLine = exports.calculateDistance = void 0;
 var cubic_hex_1 = require("./cubic-hex");
+var mathjs_1 = require("mathjs");
 var calculateDistance = function (hexA, hexB) {
-    var vX = Math.abs(hexA.getX() - hexB.getX());
-    var vY = Math.abs(hexA.getY() - hexB.getY());
-    var vZ = Math.abs(hexA.getZ() - hexB.getZ());
-    return Math.max(vX, vY, vZ);
+    var vX = (0, mathjs_1.abs)((0, mathjs_1.subtract)(hexA.getX(), hexB.getX()));
+    var vY = (0, mathjs_1.abs)((0, mathjs_1.subtract)(hexA.getY(), hexB.getY()));
+    var vZ = (0, mathjs_1.abs)((0, mathjs_1.subtract)(hexA.getZ(), hexB.getZ()));
+    return (0, mathjs_1.max)(vX, vY, vZ);
 };
 exports.calculateDistance = calculateDistance;
-var calculateLine = function (hexA, hexB) {
+var drawLine = function (hexA, hexB) {
     var distance = (0, exports.calculateDistance)(hexA, hexB);
     var line = [];
     for (var i = 0; i <= distance; i++) {
-        var multiplier = i / distance;
-        var x = Math.round(hexA.getX() + (hexB.getX() - hexA.getX()) * multiplier);
-        var y = Math.round(hexA.getY() + (hexB.getY() - hexA.getY()) * multiplier);
-        var z = Math.round(hexA.getZ() + (hexB.getZ() - hexA.getZ()) * multiplier);
+        var multiplier = (0, mathjs_1.divide)(i, distance);
+        var x = (0, mathjs_1.round)((0, mathjs_1.evaluate)("".concat(hexA.getX(), " + (").concat(hexB.getX(), " - ").concat(hexA.getX(), ") * ").concat(multiplier)));
+        var z = (0, mathjs_1.round)((0, mathjs_1.evaluate)("".concat(hexA.getZ(), " + (").concat(hexB.getZ(), " - ").concat(hexA.getZ(), ") * ").concat(multiplier)));
+        var y = (0, mathjs_1.evaluate)("-".concat(x, " -").concat(z));
         line.push(new cubic_hex_1.CubicHex(x, y, z));
     }
     return line;
 };
-exports.calculateLine = calculateLine;
+exports.drawLine = drawLine;

@@ -85,3 +85,8 @@ export type PlainBuildingNode = {
   x: number;
   y: number;
 };
+
+export type MapCoordinates = {
+  x: number;
+  y: number;
+};

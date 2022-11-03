@@ -57,10 +57,10 @@ var Building = /** @class */ (function () {
         return plainBuildingNodes.reduce(function (a, currentNode, index, array) {
             if (index === array.length - 1)
                 return a;
-            var line = (0, hex_utils_1.calculateLine)(new cubic_hex_1.CubicHex(currentNode.x, currentNode.y), new cubic_hex_1.CubicHex(array[index + 1].x, array[index + 1].y));
+            var line = (0, hex_utils_1.drawLine)(new cubic_hex_1.CubicHex(currentNode.x, currentNode.y), new cubic_hex_1.CubicHex(array[index + 1].x, array[index + 1].y));
             line.forEach(function (hex) {
-                var x = hex.toAxial().getX();
-                var y = hex.toAxial().getY();
+                var x = hex.toMapCoordinates().x;
+                var y = hex.toMapCoordinates().y;
                 if (!a[x]) {
                     a[x] = [];
                 }
