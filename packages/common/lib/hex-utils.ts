@@ -15,12 +15,12 @@ export const drawLine = (hexA: CubicHex, hexB: CubicHex): CubicHex[] => {
     const multiplier = divide(i, distance);
     const x = round(
       evaluate(
-        `${hexA.getX()} + (${hexB.getX()} - ${hexA.getX()}) * ${multiplier}`
+        `(${hexA.getX()} + (${hexB.getX()} - ${hexA.getX()}) * ${multiplier})`
       )
     );
     const z = round(
       evaluate(
-        `${hexA.getZ()} + (${hexB.getZ()} - ${hexA.getZ()}) * ${multiplier}`
+        `(${hexA.getZ()} + (${hexB.getZ()} - ${hexA.getZ()}) * ${multiplier}) - 0.001`
       )
     );
     const y = evaluate(`-${x} -${z}`);

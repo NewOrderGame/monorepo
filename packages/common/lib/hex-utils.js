@@ -15,8 +15,8 @@ var drawLine = function (hexA, hexB) {
     var line = [];
     for (var i = 0; i <= distance; i++) {
         var multiplier = (0, mathjs_1.divide)(i, distance);
-        var x = (0, mathjs_1.round)((0, mathjs_1.evaluate)("".concat(hexA.getX(), " + (").concat(hexB.getX(), " - ").concat(hexA.getX(), ") * ").concat(multiplier)));
-        var z = (0, mathjs_1.round)((0, mathjs_1.evaluate)("".concat(hexA.getZ(), " + (").concat(hexB.getZ(), " - ").concat(hexA.getZ(), ") * ").concat(multiplier)));
+        var x = (0, mathjs_1.round)((0, mathjs_1.evaluate)("(".concat(hexA.getX(), " + (").concat(hexB.getX(), " - ").concat(hexA.getX(), ") * ").concat(multiplier, ")")));
+        var z = (0, mathjs_1.round)((0, mathjs_1.evaluate)("(".concat(hexA.getZ(), " + (").concat(hexB.getZ(), " - ").concat(hexA.getZ(), ") * ").concat(multiplier, ") - 0.001")));
         var y = (0, mathjs_1.evaluate)("-".concat(x, " -").concat(z));
         line.push(new cubic_hex_1.CubicHex(x, y, z));
     }
