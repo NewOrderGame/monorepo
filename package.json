@@ -1,11 +1,11 @@
 {
   "devDependencies": {
-    "lerna": "^5.1.4"
+    "lerna": "^5.6.2",
+    "yarn": "^1.22.19"
   },
   "name": "monorepo",
   "description": "This repository contains all code for the first period.",
   "version": "1.0.0",
-  "dependencies": {},
   "scripts": {
     "start": "lerna run start --stream",
     "deploy": "lerna run deploy --stream",
@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/NewOrderGame/monorepo/issues"
   },
-  "homepage": "https://github.com/NewOrderGame/monorepo#readme"
+  "homepage": "https://github.com/NewOrderGame/monorepo#readme",
+  "workspaces": [
+    "packages/*"
+  ],
+  "private": true
 }

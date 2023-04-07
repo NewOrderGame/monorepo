@@ -1,5 +1,5 @@
 {
-  "name": "auth",
+  "name": "@newordergame/auth",
   "version": "0.1.0",
   "bin": {
     "auth": "bin/auth.js"
