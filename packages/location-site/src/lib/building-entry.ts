@@ -27,8 +27,6 @@ import {
   subtract
 } from 'mathjs';
 
-jest.mock("axios");
-
 export const handleEnterBuilding =
   (socket: Socket) =>
   async ({

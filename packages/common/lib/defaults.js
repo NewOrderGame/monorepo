@@ -5,3 +5,4 @@ exports.DEFAULT_COORDINATES = {
     lat: 46.47705630400258,
     lng: 30.730369681615272
 };
+//# sourceMappingURL=defaults.js.map

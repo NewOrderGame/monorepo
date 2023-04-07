@@ -15,14 +15,9 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
-var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
-    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
-        if (ar || !(i in from)) {
-            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
-            ar[i] = from[i];
-        }
-    }
-    return to.concat(ar || Array.prototype.slice.call(from));
+var __spread = (this && this.__spread) || function () {
+    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+    return ar;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Building = void 0;
@@ -33,8 +28,8 @@ var Building = /** @class */ (function () {
     function Building(id, plainBuildingNodes) {
         var _a;
         this.id = id;
-        this.maxX = Math.max.apply(Math, __spreadArray([], __read(plainBuildingNodes.map(function (node) { return node.x; })), false));
-        this.maxY = Math.max.apply(Math, __spreadArray([], __read(plainBuildingNodes.map(function (node) { return node.y; })), false));
+        this.maxX = Math.max.apply(Math, __spread(plainBuildingNodes.map(function (node) { return node.x; })));
+        this.maxY = Math.max.apply(Math, __spread(plainBuildingNodes.map(function (node) { return node.y; })));
         var wallNodesMap = this.collectWallNodesMap(plainBuildingNodes);
         this.map = [];
         for (var x = 0; x < this.maxX + 1; x++) {
@@ -57,7 +52,7 @@ var Building = /** @class */ (function () {
         return plainBuildingNodes.reduce(function (a, currentNode, index, array) {
             if (index === array.length - 1)
                 return a;
-            var line = (0, hex_utils_1.drawLine)(new cubic_hex_1.CubicHex(currentNode.x, currentNode.y), new cubic_hex_1.CubicHex(array[index + 1].x, array[index + 1].y));
+            var line = hex_utils_1.drawLine(new cubic_hex_1.CubicHex(currentNode.x, currentNode.y), new cubic_hex_1.CubicHex(array[index + 1].x, array[index + 1].y));
             line.forEach(function (hex) {
                 var x = hex.toMapCoordinates().x;
                 var y = hex.toMapCoordinates().y;
@@ -72,3 +67,4 @@ var Building = /** @class */ (function () {
     return Building;
 }());
 exports.Building = Building;
+//# sourceMappingURL=building.js.map

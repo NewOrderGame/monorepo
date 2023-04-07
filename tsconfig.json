@@ -6,6 +6,8 @@
     "module": "commonjs",
     "target": "es5",
     "allowJs": true,
-    "downlevelIteration": true
-  }
+    "downlevelIteration": true,
+    "sourceMap": true,
+    "skipLibCheck": true
+  },
 }

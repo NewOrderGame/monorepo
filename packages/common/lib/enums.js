@@ -36,3 +36,4 @@ var NogEvent;
     NogEvent["MOVE_NPC_AT_WORLD"] = "move-npc-at-world";
     NogEvent["CREATE_NPC"] = "create-npc";
 })(NogEvent = exports.NogEvent || (exports.NogEvent = {}));
+//# sourceMappingURL=enums.js.map

@@ -49,6 +49,7 @@ export const handleEnterBuilding =
     const characterId = socket.data.characterId;
 
     if (!characterId) throw new Error('Character ID is missing');
+    if (!locationSiteSocket) return;
 
     locationSiteSocket.emit('enter-building', {
       characterId,
@@ -60,6 +61,8 @@ export const handleInitLocationSitePage = (socket: Socket) => () => {
   const locationSiteSocket = getLocationSiteSocket();
   const characterId = socket.data.characterId;
   const character = characterStore.get(characterId);
+
+  if (!locationSiteSocket) return;
 
   locationSiteSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, {
     characterId,

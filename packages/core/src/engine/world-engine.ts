@@ -22,7 +22,7 @@ import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from '../lib/npc';
 import { handleCharactersEncounter } from '../lib/encounter';
 
-const doNextTick = (gameNamespace: Namespace) => () => {
+const doNextTick = (gameNamespace: Namespace) => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();
   const encounters: Encounter[] = encounterStore.getAll();
 
@@ -97,9 +97,9 @@ const doNextTick = (gameNamespace: Namespace) => () => {
 
 const defineDoNextTick = (gameNamespace: Namespace) => {
   if (argv.s || argv.stats) {
-    return withStats(() => doNextTick(gameNamespace)(), StatsGroups.TICK);
+    return withStats(() => doNextTick(gameNamespace), StatsGroups.TICK);
   } else {
-    return () => doNextTick(gameNamespace)();
+    return () => doNextTick(gameNamespace);
   }
 };
 

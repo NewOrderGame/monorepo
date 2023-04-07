@@ -9,14 +9,14 @@ var CubicHex = /** @class */ (function () {
         schemas_1.hexYSchema.validateSync(y);
         schemas_1.hexZSchema.validateSync(z);
         if (typeof z === 'number') {
-            this.x = (0, mathjs_1.evaluate)("".concat(x));
-            this.y = (0, mathjs_1.evaluate)("".concat(y));
-            this.z = (0, mathjs_1.evaluate)("".concat(z));
+            this.x = mathjs_1.evaluate("" + x);
+            this.y = mathjs_1.evaluate("" + y);
+            this.z = mathjs_1.evaluate("" + z);
         }
         else {
-            this.x = (0, mathjs_1.evaluate)("".concat(x));
-            this.y = (0, mathjs_1.evaluate)("".concat(-y));
-            this.z = (0, mathjs_1.evaluate)("".concat(y - x));
+            this.x = mathjs_1.evaluate("" + x);
+            this.y = mathjs_1.evaluate("" + -y);
+            this.z = mathjs_1.evaluate("" + (y - x));
         }
     }
     CubicHex.prototype.toMapCoordinates = function () {
@@ -37,3 +37,4 @@ var CubicHex = /** @class */ (function () {
     return CubicHex;
 }());
 exports.CubicHex = CubicHex;
+//# sourceMappingURL=cubic-hex.js.map

@@ -3,3 +3,6 @@ node_modules
 
 cdk.out
 cdk.context.json
+
+packages/**/*.js
+packages/**/*.js.map
