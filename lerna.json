@@ -3,5 +3,8 @@
     "packages/*"
   ],
   "version": "independent",
-  "npmClient": "npm"
+  "npmClient": "yarn",
+  "$schema": "node_modules/lerna/schemas/lerna-schema.json",
+  "useNx": false,
+  "useWorkspaces": true
 }

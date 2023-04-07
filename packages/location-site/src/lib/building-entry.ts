@@ -17,6 +17,8 @@ import {
 import { PlainBuildingNode, WayOverpassElement } from '@newordergame/common';
 import buildingStore from '../store/building-store';
 
+jest.mock("axios");
+
 export const handleEnterBuilding =
   (socket: Socket) =>
   async ({
