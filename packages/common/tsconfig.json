@@ -1,12 +1,4 @@
 {
-  "compilerOptions": {
-    "allowSyntheticDefaultImports": true,
-    "noImplicitAny": true,
-    "module": "commonjs",
-    "target": "es5",
-    "allowJs": true,
-    "declaration": true
-  },
-  "files": ["index.ts"],
-  "exclude": ["node_modules"]
+  "extends": "../../tsconfig.json",
+  "files": ["index.ts"]
 }

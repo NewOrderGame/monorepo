@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "module": "CommonJS",
+    "target": "ES5",
+    "allowJs": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "types": []
+  }
+}

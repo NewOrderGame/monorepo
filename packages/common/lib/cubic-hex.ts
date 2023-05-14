@@ -1,35 +1,33 @@
-import { AxialHex } from './axial-hex';
 import { hexXSchema, hexYSchema, hexZSchema } from './schemas';
-import logger from './utils/logger';
+import { MapCoordinates } from './types';
+import { evaluate } from 'mathjs';
 
 export class CubicHex {
-  readonly x: number;
-  readonly y: number;
-  readonly z: number;
+  private x: number;
+  private y: number;
+  private z: number;
 
   public constructor(x: number, y: number, z?: number) {
-    try {
-      hexXSchema.validateSync(x);
-      hexYSchema.validateSync(y);
-      hexZSchema.validateSync(z);
-    } catch (error) {
-      logger.error(error, 'CubicHex coordinates are invalid');
-      return;
-    }
+    hexXSchema.validateSync(x);
+    hexYSchema.validateSync(y);
+    hexZSchema.validateSync(z);
 
-    if (x && y && z) {
-      this.x = x;
-      this.y = y;
-      this.z = z;
-    } else if (x && y) {
-      this.x = x - y;
-      this.y = -x;
-      this.z = y;
+    if (typeof z === 'number') {
+      this.x = evaluate(`${x}`);
+      this.y = evaluate(`${y}`);
+      this.z = evaluate(`${z}`);
+    } else {
+      this.x = evaluate(`${x}`);
+      this.y = evaluate(`${-y}`);
+      this.z = evaluate(`${y - x}`);
     }
   }
 
-  public toAxial(): AxialHex {
-    return new AxialHex(this.x, this.y);
+  public toMapCoordinates(): MapCoordinates {
+    return {
+      x: this.x,
+      y: -this.y
+    };
   }
 
   public getX(): number {

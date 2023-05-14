@@ -33,6 +33,7 @@ export enum NogEvent {
   DESTROY_NPC = 'destroy-npc',
 
   EXIT_ENCOUNTER = 'exit-encounter',
+  EXIT_LOCATION_SITE = 'exit-location-site',
 
   MOVE_NPC_AT_WORLD = 'move-npc-at-world',
   CREATE_NPC = 'create-npc'
