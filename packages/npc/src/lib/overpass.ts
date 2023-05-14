@@ -61,15 +61,13 @@ export const getRandomHouseEntryCoordinates = async (
   const center = getCenter(nodes);
 
   if (!center) {
-    logger.error(
-      { center, coordinates, sightRange: range },
-      'Could not find center'
-    );
-    return;
+    const message = 'Could not find center';
+    logger.error({ center, coordinates, sightRange: range }, message);
+    throw new Error(message);
+  } else {
+    return {
+      lat: center.latitude,
+      lng: center.longitude
+    };
   }
-
-  return {
-    lat: center.latitude,
-    lng: center.longitude
-  };
 };

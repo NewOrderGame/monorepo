@@ -3,7 +3,7 @@ import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
 import { Content } from '../components/Content';
 import logger from '../lib/utils/logger';
 import { Connection, useConnection } from '../lib/connection';
-import { Building, NogEvent } from '@newordergame/common';
+import { NogEvent } from '@newordergame/common';
 import { Application, Point, Sprite } from 'pixi.js';
 import {
   BLACK_HEXAGON,
@@ -39,7 +39,8 @@ const handleInitLocationSitePage =
     pixiAppRef: MutableRefObject<Application | null>,
     containerRef: MutableRefObject<HTMLDivElement | null>
   ) =>
-  (building: Building) => {
+  // TODO: Create type for Building in common module
+  (building: any) => {
     logger.info('Location Site Page building a building', { building });
     const width =
       (building.maxX + building.maxY + 2) * HEXAGON_TEXTURE_WIDTH -

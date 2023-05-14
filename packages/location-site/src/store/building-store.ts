@@ -1,4 +1,5 @@
-import { Building, NogBuildingId } from '@newordergame/common';
+import { NogBuildingId } from '@newordergame/common';
+import { Building } from '../lib/building';
 import logger from '../lib/utils/logger';
 
 export class InMemoryBuildingStore {

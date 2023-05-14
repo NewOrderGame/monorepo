@@ -3,11 +3,11 @@
     "allowSyntheticDefaultImports": true,
     "noImplicitAny": true,
     "noImplicitReturns": true,
-    "module": "commonjs",
-    "target": "es5",
+    "module": "CommonJS",
+    "target": "ES5",
     "allowJs": true,
-    "downlevelIteration": true,
     "sourceMap": true,
-    "skipLibCheck": true
-  },
+    "skipLibCheck": true,
+    "types": []
+  }
 }

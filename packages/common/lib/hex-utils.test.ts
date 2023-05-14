@@ -1,5 +1,6 @@
 import { CubicHex } from './cubic-hex';
 import { calculateDistance, drawLine } from './hex-utils';
+import { expect, describe, test } from '@jest/globals';
 
 describe('Hex utils', () => {
   describe('calculateDistance', () => {
@@ -66,17 +67,17 @@ describe('Hex utils', () => {
       const line = drawLine(hexA, hexB);
 
       expect(line).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-            expect.objectContaining({ x: 0, y: 100, z: 0 }),
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-            expect.objectContaining({ x: 0, y: 0, z: 0 }),
-          ])
+        expect.arrayContaining([
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
+          expect.objectContaining({ x: 0, y: 100, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 })
+        ])
       );
     });
   });

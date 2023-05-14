@@ -1,7 +1,7 @@
-import { PlainBuildingNode } from './types';
-import { Cell } from './cell';
-import { drawLine } from './hex-utils';
-import { CubicHex } from './cubic-hex';
+import { PlainBuildingNode } from '@newordergame/common';
+import { Cell } from '@newordergame/common';
+import { drawLine } from '@newordergame/common';
+import { CubicHex } from '@newordergame/common';
 
 export class Building {
   readonly map: Cell[][];
@@ -17,7 +17,9 @@ export class Building {
 
     this.map = [];
     for (let x = 0; x < this.maxX + 1; x++) {
-      if (!this.map[x]) this.map[x] = [];
+      if (!this.map[x]) {
+        this.map[x] = []
+      };
       for (let y = 0; y < this.maxY + 1; y++) {
         this.map[x][y] = new Cell(x, y, { isWall: !!wallNodesMap[x]?.[y] });
       }
