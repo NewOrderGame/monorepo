@@ -1,6 +1,6 @@
 {
   "name": "@newordergame/common",
-  "version": "1.0.53",
+  "version": "1.0.54",
   "description": "",
   "main": "index.js",
   "module": "index.ts",
@@ -8,9 +8,9 @@
   "scripts": {
     "build": "npx tsc",
     "watch": "npx tsc --watch",
-    "test": "npm run build && npx jest",
-    "deploy-package": "npm version patch && npm run build && npm publish",
-    "update-common": "cd ../core && npm run update-common; cd ../ui && npm run update-common; cd ../common ",
+    "test": "yarn build && npx jest",
+    "deploy-package": "yarn build && yarn publish",
+    "update-common": "cd ../core && yarn update-common; cd ../ui && yarn update-common; cd ../common ",
     "prettier": "npx prettier --write ."
   },
   "author": "",
