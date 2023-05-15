@@ -48,8 +48,10 @@ export const handleEnterBuilding =
     const locationSiteSocket = getLocationSiteSocket();
     const characterId = socket.data.characterId;
 
+    logger.info({characterId, coordinates}, 'Enter building');
+
     if (!characterId) throw new Error('Character ID is missing');
-    if (!locationSiteSocket) return;
+    if (!locationSiteSocket) return logger.error({characterId, coordinates}, 'Enter building failed. Location site socket missing.');
 
     locationSiteSocket.emit('enter-building', {
       characterId,

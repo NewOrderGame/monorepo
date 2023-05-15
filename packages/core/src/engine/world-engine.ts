@@ -29,10 +29,15 @@ const doNextTick = (gameNamespace: Namespace) => {
   const charactersInSight: Map<NogCharacterId, CharacterInSight[]> = new Map();
   const encountersInSight: Map<NogCharacterId, EncounterInSight[]> = new Map();
 
+  // Pre-process charactersInSight map
+  charactersAtWorld.forEach(characterAtWorld => {
+    charactersInSight.set(characterAtWorld.characterId, []);
+  });
+
   for (let cA = 0; cA < charactersAtWorld.length; cA += 1) {
     const characterAtWorldA = charactersAtWorld[cA];
 
-    /** Encounter visibility */
+    // Encounter visibility
     encountersInSight.set(characterAtWorldA.characterId, []);
 
     for (const encounter of encounters) {
@@ -42,19 +47,10 @@ const doNextTick = (gameNamespace: Namespace) => {
         encountersInSight.get(characterAtWorldA.characterId)
       );
     }
-    /** */
 
-    /** Character visibility and encounter */
-    if (!charactersInSight.has(characterAtWorldA.characterId)) {
-      charactersInSight.set(characterAtWorldA.characterId, []);
-    }
-
+    // Character visibility and encounter
     for (let cB = cA + 1; cB < charactersAtWorld.length; cB += 1) {
       const characterAtWorldB = charactersAtWorld[cB];
-
-      if (!charactersInSight.has(characterAtWorldB.characterId)) {
-        charactersInSight.set(characterAtWorldB.characterId, []);
-      }
       checkCharacterVisibility(
         characterAtWorldA.characterId,
         characterAtWorldB.characterId,
@@ -67,20 +63,17 @@ const doNextTick = (gameNamespace: Namespace) => {
         gameNamespace
       );
     }
-    /** */
 
-    /** NPC */
+    // NPC
     handleNpcGeneration(
       characterAtWorldA,
       charactersInSight.get(characterAtWorldA.characterId)?.length
     );
-    /** */
 
-    /** Movement */
+    // Movement
     moveCharacter(characterAtWorldA.characterId);
-    /** */
 
-    /** Send visible objects */
+    // Send visible objects
     sendCharactersInSight(
       characterAtWorldA.characterId,
       charactersInSight.get(characterAtWorldA.characterId),
@@ -91,7 +84,6 @@ const doNextTick = (gameNamespace: Namespace) => {
       encountersInSight.get(characterAtWorldA.characterId),
       gameNamespace
     );
-    /** */
   }
 };
 
