@@ -1,17 +1,18 @@
+import { Cell, NogEvent } from '@newordergame/common';
+import { Application, Point, Sprite } from 'pixi.js';
 import * as React from 'react';
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
+import { Socket } from 'socket.io-client';
 import { Content } from '../components/Content';
-import logger from '../lib/utils/logger';
 import { Connection, useConnection } from '../lib/connection';
-import { NogEvent } from '@newordergame/common';
-import { Application, Point, Sprite } from 'pixi.js';
 import {
   BLACK_HEXAGON,
+  BLACK_TRANSPARENT_HEXAGON,
   HEXAGON_TEXTURE_HEIGHT,
   HEXAGON_TEXTURE_WIDTH,
   WHITE_HEXAGON
 } from '../lib/constants';
-import { Socket } from 'socket.io-client';
+import logger from '../lib/utils/logger';
 
 export const LocationSitePage = () => {
   logger.info('Location Site Page');
@@ -59,9 +60,7 @@ const handleInitLocationSitePage =
     for (let x = 0; x <= building.maxX; x++) {
       for (let y = 0; y <= building.maxY; y++) {
         const cell = building.map[x][y];
-        const hexagon: Sprite = new Sprite(
-          cell.isWall ? BLACK_HEXAGON : WHITE_HEXAGON
-        );
+        const hexagon: Sprite = new Sprite(determineSprite(cell));
         hexagon.x = (building.maxY - y + x) * HEXAGON_TEXTURE_WIDTH;
         hexagon.y = ((x + y) * HEXAGON_TEXTURE_HEIGHT) / 2;
         hexagon.interactive = true;
@@ -104,4 +103,14 @@ const useOnInitLocationSitePage = (
       connection.gameSocket.off(NogEvent.INIT_LOCATION_SITE_PAGE);
     };
   }, []);
+};
+
+const determineSprite = (cell: Cell) => {
+  if (cell.isWall) {
+    return BLACK_HEXAGON;
+  } else if (cell.isInterior) {
+    return WHITE_HEXAGON;
+  } else {
+    return BLACK_TRANSPARENT_HEXAGON;
+  }
 };

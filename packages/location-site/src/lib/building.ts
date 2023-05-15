@@ -1,4 +1,10 @@
-import { Cell, CubicHex, PlainBuildingNode, drawLine } from '@newordergame/common';
+import {
+  Cell,
+  CubicHex,
+  PlainBuildingNode,
+  drawLine
+} from '@newordergame/common';
+import logger from './utils/logger';
 
 export class Building {
   readonly map: Cell[][];
@@ -11,14 +17,20 @@ export class Building {
 
     const wallNodesMap: boolean[][] =
       this.collectWallNodesMap(plainBuildingNodes);
+    const interiorHexagonsMap: boolean[][] =
+      this.collectInteriorHexagonsMap(plainBuildingNodes);
 
     this.map = [];
-    for (let x = 0; x < this.maxX + 1; x++) {
-      if (!this.map[x]) {
-        this.map[x] = []
-      };
-      for (let y = 0; y < this.maxY + 1; y++) {
-        this.map[x][y] = new Cell(x, y, { isWall: !!wallNodesMap[x]?.[y] });
+    for (let x = 0; x <= this.maxX; x++) {
+      this.map[x] = [];
+      for (let y = 0; y <= this.maxY; y++) {
+        const isWall = wallNodesMap[x]?.[y] ?? false;
+        const isInterior = interiorHexagonsMap[x]?.[y] ?? false;
+        this.map[x][y] = new Cell(x, y, {
+          isWall: isWall,
+          isInterior: isInterior,
+        });
+        
       }
     }
   }
@@ -28,8 +40,9 @@ export class Building {
   }
 
   public getCell(x: number, y: number) {
-    if (x > this.maxX || y > this.maxY)
+    if (x > this.maxX || y > this.maxY) {
       throw new Error('The cell is out of boundaries');
+    }
     return this.map[x][y];
   }
 
@@ -44,8 +57,7 @@ export class Building {
           new CubicHex(array[index + 1].x, array[index + 1].y)
         );
         line.forEach((hex: any) => {
-          const x = hex.toMapCoordinates().x;
-          const y = hex.toMapCoordinates().y;
+          const { x, y } = hex.toMapCoordinates();
           if (!a[x]) {
             a[x] = [];
           }
@@ -55,5 +67,45 @@ export class Building {
       },
       []
     );
+  }
+
+  private collectInteriorHexagonsMap(
+    plainBuildingNodes: PlainBuildingNode[]
+  ): boolean[][] {
+    const interiorHexagonsMap: boolean[][] = [];
+    for (let x = 0; x <= this.maxX; x++) {
+      interiorHexagonsMap[x] = [];
+      for (let y = 0; y <= this.maxY; y++) {
+        const hex = new CubicHex(x, y);
+        const isInterior = this.isHexagonInterior(hex, plainBuildingNodes);
+        interiorHexagonsMap[x][y] = isInterior;
+      }
+    }
+    return interiorHexagonsMap;
+  }
+
+  private isHexagonInterior(
+    hex: CubicHex,
+    plainBuildingNodes: PlainBuildingNode[]
+  ): boolean {
+    let inside = false;
+    const x = hex.toMapCoordinates().x;
+    const y = hex.toMapCoordinates().y;
+
+    for (
+      let i = 0, j = plainBuildingNodes.length - 1;
+      i < plainBuildingNodes.length;
+      j = i++
+    ) {
+      const xi = plainBuildingNodes[i].x;
+      const yi = plainBuildingNodes[i].y;
+      const xj = plainBuildingNodes[j].x;
+      const yj = plainBuildingNodes[j].y;
+      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+        inside = !inside;
+      }
+    }
+
+    return inside;
   }
 }

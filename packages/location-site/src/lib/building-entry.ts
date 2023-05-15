@@ -1,32 +1,27 @@
-import logger from './utils/logger';
-import { Coordinates, NogEvent } from '@newordergame/common';
-import { Building } from './building';
+import {
+  Coordinates,
+  NogEvent,
+  PlainBuildingNode,
+  WayOverpassElement
+} from '@newordergame/common';
+import axios from 'axios';
 import {
   computeDestinationPoint,
   getDistance,
   getGreatCircleBearing,
   isPointInPolygon
 } from 'geolib';
-import axios from 'axios';
+import { abs, add, evaluate, min, multiply, round, subtract } from 'mathjs';
 import { Socket } from 'socket.io-client';
+import buildingStore from '../store/building-store';
+import { Building } from './building';
 import {
   OVERPASS_API_BUILDINGS_SKELS_QUERY,
   OVERPASS_API_INTERPRETER_PATH,
   OVERPASS_API_URL,
   SIGHT_RANGE
 } from './constants';
-import { PlainBuildingNode, WayOverpassElement } from '@newordergame/common';
-import buildingStore from '../store/building-store';
-import {
-  round,
-  min,
-  max,
-  abs,
-  evaluate,
-  add,
-  multiply,
-  subtract
-} from 'mathjs';
+import logger from './utils/logger';
 
 export const handleEnterBuilding =
   (socket: Socket) =>
@@ -87,18 +82,15 @@ export const handleInitLocationSitePage =
 export const convertWayToPlainBuildingNodes = (
   building: WayOverpassElement
 ): PlainBuildingNode[] => {
-  logger.info({building: JSON.stringify(building)}, 'Building for DEBUG');
+  logger.info({ building: JSON.stringify(building) }, 'Building for DEBUG');
   const longestWallNodeIndex = determineLongestWallIndex(building);
   const longestWallNode = building.geometry[longestWallNodeIndex];
   const secondWallNode = building.geometry[longestWallNodeIndex + 1];
 
-  const longestWallBearing = getGreatCircleBearing(longestWallNode, secondWallNode);
-
-  const originNode = { lat: 0, lon: 0 };
-  const originBearing = getGreatCircleBearing(longestWallNode, originNode);
-
-  const bearingDelta = subtract(originBearing, longestWallBearing);
-
+  const longestWallBearing = getGreatCircleBearing(
+    longestWallNode,
+    secondWallNode
+  );
   const rawPlainBuilding = building.geometry.map((node) => {
     const distance = getDistance(longestWallNode, node, 0.00001);
     const bearing = getGreatCircleBearing(longestWallNode, node);
@@ -117,7 +109,7 @@ export const convertWayToPlainBuildingNodes = (
     x: add(node.x, abs(minX)),
     y: add(node.y, abs(minY))
   }));
-};  
+};
 
 export const determineBuilding = (
   coordinates: Coordinates,
@@ -142,7 +134,6 @@ export const determineLongestWallIndex = (
   });
   return distances.indexOf(Math.max(...distances));
 };
-
 
 export const getBuildingsInSight = (
   coordinates: Coordinates,
