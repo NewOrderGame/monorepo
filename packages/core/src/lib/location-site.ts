@@ -25,7 +25,7 @@ export const handleLocationSiteServiceConnection = (
 
   socket.on(
     'enter-building-commit',
-    handleEnterBuildingCommit(socket, gameNamespace)
+    handleEnterBuildingCommit(gameNamespace)
   );
 
   socket.on(
@@ -37,9 +37,8 @@ export const handleLocationSiteServiceConnection = (
 export const handleInitLocationSitePageInternal =
   (socket: Socket, gameNamespace: Namespace) =>
   ({ characterId, building }: { characterId: string; building: any }) => {
-    gameNamespace
-      .to(characterId)
-      .emit(NogEvent.INIT_LOCATION_SITE_PAGE, building);
+    const characterSocket = gameNamespace.to(characterId);
+    characterSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, building);
     logger.info({ characterId }, 'Sent "init-location-site-page-commit"');
   };
 
@@ -48,10 +47,19 @@ export const handleEnterBuilding =
     const locationSiteSocket = getLocationSiteSocket();
     const characterId = socket.data.characterId;
 
-    logger.info({characterId, coordinates}, 'Enter building');
+    if (!characterId) {
+      throw new Error('Character ID is missing');
+    }
 
-    if (!characterId) throw new Error('Character ID is missing');
-    if (!locationSiteSocket) return logger.error({characterId, coordinates}, 'Enter building failed. Location site socket missing.');
+    logger.info({ characterId, coordinates }, 'Enter building');
+
+    if (!locationSiteSocket) {
+      logger.error(
+        { characterId, coordinates },
+        'Enter building failed. Location site socket missing.'
+      );
+      return;
+    }
 
     locationSiteSocket.emit('enter-building', {
       characterId,
@@ -64,7 +72,9 @@ export const handleInitLocationSitePage = (socket: Socket) => () => {
   const characterId = socket.data.characterId;
   const character = characterStore.get(characterId);
 
-  if (!locationSiteSocket) return;
+  if (!locationSiteSocket) {
+    return;
+  }
 
   locationSiteSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, {
     characterId,
@@ -81,11 +91,10 @@ export const handleExitLocationSite = (socket: Socket) => () => {
     buildingId: null
   });
   socket.emit(NogEvent.REDIRECT, { page: NogPage.WORLD });
-  2;
 };
 
 export const handleEnterBuildingCommit =
-  (socket: Socket, gameNamespace: Namespace) =>
+  (gameNamespace: Namespace) =>
   ({
     characterId,
     buildingId
@@ -99,9 +108,12 @@ export const handleEnterBuildingCommit =
       ...character,
       buildingId
     });
+
     characterAtWorldStore.delete(character.characterId);
-    gameNamespace
-      .to(characterId)
-      .emit(NogEvent.REDIRECT, { page: NogPage.LOCATION_SITE });
+
+    gameNamespace.to(characterId).emit(NogEvent.REDIRECT, {
+      page: NogPage.LOCATION_SITE
+    });
+
     logger.info('Sent redirect to location-site');
   };
