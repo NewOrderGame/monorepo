@@ -52,7 +52,7 @@ export const handleDisconnect = async (
   }
 
   const isLocationSiteService =
-    socket.handshake?.auth.locationSiteServiceSecret === 'LOCATION_SITE_SERVICE_SECRET';
+    socket.handshake?.auth.locationSiteServiceSecret === process.env.LOCATION_SITE_SERVICE_SECRET;
   if (isLocationSiteService) {
     setLocationSiteSocket(null);
     logger.warn('Location Site service disconnected', {

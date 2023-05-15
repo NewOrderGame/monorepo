@@ -25,6 +25,4 @@ const handleGameConnection =
     socket.on(NogEvent.DISCONNECT, () =>
       handleDisconnect(socket, gameNamespace)
     );
-
-    socket.emit(NogEvent.CONNECTED);
   };

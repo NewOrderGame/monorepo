@@ -14,12 +14,13 @@ export const handleLocationSiteServiceConnection = (
 ) => {
   const isLocationSiteService =
     socket.handshake.auth.locationSiteServiceSecret ===
-    'LOCATION_SITE_SERVICE_SECRET';
+    process.env.LOCATION_SITE_SERVICE_SECRET;
 
   if (!isLocationSiteService) {
     return;
   }
 
+  socket.emit(NogEvent.CONNECTED);
   logger.info('Location Site service connected');
   setLocationSiteSocket(socket);
 

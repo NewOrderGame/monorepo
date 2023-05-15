@@ -66,6 +66,7 @@ export const handleUserConnection = async (
     },
     'Sent redirect'
   );
+  socket.emit(NogEvent.CONNECTED);
 };
 
 const addUserEventListeners = (
