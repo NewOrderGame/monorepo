@@ -30,13 +30,11 @@
     "aws:docker:push": "docker push $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "webpack:build": "cp environment/.env.production .env && webpack --mode=production --node-env=production",
     "webpack:watch": "cp environment/.env.development .env && webpack --watch",
-    "update-common": "npm i -S @newordergame/common@latest",
     "prettier": "npx prettier --write ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "file:../common",
     "axios": "^0.27.2",
     "cognito-user-pool": "^0.1.13",
     "express": "^4.18.1",

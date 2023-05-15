@@ -19,7 +19,6 @@
     "citadel:rm": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker rm newordergame-npc",
     "citadel:login": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker login",
     "citadel:pull": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker pull devlysh/newordergame-npc",
-    "update-common": "npm i -S @newordergame/common@latest",
     "webpack:build": "cp environment/.env.production .env && webpack --mode=production --node-env=production",
     "webpack:watch": "cp environment/.env.development .env && webpack --watch",
     "prettier": "npx prettier --write ."
@@ -27,7 +26,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@newordergame/common": "^1.0.44",
     "axios": "^0.27.2",
     "geolib": "^3.3.3",
     "pino": "^8.0.0",

@@ -6,11 +6,12 @@
   "module": "index.ts",
   "types": "index.d.ts",
   "scripts": {
+    "start": "yarn watch",
     "build": "npx tsc",
-    "watch": "npx tsc --watch",
+    "watch": "npx tsc --watch --noEmit | sed -u 's/\\x1Bc//g'",
     "test": "yarn build && npx jest",
     "deploy-package": "yarn build && yarn publish",
-    "update-common": "cd ../core && yarn update-common; cd ../ui && yarn update-common; cd ../common ",
+    "update-common": "cd ../../ && yarn add @newordergame/common -W",
     "prettier": "npx prettier --write ."
   },
   "author": "",

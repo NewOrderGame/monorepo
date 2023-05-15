@@ -6,3 +6,5 @@ cdk.context.json
 
 packages/**/*.js
 packages/**/*.js.map
+
+**/*/yarn-error.log

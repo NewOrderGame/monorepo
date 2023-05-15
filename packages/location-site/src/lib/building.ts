@@ -1,7 +1,4 @@
-import { PlainBuildingNode } from '@newordergame/common';
-import { Cell } from '@newordergame/common';
-import { drawLine } from '@newordergame/common';
-import { CubicHex } from '@newordergame/common';
+import { Cell, CubicHex, PlainBuildingNode, drawLine } from '@newordergame/common';
 
 export class Building {
   readonly map: Cell[][];
@@ -46,7 +43,7 @@ export class Building {
           new CubicHex(currentNode.x, currentNode.y),
           new CubicHex(array[index + 1].x, array[index + 1].y)
         );
-        line.forEach((hex) => {
+        line.forEach((hex: any) => {
           const x = hex.toMapCoordinates().x;
           const y = hex.toMapCoordinates().y;
           if (!a[x]) {
