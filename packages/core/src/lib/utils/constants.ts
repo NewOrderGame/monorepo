@@ -3,6 +3,7 @@ export const SECOND = 1000; // ms
 export const DISTANCE_ACCURACY = 0.001;
 export const TICK_PER_SECOND = 4;
 export const ENCOUNTER_DISTANCE = 10; // m
+export const ENCOUNTER_DURATION = 5000; // ms
 export const ENCOUNTER_COOL_DOWN_TIME = 5; // s
 export const TICK_TIME_STATS_DIR = './stats';
 export const STATS_SAVE_INTERVAL = 60; // s

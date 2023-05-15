@@ -17,7 +17,8 @@ import { getCenter as computeCenter, getDistance } from 'geolib';
 import {
   DISTANCE_ACCURACY,
   ENCOUNTER_COOL_DOWN_TIME,
-  ENCOUNTER_DISTANCE
+  ENCOUNTER_DISTANCE,
+  ENCOUNTER_DURATION
 } from './utils/constants';
 import { nanoid } from 'nanoid';
 
@@ -158,7 +159,7 @@ export const handleCharactersEncounter = (
 
     setTimeout(() => {
       exitEncounter({ encounter, characterA, characterB, gameNamespace });
-    }, 5000);
+    }, ENCOUNTER_DURATION);
   }
 };
 
