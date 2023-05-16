@@ -17,8 +17,10 @@ export class Building {
 
     const wallNodesMap: boolean[][] =
       this.collectWallNodesMap(plainBuildingNodes);
-    const interiorHexagonsMap: boolean[][] =
-      this.collectInteriorHexagonsMap(plainBuildingNodes);
+    const interiorHexagonsMap: boolean[][] = this.collectInteriorHexagonsMap(
+      plainBuildingNodes,
+      wallNodesMap
+    );
 
     this.map = [];
     for (let x = 0; x <= this.maxX; x++) {
@@ -27,10 +29,9 @@ export class Building {
         const isWall = wallNodesMap[x]?.[y] ?? false;
         const isInterior = interiorHexagonsMap[x]?.[y] ?? false;
         this.map[x][y] = new Cell(x, y, {
-          isWall: isWall,
-          isInterior: isInterior,
+          isWall,
+          isInterior
         });
-        
       }
     }
   }
@@ -70,23 +71,34 @@ export class Building {
   }
 
   private collectInteriorHexagonsMap(
-    plainBuildingNodes: PlainBuildingNode[]
+    plainBuildingNodes: PlainBuildingNode[],
+    wallNodesMap: boolean[][]
   ): boolean[][] {
     const interiorHexagonsMap: boolean[][] = [];
+
     for (let x = 0; x <= this.maxX; x++) {
       interiorHexagonsMap[x] = [];
+
       for (let y = 0; y <= this.maxY; y++) {
         const hex = new CubicHex(x, y);
-        const isInterior = this.isHexagonInterior(hex, plainBuildingNodes);
-        interiorHexagonsMap[x][y] = isInterior;
+        const isWall = wallNodesMap[x]?.[y] ?? false;
+        const isInterior = this.isHexagonInterior(
+          hex,
+          plainBuildingNodes,
+          wallNodesMap
+        );
+
+        interiorHexagonsMap[x][y] = isWall || isInterior;
       }
     }
+
     return interiorHexagonsMap;
   }
 
   private isHexagonInterior(
     hex: CubicHex,
-    plainBuildingNodes: PlainBuildingNode[]
+    plainBuildingNodes: PlainBuildingNode[],
+    wallNodesMap: boolean[][]
   ): boolean {
     let inside = false;
     const x = hex.toMapCoordinates().x;
@@ -101,7 +113,13 @@ export class Building {
       const yi = plainBuildingNodes[i].y;
       const xj = plainBuildingNodes[j].x;
       const yj = plainBuildingNodes[j].y;
-      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) {
+
+      // Check if the cell is outside the boundary or a wall node
+      if (
+        yi > y !== yj > y &&
+        x < ((xj - xi) * (y - yi)) / (yj - yi) + xi &&
+        !wallNodesMap[x]?.[y]
+      ) {
         inside = !inside;
       }
     }
