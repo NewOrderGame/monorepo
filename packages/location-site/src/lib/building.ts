@@ -1,8 +1,8 @@
 import {
   Cell,
   CubicHex,
-  PlainBuildingNode,
-  drawLine
+  drawLine,
+  PlainBuildingNode
 } from '@newordergame/common';
 import logger from './utils/logger';
 
@@ -22,49 +22,57 @@ export class Building {
       wallNodesMap
     );
 
-    this.map = [];
+    this.map = this.createMap(wallNodesMap, interiorHexagonsMap);
+
+    // TODO: remove this line
+    this.printMap();
+  }
+
+  private createMap(
+    wallNodesMap: boolean[][],
+    interiorHexagonsMap: boolean[][]
+  ): Cell[][] {
+    const map: Cell[][] = [];
+
     for (let x = 0; x <= this.maxX; x++) {
-      this.map[x] = [];
+      map[x] = [];
+
       for (let y = 0; y <= this.maxY; y++) {
         const isWall = wallNodesMap[x]?.[y] ?? false;
         const isInterior = interiorHexagonsMap[x]?.[y] ?? false;
-        this.map[x][y] = new Cell(x, y, {
-          isWall,
-          isInterior
-        });
+        map[x][y] = new Cell(x, y, { isWall, isInterior });
       }
     }
-  }
 
-  public getMap() {
-    return this.map;
-  }
-
-  public getCell(x: number, y: number) {
-    if (x > this.maxX || y > this.maxY) {
-      throw new Error('The cell is out of boundaries');
-    }
-    return this.map[x][y];
+    return map;
   }
 
   private collectWallNodesMap(
     plainBuildingNodes: PlainBuildingNode[]
   ): boolean[][] {
     return plainBuildingNodes.reduce(
-      (a: boolean[][], currentNode: PlainBuildingNode, index, array) => {
-        if (index === array.length - 1) return a;
+      (
+        wallNodesMap: boolean[][],
+        currentNode: PlainBuildingNode,
+        index,
+        array
+      ) => {
+        if (index === array.length - 1) return wallNodesMap;
+
         const line = drawLine(
           new CubicHex(currentNode.x, currentNode.y),
           new CubicHex(array[index + 1].x, array[index + 1].y)
         );
+
         line.forEach((hex: any) => {
           const { x, y } = hex.toMapCoordinates();
-          if (!a[x]) {
-            a[x] = [];
+          if (!wallNodesMap[x]) {
+            wallNodesMap[x] = [];
           }
-          a[x][y] = true;
+          wallNodesMap[x][y] = true;
         });
-        return a;
+
+        return wallNodesMap;
       },
       []
     );
@@ -85,9 +93,7 @@ export class Building {
         const isInterior = this.isHexagonInterior(
           hex,
           plainBuildingNodes,
-          wallNodesMap
         );
-
         interiorHexagonsMap[x][y] = isWall || isInterior;
       }
     }
@@ -98,11 +104,9 @@ export class Building {
   private isHexagonInterior(
     hex: CubicHex,
     plainBuildingNodes: PlainBuildingNode[],
-    wallNodesMap: boolean[][]
   ): boolean {
     let inside = false;
-    const x = hex.toMapCoordinates().x;
-    const y = hex.toMapCoordinates().y;
+    const { x, y } = hex.toMapCoordinates();
 
     for (
       let i = 0, j = plainBuildingNodes.length - 1;
@@ -114,16 +118,27 @@ export class Building {
       const xj = plainBuildingNodes[j].x;
       const yj = plainBuildingNodes[j].y;
 
-      // Check if the cell is outside the boundary or a wall node
-      if (
-        yi > y !== yj > y &&
-        x < ((xj - xi) * (y - yi)) / (yj - yi) + xi &&
-        !wallNodesMap[x]?.[y]
-      ) {
+      const intersect =
+        yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+
+      if (intersect) {
         inside = !inside;
       }
     }
 
     return inside;
+  }
+
+  // Utility method to print the building map
+  printMap(): void {
+    for (let y = this.maxY; y >= 0; y--) {
+      let line = '';
+      for (let x = 0; x <= this.maxX; x++) {
+        const cell = this.map[x][y];
+        const symbol = cell.isWall ? 'X' : cell.isInterior ? 'I' : ' ';
+        line += symbol;
+      }
+      logger.debug(line, 'RENDERED BUILDING');
+    }
   }
 }
