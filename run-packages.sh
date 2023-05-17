@@ -1,7 +1,9 @@
 #!/bin/bash
 
 while read -r package; do
-  scopes+=(--scope="$package")
-done < .newordergamerc
+  if [[ $package != \#* ]]; then
+    scopes+=(--scope="$package")
+  fi
+done < .nogrc
 
 lerna run start --stream "${scopes[@]}"

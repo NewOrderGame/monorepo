@@ -1,0 +1,11 @@
+#======================================#
+# New Order Game Runtime Configuration #
+# Package list for execution           #
+# Comment the lines to ignore          #
+#======================================#
+
+@newordergame/common
+@newordergame/ui
+@newordergame/core
+#@newordergame/npc
+@newordergame/location-site
