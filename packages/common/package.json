@@ -1,6 +1,6 @@
 {
   "name": "@newordergame/common",
-  "version": "1.0.56",
+  "version": "1.0.57",
   "description": "",
   "main": "index.js",
   "module": "index.ts",
@@ -11,7 +11,7 @@
     "watch": "npx tsc --watch --noEmit | sed -u 's/\\x1Bc//g'",
     "test": "yarn build && npx jest",
     "ship": "yarn publish-package",
-    "publish-package": "yarn build && yarn publish --patch && yarn update-package",
+    "publish-package": "yarn build && yarn publish --patch && yarn upgrade-package",
     "upgrade-package": "cd ../../ && yarn upgrade-common && cd -",
     "prettier": "npx prettier --write ."
   },
