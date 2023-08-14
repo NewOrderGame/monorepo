@@ -6,4 +6,6 @@ packages/*/build/*
 packages/*/coverage/*
 packages/*/node_modules
 
-/core/stats
+packages/common/dist
+
+core/stats

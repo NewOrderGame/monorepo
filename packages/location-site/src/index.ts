@@ -15,7 +15,7 @@ const game = io(`${CORE_URL}/game`, {
   autoConnect: false
 });
 
-game.auth = { locationSiteServiceSecret: process.env.LOCATION_SITE_SERVICE_SECRET };
+game.auth = { locationSiteServiceSecret: process.env.NOG_LOCATION_SITE_SERVICE_SECRET };
 
 logger.info('Connecting to Game...');
 game.connect();

@@ -43,7 +43,7 @@ export const handleDisconnect = async (
   }
 
   const isNpcService =
-    socket.handshake?.auth.npcServiceSecret === 'NPC_SERVICE_SECRET';
+    socket.handshake?.auth.npcServiceSecret === process.env.NOG_NPC_SERVICE_SECRET;
   if (isNpcService) {
     setNpcSocket(null);
     logger.warn('NPC service disconnected', {
@@ -52,7 +52,7 @@ export const handleDisconnect = async (
   }
 
   const isLocationSiteService =
-    socket.handshake?.auth.locationSiteServiceSecret === process.env.LOCATION_SITE_SERVICE_SECRET;
+    socket.handshake?.auth.locationSiteServiceSecret === process.env.NOG_LOCATION_SITE_SERVICE_SECRET;
   if (isLocationSiteService) {
     setLocationSiteSocket(null);
     logger.warn('Location Site service disconnected', {

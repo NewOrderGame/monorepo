@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@newordergame/common": "file:./packages/common"
+    "@newordergame/common": "^1.0.57"
   },
   "devDependencies": {
     "eslint": "^8.37.0",

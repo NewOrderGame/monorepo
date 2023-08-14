@@ -8,6 +8,10 @@
     "allowJs": true,
     "sourceMap": true,
     "skipLibCheck": true,
-    "types": []
+    "types": [],
+    "baseUrl": ".",
+    "paths": {
+      "@newordergame/common": ["../packages/common"]
+    }
   }
 }

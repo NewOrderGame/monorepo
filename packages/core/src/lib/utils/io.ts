@@ -1,18 +1,19 @@
 import { Server } from 'socket.io';
 import logger from './logger';
 
-if (!process.env.UI_ORIGIN) {
-  throw logger.error('Environment variable UI_ORIGIN is missing');
-}
+const NOG_PORT = process.env.NOG_PORT;
+const NOG_UI_ORIGIN = process.env.NOG_UI_ORIGIN;
 
-const PORT = 5000;
+if (!process.env.NOG_UI_ORIGIN) {
+  throw logger.error('Environment variable NOG_UI_ORIGIN is missing');
+}
 
 export const io = new Server({
   cors: {
-    origin: process.env.UI_ORIGIN
+    origin: NOG_UI_ORIGIN
   }
 });
 
 export const listen = () => {
-  io.listen(PORT);
+  io.listen(Number(NOG_PORT));
 }

@@ -22,7 +22,7 @@ const game = io(`${CORE_URL}/game`, {
   autoConnect: false
 });
 
-game.auth = { npcServiceSecret: 'NPC_SERVICE_SECRET' };
+game.auth = { npcServiceSecret: process.env.NOG_NPC_SERVICE_SECRET };
 
 logger.info('Connecting to Game...');
 game.connect();
@@ -88,6 +88,13 @@ game.on(
   }
 );
 
+type MoveAtWorldType = {
+  characterId: string;
+  coordinates: Coordinates;
+  duration: number;
+  distance: number;
+}
+
 game.on(
   NogEvent.MOVE_NPC_AT_WORLD,
   ({
@@ -95,12 +102,7 @@ game.on(
     coordinates,
     duration,
     distance
-  }: {
-    characterId: string;
-    coordinates: Coordinates;
-    duration: number;
-    distance: number;
-  }) => {
+  }: MoveAtWorldType) => {
     logger.info(
       { characterId, coordinates, duration, distance },
       'Move NPC at world'
@@ -198,4 +200,3 @@ setInterval(() => {
     }
   });
 }, 1000);
-/** */
