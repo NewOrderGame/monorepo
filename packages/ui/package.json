@@ -37,9 +37,9 @@
     "yarn": "^1.22.19"
   },
   "scripts": {
-    "start": "BROWSER=none react-scripts start",
+    "start": "BROWSER=none cp environment/.env.development .env && react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "cp environment/.env.test .env && react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "yarn build && cd aws && yarn deploy; cd ..",
     "prettier": "npx prettier --write .",
