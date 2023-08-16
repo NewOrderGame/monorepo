@@ -51,9 +51,14 @@ export const handleCreateCharacter = async ({
     return;
   }
   const username = user?.Username;
-  const nickname: string = user?.UserAttributes.find(
+  const nickname: string | undefined = user?.UserAttributes.find(
     (a) => a.Name === 'nickname'
   )?.Value;
+
+  if (!nickname) {
+    logger.error('Nickname not found');
+    return;
+  }
 
   const character = createCharacter({
     characterId: username,

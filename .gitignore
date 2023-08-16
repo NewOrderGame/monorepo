@@ -1,16 +1,18 @@
 .idea
+.vscode
+
 node_modules
+dist
 
 cdk.out
 cdk.context.json
 
-packages/**/*.js
-packages/**/*.js.map
-
-**/*/yarn-error.log
+package-lock.json
+yarn-error.log
 
 .env
 .env.development
 .env.production
 !.env.example
+
 .DS_Store

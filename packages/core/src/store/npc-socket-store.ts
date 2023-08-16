@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
 
-let npcSocket: Socket;
+let npcSocket: Socket | null;
 
-export const setNpcSocket = (socket: Socket) => {
+export const setNpcSocket = (socket: Socket | null) => {
   npcSocket = socket;
 };
 

@@ -13,7 +13,7 @@ export class InMemoryEncounterStore {
     this._encounters = new Map<NogEncounterId, Encounter>();
   }
 
-  get(id: NogEncounterId): Encounter {
+  get(id: NogEncounterId): Encounter | undefined {
     return this._encounters.get(id);
   }
 

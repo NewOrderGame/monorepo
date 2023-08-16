@@ -81,6 +81,12 @@ game.on(
     charactersInSight: CharacterInSight[];
   }) => {
     const character = characterAtWorldStore.get(characterId);
+
+    if (!character) {
+      logger.error('Character not found');
+      return;
+    }
+
     characterAtWorldStore.set(characterId, {
       ...character,
       charactersInSight
@@ -119,6 +125,12 @@ game.on(
     }
 
     const characterAtWorld = characterAtWorldStore.get(characterId);
+
+    if (!characterAtWorld) {
+      logger.error('Character at world not found');
+      return;
+    }
+
     characterAtWorldStore.set(characterId, {
       ...characterAtWorld,
       movesTo: coordinates

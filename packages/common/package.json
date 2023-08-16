@@ -9,20 +9,19 @@
     "start": "yarn watch",
     "build": "npx tsc",
     "watch": "npx tsc --watch | sed -u 's/\\x1Bc//g'",
-    "test": "yarn build && npx jest",
     "ship": "yarn publish-package",
     "publish-package": "yarn build && yarn publish --patch && yarn upgrade-package",
     "upgrade-package": "cd ../../ && yarn upgrade-common && cd -",
-    "prettier": "npx prettier --write ."
+    "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
+    "format": "prettier --write src/**/*.ts",
+    "test": "yarn build && jest",
+    "type-check": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
   },
   "dependencies": {
-    "mathjs": "^11.3.2",
-    "ts-jest": "^29.0.0",
-    "ts-node": "^10.9.1",
     "yup": "^0.32.11"
   }
 }

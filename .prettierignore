@@ -1,5 +1,4 @@
 *.d.ts
-*.js
 
 packages/*/aws/cdk.out
 packages/*/build/*
@@ -9,3 +8,5 @@ packages/*/node_modules
 packages/common/dist
 
 core/stats
+
+node_modules

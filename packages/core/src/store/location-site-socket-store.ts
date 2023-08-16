@@ -1,8 +1,8 @@
 import { Socket } from 'socket.io';
 
-let locationSiteSocket: Socket;
+let locationSiteSocket: Socket | null;
 
-export const setLocationSiteSocket = (socket: Socket) => {
+export const setLocationSiteSocket = (socket: Socket | null) => {
   locationSiteSocket = socket;
 };
 

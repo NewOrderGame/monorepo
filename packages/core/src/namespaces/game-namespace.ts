@@ -11,7 +11,7 @@ export const initGameNamespace = () => {
   logger.info('Init Game');
   const gameNamespace = io.of('/game');
   gameNamespace.on(NogEvent.CONNECTION, handleGameConnection(gameNamespace));
-  return gameNamespace
+  return gameNamespace;
 };
 
 const handleGameConnection =

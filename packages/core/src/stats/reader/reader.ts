@@ -63,14 +63,14 @@ export const parseStats = (
     encountersAvg,
     encountersMax
   };
-}
+};
 
 export const getRawStatsFromFile = (file: string): number[][] => {
   const b: Buffer = readFileSync(file);
   const s: string = b.toString();
   const al: string[] = s.split('\n');
   return al.map((line) => line.split(',').map((value) => Number(value)));
-}
+};
 
 export const getTickTimeStats = (statsDirectory: string): TickTimeStats => {
   const files: string[] = readdirSync(statsDirectory);
@@ -89,24 +89,21 @@ export const getTickTimeStats = (statsDirectory: string): TickTimeStats => {
   const filesToDelete = filesWithCTime.slice(0, -ELEMENTS_TO_DISPLAY);
   filesToDelete.forEach((file) => unlinkSync(`${statsDirectory}/${file.name}`));
 
-  let allRawStats: number[][] = [];
-
-  const timeline = filesToDisplay.reduce(
-    (result, timestamp): TimelineChunk[] => {
-      const rawStats = getRawStatsFromFile(`${statsDirectory}/${timestamp}`);
-      const stats = parseStats(rawStats, Number(timestamp));
-      allRawStats = allRawStats.concat(rawStats);
-      return [...result, stats];
-    },
-    []
+  const allRawStats: number[][] = filesToDisplay.flatMap((timestamp) =>
+    getRawStatsFromFile(`${statsDirectory}/${timestamp}`)
   );
+
+  const timeline = filesToDisplay.map((timestamp) => {
+    const rawStats = getRawStatsFromFile(`${statsDirectory}/${timestamp}`);
+    return parseStats(rawStats, Number(timestamp));
+  });
 
   return {
     timeline,
     charactersChart: calculateQuantityChart(allRawStats, 1),
     encountersChart: calculateQuantityChart(allRawStats, 2)
   };
-}
+};
 
 export const calculateQuantityChart = (
   stats: number[][],
@@ -115,14 +112,18 @@ export const calculateQuantityChart = (
   const statsMap = new Map<number, number[]>();
   stats.forEach((stat) => {
     if (statsMap.has(stat[index])) {
-      statsMap.get(stat[index]).push(stat[0]);
+      statsMap.get(stat[index])?.push(stat[0]);
     } else {
       statsMap.set(stat[index], []);
     }
   });
 
   return Array.from(statsMap.keys()).map((key) => {
-    const stat: number[] = statsMap.get(key);
+    const stat: number[] | undefined = statsMap.get(key);
+
+    if (!stat) {
+      throw new Error('Stat is missing');
+    }
 
     return {
       quantity: key,
@@ -131,4 +132,4 @@ export const calculateQuantityChart = (
       max: Math.max(...stat)
     };
   });
-}
+};

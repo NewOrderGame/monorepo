@@ -40,7 +40,8 @@ const handleInitLocationSitePage =
     pixiAppRef: MutableRefObject<Application | null>,
     containerRef: MutableRefObject<HTMLDivElement | null>
   ) =>
-  // TODO: Create type for Building in common module
+  // TODO: Create interface for Building in common module
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (building: any) => {
     logger.info('Location Site Page building a building', { building });
     const width =
@@ -78,6 +79,8 @@ const handleInitLocationSitePage =
     containerRef.current?.appendChild(pixiAppRef.current.view);
   };
 
+// TODO: Use proper type instead of "any"
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const useEmitInitLocationSitePage = (connection: any) => {
   useEffect(() => {
     connection.gameSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE);

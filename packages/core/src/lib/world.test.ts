@@ -29,7 +29,6 @@ import {
 } from 'geolib';
 import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
 import { getFakeNamespace, getFakeSocket } from '../test/utils';
-import CharacterStore from '../store/character-store';
 
 const DEFAULT_CHARACTER_STATS: CharacterStats = {
   outlook: [0, 0, 0],
@@ -258,14 +257,25 @@ describe('World', () => {
         const characterAfter = characterAtWorldStore.get(
           characterBefore.characterId
         );
+        if (!characterAfter) {
+          throw new Error('Character after not found');
+        }
+
+        const expectedCharacter = characterStore.get(character.characterId);
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
+        const expectedCharacterAfter = characterAtWorldStore.get(
+          characterAfter.characterId
+        );
+        if (!expectedCharacterAfter) {
+          throw new Error('Character after not found');
+        }
 
         expect(characterAfter.coordinates).toEqual(intermediateCoordinates);
-        expect(characterStore.get(character.characterId).coordinates).toEqual(
-          intermediateCoordinates
-        );
-        expect(
-          characterAtWorldStore.get(characterAfter.characterId).coordinates
-        ).toEqual(intermediateCoordinates);
+        expect(expectedCharacter.coordinates).toEqual(intermediateCoordinates);
+        expect(characterAfter.coordinates).toEqual(intermediateCoordinates);
       });
     });
 
@@ -317,9 +327,14 @@ describe('World', () => {
 
         handleMoveCharacterAtWorld(socket, movesTo);
 
-        expect(
-          characterAtWorldStore.get(characterAtWorld.characterId).movesTo
-        ).toEqual(movesTo);
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorld.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Expected character at world not found');
+        }
+
+        expect(expectedCharacter.movesTo).toEqual(movesTo);
         expect(socket.emit).toHaveBeenCalledWith(
           NogEvent.MOVE_CHARACTER_AT_WORLD,
           {
@@ -393,12 +408,16 @@ describe('World', () => {
           charactersInSightB
         );
 
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorldA.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
         expect(charactersInSightA.length).toBe(1);
         expect(characterAtWorldA.characterSightFlag).toBe(true);
-        expect(
-          characterAtWorldStore.get(characterAtWorldA.characterId)
-            .characterSightFlag
-        ).toBe(true);
+        expect(expectedCharacter.characterSightFlag).toBe(true);
       });
 
       test('Character A should not see Character B', () => {
@@ -454,12 +473,16 @@ describe('World', () => {
           charactersInSightB
         );
 
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorldA.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
         expect(charactersInSightA.length).toBe(0);
         expect(characterAtWorldA.characterSightFlag).toBe(false);
-        expect(
-          characterAtWorldStore.get(characterAtWorldA.characterId)
-            .characterSightFlag
-        ).toBe(false);
+        expect(expectedCharacter.characterSightFlag).toBe(false);
       });
     });
 
@@ -498,11 +521,15 @@ describe('World', () => {
           world
         );
 
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorld.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
         expect(characterAtWorld.characterSightFlag).toBe(false);
-        expect(
-          characterAtWorldStore.get(characterAtWorld.characterId)
-            .characterSightFlag
-        ).toBe(false);
+        expect(expectedCharacter.characterSightFlag).toBe(false);
         expect(world.to).toBeCalled();
         expect(world.to).toBeCalledWith(characterAtWorld.characterId);
         expect(world.to(characterAtWorld.characterId).emit).toBeCalled();
@@ -546,12 +573,16 @@ describe('World', () => {
           world
         );
 
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorld.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
         expect(characterAtWorld.characterSightFlag).toBe(false);
         expect(charactersInSight.length).toBe(0);
-        expect(
-          characterAtWorldStore.get(characterAtWorld.characterId)
-            .characterSightFlag
-        ).toBe(false);
+        expect(expectedCharacter.characterSightFlag).toBe(false);
         expect(world.to(characterAtWorld.characterId).emit).not.toBeCalled();
       });
     });
@@ -601,12 +632,16 @@ describe('World', () => {
           encountersInSight
         );
 
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorld.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
         expect(encountersInSight.length).toBe(1);
         expect(characterAtWorld.encounterSightFlag).toBe(true);
-        expect(
-          characterAtWorldStore.get(characterAtWorld.characterId)
-            .encounterSightFlag
-        ).toBe(true);
+        expect(expectedCharacter.encounterSightFlag).toBe(true);
       });
 
       test('Character should not see Encounter', () => {
@@ -653,12 +688,16 @@ describe('World', () => {
           encountersInSight
         );
 
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorld.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
         expect(encountersInSight.length).toBe(0);
         expect(characterAtWorld.encounterSightFlag).toBe(false);
-        expect(
-          characterAtWorldStore.get(characterAtWorld.characterId)
-            .encounterSightFlag
-        ).toBe(false);
+        expect(expectedCharacter.encounterSightFlag).toBe(false);
       });
     });
 
@@ -697,13 +736,16 @@ describe('World', () => {
           encountersInSight,
           world
         );
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorld.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
 
         expect(encountersInSight.length).toBe(0);
         expect(characterAtWorld.encounterSightFlag).toBe(false);
-        expect(
-          characterAtWorldStore.get(characterAtWorld.characterId)
-            .encounterSightFlag
-        ).toBe(false);
+        expect(expectedCharacter.encounterSightFlag).toBe(false);
         expect(world.to(characterAtWorld.characterId).emit).toBeCalledWith(
           NogEvent.ENCOUNTERS_IN_SIGHT,
           encountersInSight
@@ -745,12 +787,16 @@ describe('World', () => {
           world
         );
 
+        const expectedCharacter = characterAtWorldStore.get(
+          characterAtWorld.characterId
+        );
+        if (!expectedCharacter) {
+          throw new Error('Character not found');
+        }
+
         expect(encountersInSight.length).toBe(0);
         expect(characterAtWorld.encounterSightFlag).toBe(false);
-        expect(
-          characterAtWorldStore.get(characterAtWorld.characterId)
-            .encounterSightFlag
-        ).toBe(false);
+        expect(expectedCharacter.encounterSightFlag).toBe(false);
         expect(world.to(characterAtWorld.characterId).emit).not.toBeCalled();
       });
     });

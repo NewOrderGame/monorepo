@@ -7,7 +7,7 @@ const timer = startGame(gameNamespace);
 
 gameNamespace.on('stop-game', (secret: string) => {
   if (secret === process.env.STOP_GAME_SECRET) {
-    clearInterval(timer);
+    clearInterval(timer as NodeJS.Timeout);
   }
 });
 

@@ -69,8 +69,7 @@ const connect =
     navigate: NavigateFunction,
     setConnected: (connected: boolean) => void
   ) =>
-  (
-  ) => {
+  () => {
     gameSocket.auth = {
       accessToken
     };

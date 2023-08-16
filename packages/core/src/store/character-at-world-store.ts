@@ -9,7 +9,7 @@ export class InMemoryCharacterAtWorldStore {
     this._charactersAtWorld = new Map<NogCharacterId, CharacterAtWorld>();
   }
 
-  get(id: NogCharacterId): CharacterAtWorld {
+  get(id: NogCharacterId): CharacterAtWorld | undefined {
     return this._charactersAtWorld.get(id);
   }
 

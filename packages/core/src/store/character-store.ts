@@ -9,7 +9,7 @@ export class InMemoryCharacterStore {
     this._characters = new Map<NogCharacterId, Character>();
   }
 
-  get(id: NogCharacterId): Character {
+  get(id: NogCharacterId): Character | undefined {
     return this._characters.get(id);
   }
 

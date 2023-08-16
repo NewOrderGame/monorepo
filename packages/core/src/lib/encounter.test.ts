@@ -20,9 +20,14 @@ const DEFAULT_CHARACTER_STATS: CharacterStats = {
 
 describe('Visibility module', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     characterAtWorldStore.clear();
     encounterStore.clear();
     characterStore.clear();
+  });
+
+  afterEach(() => {
+    jest.runAllTimers();
   });
 
   describe('handleCharactersEncounter. Handles encounter between characters on map', () => {
@@ -88,6 +93,10 @@ describe('Visibility module', () => {
 
         expect(characterA.encounterId).toBe(encounter.encounterId);
         expect(characterB.encounterId).toBe(encounter.encounterId);
+
+        if (!characterA.encounterStartTime || !characterB.encounterStartTime) {
+          throw new Error('Encounter start time is missing');
+        }
 
         expect(characterA.encounterStartTime - encounterStartTime).toBeLessThan(
           10

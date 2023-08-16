@@ -2,7 +2,6 @@ import { Namespace, Socket } from 'socket.io';
 import logger from './utils/logger';
 import characterAtWorldStore from '../store/character-at-world-store';
 import {
-  CharacterAtWorld,
   CharacterInSight,
   EncounterInSight,
   NogCharacterId,
@@ -38,6 +37,11 @@ export const moveCharacter = (characterId: NogCharacterId) => {
   );
 
   const character = characterStore.get(characterId);
+
+  if (!character) {
+    logger.error('Character not found');
+    return;
+  }
 
   if (distance < characterAtWorld.stats.speed / TICK_PER_SECOND) {
     character.coordinates = characterAtWorld.movesTo;
@@ -174,6 +178,11 @@ export const checkEncounterVisibility = (
 
   const encounter = encounterStore.get(encounterId);
 
+  if (!encounter) {
+    logger.error('Encounter not found');
+    return;
+  }
+
   const distance = computeDistance(
     {
       latitude: characterAtWorld.coordinates.lat,
@@ -238,9 +247,7 @@ export const handleInitWorldPage =
     }
 
     if (character.page === NogPage.WORLD) {
-      let characterAtWorld: CharacterAtWorld = characterAtWorldStore.get(
-        character.characterId
-      );
+      let characterAtWorld = characterAtWorldStore.get(character.characterId);
       if (!characterAtWorld) {
         characterAtWorld = createCharacterAtWorld({
           character: character,

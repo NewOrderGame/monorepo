@@ -26,7 +26,8 @@ import { getDistance as computeDistance } from 'geolib';
 
 export const handleNpcServiceConnection = (socket: Socket) => {
   const isNpcService =
-    socket.handshake.auth.npcServiceSecret === process.env.NOG_NPC_SERVICE_SECRET;
+    socket.handshake.auth.npcServiceSecret ===
+    process.env.NOG_NPC_SERVICE_SECRET;
 
   if (!isNpcService) {
     return;

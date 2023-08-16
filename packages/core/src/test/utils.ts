@@ -7,7 +7,7 @@ export const getFakeSocket = () => {
     emit,
     data
   } as unknown as Socket;
-}
+};
 
 export const getFakeNamespace = () => {
   const emit = jest.fn();
@@ -19,4 +19,4 @@ export const getFakeNamespace = () => {
   return {
     to
   } as unknown as Namespace;
-}
+};

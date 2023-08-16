@@ -7,9 +7,7 @@ import { Connection, useConnection } from '../lib/connection';
 import { NogEvent, Outlook } from '@newordergame/common';
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import logger from '../lib/utils/logger';
-import {
-  AuthenticatorContext
-} from '@aws-amplify/ui-react/dist/types/components/Authenticator/hooks/useAuthenticator';
+import { AuthenticatorContext } from '@aws-amplify/ui-react/dist/types/components/Authenticator/hooks/useAuthenticator';
 
 const INITIAL_VALUES = {
   0: 0,

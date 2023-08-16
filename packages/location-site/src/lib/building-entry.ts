@@ -46,7 +46,7 @@ export const handleEnterBuilding =
 
       if (wayBuilding) {
         const buildingId = wayBuilding.id;
-        let building: Building = buildingStore.get(buildingId);
+        let building: Building | undefined = buildingStore.get(buildingId);
         if (!building) {
           const plainBuildingNodes: PlainBuildingNode[] =
             convertWayToPlainBuildingNodes(wayBuilding);

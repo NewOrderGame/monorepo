@@ -10,7 +10,7 @@ export class InMemoryBuildingStore {
     this._characters = new Map<NogBuildingId, Building>();
   }
 
-  get(id: NogBuildingId): Building {
+  get(id: NogBuildingId): Building | undefined {
     return this._characters.get(id);
   }
 

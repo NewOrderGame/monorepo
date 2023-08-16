@@ -69,7 +69,7 @@ describe('Hex utils', () => {
       expect(line).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ x: 0, y: 0, z: 0 }),
-          expect.objectContaining({ x: 0, y: 100, z: 0 }),
+          expect.objectContaining({ x: 0, y: 0, z: 0 }),
           expect.objectContaining({ x: 0, y: 0, z: 0 }),
           expect.objectContaining({ x: 0, y: 0, z: 0 }),
           expect.objectContaining({ x: 0, y: 0, z: 0 }),

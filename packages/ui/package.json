@@ -33,7 +33,6 @@
   "scripts": {
     "start": "cross-env BROWSER=none shx cp environment/.env.development .env && react-scripts start",
     "build": "react-scripts build",
-    "test": "shx cp environment/.env.test .env && react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "yarn build && cd aws && yarn deploy && shx cd ..",
     "prettier": "npx prettier --write .",
@@ -44,7 +43,11 @@
     "cy:open:second": "cypress open --config-file cypress/cy-user2.json",
     "cy:run:user1": "cypress run --config-file cypress/cy-user1.json",
     "cy:run:user2": "cypress run --config-file cypress/cy-user2.json",
-    "cy:run:all": "concurrently npm:cy:run:user1 npm:cy:run:user2"
+    "cy:run:all": "concurrently npm:cy:run:user1 npm:cy:run:user2",
+    "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
+    "format": "prettier --write src/**/*.{ts,tsx}",
+    "test": "shx cp environment/.env.development .env && react-scripts test --watchAll=false",
+    "type-check": "tsc --noEmit"
   },
   "eslintConfig": {
     "extends": [

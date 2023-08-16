@@ -24,10 +24,7 @@ export const handleLocationSiteServiceConnection = (
   logger.info('Location Site service connected');
   setLocationSiteSocket(socket);
 
-  socket.on(
-    'enter-building-commit',
-    handleEnterBuildingCommit(gameNamespace)
-  );
+  socket.on('enter-building-commit', handleEnterBuildingCommit(gameNamespace));
 
   socket.on(
     NogEvent.INIT_LOCATION_SITE_PAGE,
@@ -37,6 +34,8 @@ export const handleLocationSiteServiceConnection = (
 
 export const handleInitLocationSitePageInternal =
   (socket: Socket, gameNamespace: Namespace) =>
+  // TODO: create interface for Building
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ({ characterId, building }: { characterId: string; building: any }) => {
     const characterSocket = gameNamespace.to(characterId);
     characterSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, building);
@@ -49,7 +48,8 @@ export const handleEnterBuilding =
     const characterId = socket.data.characterId;
 
     if (!characterId) {
-      throw new Error('Character ID is missing');
+      logger.error('Character ID is missing');
+      return;
     }
 
     logger.info({ characterId, coordinates }, 'Enter building');
@@ -73,6 +73,11 @@ export const handleInitLocationSitePage = (socket: Socket) => () => {
   const characterId = socket.data.characterId;
   const character = characterStore.get(characterId);
 
+  if (!character) {
+    logger.error('Character not found');
+    return;
+  }
+
   if (!locationSiteSocket) {
     return;
   }
@@ -87,6 +92,12 @@ export const handleExitLocationSite = (socket: Socket) => () => {
   logger.debug('Exit location site');
   const characterId = socket.data.characterId;
   const character = characterStore.get(characterId);
+
+  if (!character) {
+    logger.error('Character not found');
+    return;
+  }
+
   characterStore.set(characterId, {
     ...character,
     buildingId: null
@@ -104,6 +115,11 @@ export const handleEnterBuildingCommit =
     buildingId: number;
   }) => {
     const character = characterStore.get(characterId);
+
+    if (!character) {
+      logger.error('Character not found');
+      return;
+    }
 
     characterStore.set(characterId, {
       ...character,

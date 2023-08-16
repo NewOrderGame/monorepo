@@ -76,7 +76,7 @@ export type CharacterInSight = {
 export type OverpassElement = { type: string; id: number };
 
 export type WayOverpassElement = {
-  bounds: any;
+  bounds: number[];
   nodes: number[];
   geometry: { lat: number; lon: number }[];
 } & OverpassElement;

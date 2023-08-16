@@ -6,7 +6,6 @@
   "scripts": {
     "start": "shx cp environment/.env.development .env && nodemon",
     "start:stats-reader": "ts-node ./src/stats/reader",
-    "test": "shx cp environment/.env.development .env && jest --detectOpenHandles --collect-coverage",
     "deploy": "yarn citadel:deploy",
     "citadel:deploy": "yarn docker:build && yarn docker:tag && yarn docker:login && yarn docker:push && yarn citadel:restart",
     "citadel:restart": "yarn citadel:stop && yarn citadel:rm && yarn citadel:pull && yarn citadel:start",
@@ -30,7 +29,10 @@
     "aws:docker:push": "docker push $NOG_AWS_ACCOUNT_ID.dkr.ecr.eu-central-1.amazonaws.com/core-service",
     "webpack:build": "shx cp environment/.env.production .env && webpack --mode=production --node-env=production",
     "webpack:watch": "shx cp environment/.env.development .env && webpack --watch",
-    "prettier": "npx prettier --write ."
+    "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
+    "format": "prettier --write src/**/*.ts",
+    "test": "shx cp environment/.env.development .env && jest --detectOpenHandles --collect-coverage",
+    "type-check": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC",

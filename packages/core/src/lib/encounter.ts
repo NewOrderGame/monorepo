@@ -1,5 +1,5 @@
 import characterStore from '../store/character-store';
-import * as moment from 'moment';
+import moment from 'moment';
 import logger from './utils/logger';
 import {
   Character,
@@ -64,6 +64,11 @@ export const handleCharactersEncounter = (
 
   const characterA = characterStore.get(characterAtWorldA.characterId);
   const characterB = characterStore.get(characterAtWorldB.characterId);
+
+  if (!characterA || !characterB) {
+    logger.error('Character not found');
+    return;
+  }
 
   let canEncounter: boolean =
     !characterA.encounterStartTime && !characterB.encounterStartTime;
@@ -215,18 +220,34 @@ export const handleExitEncounter =
       logger.error('There should be character ID');
     }
     const characterA = characterStore.get(socket.data.characterId);
-    const encounter = encounterStore.get(characterA.encounterId);
 
-    if (!encounter) {
-      logger.error('There should be an encounter');
+    if (!characterA) {
+      logger.error('Character A not found');
       return;
     }
 
-    const characterB = characterStore.get(
-      encounter.participants.find(
-        (p: EncounterParticipant) => p.characterId !== characterA.characterId
-      ).characterId
+    const encounter = encounterStore.get(characterA.encounterId as string);
+
+    if (!encounter) {
+      logger.error('Encounter not found');
+      return;
+    }
+
+    const participant = encounter.participants.find(
+      (p: EncounterParticipant) => p.characterId !== characterA.characterId
     );
+
+    if (!participant) {
+      logger.error('There should be a participant');
+      return;
+    }
+
+    const characterB = characterStore.get(participant.characterId);
+
+    if (!characterB) {
+      logger.error('Character B not found');
+      return;
+    }
 
     exitEncounter({ encounter, characterA, characterB, gameNamespace });
   };
@@ -244,7 +265,9 @@ export const handleInitEncounterPage =
     }
 
     if (character.page === NogPage.ENCOUNTER) {
-      const encounter: Encounter = encounterStore.get(character.encounterId);
+      const encounter: Encounter | undefined = encounterStore.get(
+        character.encounterId as string
+      );
       if (encounter) {
         socket.emit(NogEvent.INIT_ENCOUNTER_PAGE, {
           participants: encounter.participants

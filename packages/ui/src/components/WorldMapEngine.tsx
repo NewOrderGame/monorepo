@@ -63,6 +63,8 @@ const useAddConnectionSocketsEventListeners = (
   }, [connection.gameSocket, map]);
 };
 
+// TODO: Create interface for Building
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const handleEnterBuilding = (building: any) => {
   logger.info('Commit building entry', { building });
 };

@@ -1,4 +1,4 @@
-import { NogEvent, NogPage } from '@newordergame/common';
+import { Character, NogEvent, NogPage } from '@newordergame/common';
 import logger from '../lib/utils/logger';
 import { Namespace, Socket } from 'socket.io';
 import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
@@ -9,7 +9,8 @@ import { handleCreateCharacter } from './character';
 import { handleExitEncounter, handleInitEncounterPage } from './encounter';
 import { handleInitWorldPage, handleMoveCharacterAtWorld } from './world';
 import {
-  handleEnterBuilding, handleExitLocationSite,
+  handleEnterBuilding,
+  handleExitLocationSite,
   handleInitLocationSitePage
 } from './location-site';
 
@@ -33,16 +34,21 @@ export const handleUserConnection = async (
   }
 
   const username = user.Username;
-  const nickname: string = user.UserAttributes.find(
+  const nickname: string | undefined = user.UserAttributes.find(
     (a) => a.Name === 'nickname'
   )?.Value;
 
   socket.data.characterId = username;
 
   const character = characterStore.get(username);
-  const page = determinePage(character);
+
+  if (!nickname) {
+    throw new Error('Nickname not found');
+  }
 
   addUserEventListeners(gameNamespace, socket, username, nickname);
+
+  const page = determinePage(character as Character);
 
   if (character) {
     characterStore.set(character.characterId, {
@@ -110,8 +116,5 @@ const addUserEventListeners = (
     handleInitLocationSitePage(socket)
   );
 
-  socket.on(
-    NogEvent.EXIT_LOCATION_SITE,
-    handleExitLocationSite(socket)
-  );
+  socket.on(NogEvent.EXIT_LOCATION_SITE, handleExitLocationSite(socket));
 };

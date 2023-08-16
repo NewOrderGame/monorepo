@@ -4,7 +4,6 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "shx cp environment/.env.development .env && jest --detectOpenHandles --collect-coverage",
     "start": "shx cp environment/.env.development .env && nodemon",
     "deploy": "yarn citadel:deploy",
     "docker:build": "docker build -t location-site-service .",
@@ -21,7 +20,10 @@
     "citadel:pull": "ssh $CITADEL_USER@$CITADEL_IP_ADDRESS docker pull devlysh/newordergame-location-site",
     "webpack:build": "cross-env NODE_ENV=production shx cp environment/.env.production .env && webpack --mode=production",
     "webpack:watch": "shx cp environment/.env.development .env && webpack --watch",
-    "prettier": "npx prettier --write ."
+    "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
+    "format": "prettier --write src/**/*.ts",
+    "test": "shx cp environment/.env.development .env && jest --detectOpenHandles --collect-coverage",
+    "type-check": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC",
