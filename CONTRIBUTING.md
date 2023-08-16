@@ -11,15 +11,13 @@ Use Node.js 16.
 
 We recommend using NVM to install the specified Node.js version.
 
-- Run the `nvm use` command in the project's root directory.
+You can find the node version in the `.nvmrc`
 
-Each package has its own `.nvmrc` file specifying the current version.
+- Run the `nvm use` command in the project's root directory.
 
 ### Running local New Order Game
 
 #### Setup for development
-
-##### Set up environment
 
 You'll need to set up the environment separately for each package
 
@@ -27,9 +25,10 @@ You'll need to set up the environment separately for each package
 
 > Ask [Artem Devlysh](mailto:artem@devlysh.com?subject=Regarding%20NOG%20dev%20environment%20variables) about environment variables which are indicated by `...`
 
-> See list of required variables for each service in according `.env.example` file.
+> See list of required variables for each service in according `.env.example`
 
-###### Backend services:
+##### Backend services:
+
 ```shell
 # Node environment
 NODE_ENV="dev"
@@ -66,8 +65,8 @@ NOG_NPC_SERVICE_SECRET="NPC_SERVICE_SECRET" # Should be equal for NPC Service an
 
 > During development, the main thing is that they match in the configured service and Core Service to make it work
 
+##### UI:
 
-###### UI:
 ```shell
 # Node environment
 NODE_ENV="dev"
@@ -108,7 +107,16 @@ Then you will see runtime log and if there are no errors check the game.
 
 - Open this page in your browser and enjoy: [http://localhost:3000](http://localhost:3000)
 
+## Code gide
+
+### Adding dependencies
+
+When you add dependency please make sure it is being used in single package.
+
+If such dependency meets in other package, please move it to the root `$PROJECT_ROOT/package.json` and remove one in package.
+
 ## Links
+
 - [Google Drive](https://drive.google.com/drive/folders/18vlsmhDxfZF5FtdXBN8FzpCZjwQK_ddi)
 - [Trello board](https://trello.com/b/mW7EUTvz/new-order-game)
 - [Telegram Group](https://t.me/+hgopmqpdSHgyNDZi)

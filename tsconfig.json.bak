@@ -4,14 +4,15 @@
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "module": "CommonJS",
-    "target": "ES5",
+    "target": "ES2020",
     "allowJs": true,
     "sourceMap": true,
     "skipLibCheck": true,
     "types": [],
     "baseUrl": ".",
     "paths": {
-      "@newordergame/common": ["../packages/common"]
+      "@newordergame/common": ["./packages/common"]
     }
-  }
+  },
+  "include": ["packages"]
 }
