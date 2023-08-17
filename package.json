@@ -60,6 +60,10 @@
     "verify": "lerna run verify --stream"
   },
   "lint-staged": {
+    "**/*.{js,jsx}": [
+      "prettier --write",
+      "eslint"
+    ],
     "**/*.{ts,tsx}": [
       "prettier --write",
       "eslint",
