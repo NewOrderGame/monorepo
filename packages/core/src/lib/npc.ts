@@ -24,9 +24,9 @@ import { getNpcSocket, setNpcSocket } from '../store/npc-socket-store';
 import characterStore from '../store/character-store';
 import { getDistance as computeDistance } from 'geolib';
 
-export const handleNpcServiceConnection = (socket: Socket) => {
+export const handleNpcServiceConnection = (npcSocket: Socket) => {
   const isNpcService =
-    socket.handshake.auth.npcServiceSecret ===
+    npcSocket.handshake.auth.npcServiceSecret ===
     process.env.NOG_NPC_SERVICE_SECRET;
 
   if (!isNpcService) {
@@ -35,11 +35,11 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
   logger.info('NPC service connected');
   const allNpc = characterAtWorldStore.getAllNpc();
-  setNpcSocket(socket);
-  socket.emit(NogEvent.INIT_NPC, allNpc);
-  allNpc.forEach((npc) => socket.join(npc.characterId));
+  setNpcSocket(npcSocket);
+  npcSocket.emit(NogEvent.INIT_NPC, allNpc);
+  allNpc.forEach((npc) => npcSocket.join(npc.characterId));
 
-  socket.on(NogEvent.CREATE_NPC, (coordinates: Coordinates) => {
+  npcSocket.on(NogEvent.CREATE_NPC, (coordinates: Coordinates) => {
     logger.info({ coordinates }, 'Create NPC');
 
     try {
@@ -80,11 +80,11 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
     characterStore.set(defaultNpc.characterId, defaultNpc);
     characterAtWorldStore.set(npc.characterId, npc);
-    socket.join(npc.characterId);
-    socket.emit(NogEvent.INIT_NPC, [npc]);
+    npcSocket.join(npc.characterId);
+    npcSocket.emit(NogEvent.INIT_NPC, [npc]);
   });
 
-  socket.on(NogEvent.DESTROY_NPC, (characterIds: string[]) => {
+  npcSocket.on(NogEvent.DESTROY_NPC, (characterIds: string[]) => {
     characterIds.forEach((characterId) => {
       logger.info({ characterId }, 'Destroy NPC');
 
@@ -97,12 +97,12 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
       characterStore.delete(characterId);
       characterAtWorldStore.delete(characterId);
-      socket.leave(characterId);
-      socket.emit(NogEvent.DESTROY_NPC, [{ characterId }]);
+      npcSocket.leave(characterId);
+      npcSocket.emit(NogEvent.DESTROY_NPC, [{ characterId }]);
     });
   });
 
-  socket.on(
+  npcSocket.on(
     NogEvent.MOVE_NPC_AT_WORLD,
     ({
       coordinates,
@@ -124,10 +124,7 @@ export const handleNpcServiceConnection = (socket: Socket) => {
       const characterAtWorld = characterAtWorldStore.get(characterId);
 
       if (!characterAtWorld) {
-        logger.error(
-          new Error('Character at world is missing'),
-          'Error during moving NPC at world'
-        );
+        logger.warn({ characterId }, 'This NPC seems to be gone...');
         return;
       }
 
@@ -147,7 +144,7 @@ export const handleNpcServiceConnection = (socket: Socket) => {
 
       const duration = distance / characterAtWorld.stats.speed;
 
-      socket.emit(NogEvent.MOVE_NPC_AT_WORLD, {
+      npcSocket.emit(NogEvent.MOVE_NPC_AT_WORLD, {
         coordinates,
         characterId,
         duration,

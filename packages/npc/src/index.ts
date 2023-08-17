@@ -99,16 +99,11 @@ type MoveAtWorldType = {
   coordinates: Coordinates;
   duration: number;
   distance: number;
-}
+};
 
 game.on(
   NogEvent.MOVE_NPC_AT_WORLD,
-  ({
-    characterId,
-    coordinates,
-    duration,
-    distance
-  }: MoveAtWorldType) => {
+  ({ characterId, coordinates, duration, distance }: MoveAtWorldType) => {
     logger.info(
       { characterId, coordinates, duration, distance },
       'Move NPC at world'
@@ -120,7 +115,10 @@ game.on(
       numberSchema.validateSync(duration);
       numberSchema.validateSync(distance);
     } catch (error) {
-      logger.error(error, 'Error during moving NPC at world');
+      logger.error(
+        error,
+        'Error during moving NPC at world during MOVE_NPC_AT_WORLD'
+      );
       return;
     }
 
