@@ -6,7 +6,8 @@
   "module": "dist/index.ts",
   "types": "dist/index.d.ts",
   "scripts": {
-    "start": "yarn watch",
+    "start": "yarn dev",
+    "dev": "yarn watch",
     "build": "npx tsc",
     "watch": "npx tsc --watch | sed -u 's/\\x1Bc//g'",
     "ship": "yarn publish-package",

@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "shx cp environment/.env.development .env && nodemon",
+    "start": "yarn dev",
+    "dev": "shx cp environment/.env.development .env && nodemon",
     "deploy": "yarn citadel:deploy",
     "docker:build": "docker build -t npc-service .",
     "docker:login": "docker login",

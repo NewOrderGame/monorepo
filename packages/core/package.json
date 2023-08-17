@@ -4,7 +4,8 @@
   "description": "My webpack project",
   "main": "src/index.ts",
   "scripts": {
-    "start": "shx cp environment/.env.development .env && nodemon",
+    "start": "yarn dev",
+    "dev": "shx cp environment/.env.development .env && nodemon",
     "start:stats-reader": "ts-node ./src/stats/reader",
     "deploy": "yarn citadel:deploy",
     "citadel:deploy": "yarn docker:build && yarn docker:tag && yarn docker:login && yarn docker:push && yarn citadel:restart",
