@@ -1,5 +1,5 @@
 {
-  "version": "0.1.1",
+  "version": "0.1.2",
   "dependencies": {
     "@newordergame/common": "^1.0.57",
     "aws-sdk": "^2.1136.0",
@@ -48,7 +48,7 @@
   "name": "monorepo",
   "description": "This repository contains all code for the first period.",
   "scripts": {
-    "start": "yarn start:dev",
+    "start": "yarn dev",
     "all": "lerna run start --stream",
     "dev": "./run-packages.sh",
     "deploy": "lerna run deploy --stream",
@@ -64,10 +64,15 @@
       "prettier --write",
       "eslint"
     ],
-    "**/*.{ts,tsx}": [
+    "packages/ui/**/*.{ts,tsx}": [
       "prettier --write",
       "eslint",
-      "tsc --noEmit --skipLibCheck --isolatedModules"
+      "node tsc-wrapper.js \"tsc --project packages/ui/tsconfig.json --noEmit --skipLibCheck --isolatedModules\""
+    ],
+    "packages/**/*.{ts}": [
+      "prettier --write",
+      "eslint",
+      "tsc --noEmit --skipLibCheck --isolatedModules --esModuleInterop --allowSyntheticDefaultImports"
     ],
     "**/*.json": [
       "prettier --write"

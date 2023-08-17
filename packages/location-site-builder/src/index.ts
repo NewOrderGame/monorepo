@@ -15,7 +15,10 @@ const game = io(`${CORE_URL}/game`, {
   autoConnect: false
 });
 
-game.auth = { locationSiteServiceSecret: process.env.NOG_LOCATION_SITE_SERVICE_SECRET };
+game.auth = {
+  locationSiteBuilderServiceSecret:
+    process.env.NOG_LOCATION_SITE_BUILDER_SERVICE_SECRET
+};
 
 logger.info('Connecting to Game...');
 game.connect();
@@ -32,6 +35,6 @@ game.on(NogEvent.CONNECTED, () => {
   logger.info('Connected to Game namespace');
 });
 
-game.on('enter-building', handleEnterBuilding(game));
+game.on(NogEvent.ENTER_BUILDING, handleEnterBuilding(game));
 
-game.on('init-location-site-page', handleInitLocationSitePage(game));
+game.on(NogEvent.INIT_LOCATION_SITE_PAGE, handleInitLocationSitePage(game));

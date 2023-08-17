@@ -1,4 +1,5 @@
 import {
+  Building as BuildingInterface,
   Cell,
   CubicHex,
   PlainBuildingNode,
@@ -7,7 +8,7 @@ import {
 import logger from './utils/logger';
 import { max } from 'mathjs';
 
-export class Building {
+export class Building implements BuildingInterface {
   readonly map: Cell[][];
   readonly maxX: number;
   readonly maxY: number;

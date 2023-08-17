@@ -23,6 +23,7 @@ export enum NogEvent {
   INIT_ENCOUNTER_PAGE = 'init-encounter-page',
   INIT_WORLD_PAGE = 'init-world-page',
   INIT_LOCATION_SITE_PAGE = 'init-location-site-page',
+  INIT_LOCATION_SITE_PAGE_COMMIT = 'init-location-site-page-commit',
 
   CREATE_CHARACTER = 'create-character',
   MOVE_CHARACTER_AT_WORLD = 'move-character-at-world',
@@ -36,5 +37,8 @@ export enum NogEvent {
   EXIT_LOCATION_SITE = 'exit-location-site',
 
   MOVE_NPC_AT_WORLD = 'move-npc-at-world',
-  CREATE_NPC = 'create-npc'
+  CREATE_NPC = 'create-npc',
+
+  ENTER_BUILDING = 'enter-building',
+  ENTER_BUILDING_COMMIT = 'enter-building-commit'
 }

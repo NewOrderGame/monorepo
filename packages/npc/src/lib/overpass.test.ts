@@ -31,6 +31,6 @@ describe('Overpass module', () => {
       100
     );
 
-    logger.trace(spawnCoordinates, 'Spawn Coordinates');
+    logger.info(spawnCoordinates, 'Spawn Coordinates');
   });
 });

@@ -8,9 +8,14 @@ import {
 } from 'leaflet';
 import { useMap, useMapEvents } from 'react-leaflet';
 import { useEffect } from 'react';
-import { CharacterInSight, EncounterInSight } from '../../../common';
 import { Connection, useConnection } from '../lib/connection';
-import { Coordinates, NogEvent } from '@newordergame/common';
+import {
+  Coordinates,
+  NogEvent,
+  Building,
+  CharacterInSight,
+  EncounterInSight
+} from '@newordergame/common';
 import logger from '../lib/utils/logger';
 
 export const WorldMapEngine = () => {
@@ -52,20 +57,18 @@ const useAddConnectionSocketsEventListeners = (
       handleCharactersInSight(map)
     );
 
-    connection.gameSocket.on('enter-building', handleEnterBuilding);
+    connection.gameSocket.on(NogEvent.ENTER_BUILDING, handleEnterBuilding);
 
     return () => {
       connection.gameSocket.off(NogEvent.MOVE_CHARACTER_AT_WORLD);
       connection.gameSocket.off(NogEvent.CHARACTERS_IN_SIGHT);
       connection.gameSocket.off(NogEvent.ENCOUNTERS_IN_SIGHT);
-      connection.gameSocket.off('enter-building');
+      connection.gameSocket.off(NogEvent.ENTER_BUILDING);
     };
   }, [connection.gameSocket, map]);
 };
 
-// TODO: Create interface for Building
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const handleEnterBuilding = (building: any) => {
+const handleEnterBuilding = (building: Building) => {
   logger.info('Commit building entry', { building });
 };
 

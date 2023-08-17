@@ -109,7 +109,7 @@ const addUserEventListeners = (
     handleExitEncounter(socket, gameNamespace)
   );
 
-  socket.on('enter-building', handleEnterBuilding(socket));
+  socket.on(NogEvent.ENTER_BUILDING, handleEnterBuilding(socket));
 
   socket.on(
     NogEvent.INIT_LOCATION_SITE_PAGE,

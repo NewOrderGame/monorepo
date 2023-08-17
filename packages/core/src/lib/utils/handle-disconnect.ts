@@ -3,7 +3,7 @@ import characterStore from '../../store/character-store';
 import logger from './logger';
 import { setNpcSocket } from '../../store/npc-socket-store';
 import characterAtWorldStore from '../../store/character-at-world-store';
-import { setLocationSiteSocket } from '../../store/location-site-socket-store';
+import { setLocationSiteBuilderSocket } from '../../store/location-site-builder-socket-store';
 
 export const handleDisconnect = async (
   socket: Socket,
@@ -43,7 +43,8 @@ export const handleDisconnect = async (
   }
 
   const isNpcService =
-    socket.handshake?.auth.npcServiceSecret === process.env.NOG_NPC_SERVICE_SECRET;
+    socket.handshake?.auth.npcServiceSecret ===
+    process.env.NOG_NPC_SERVICE_SECRET;
   if (isNpcService) {
     setNpcSocket(null);
     logger.warn('NPC service disconnected', {
@@ -51,10 +52,11 @@ export const handleDisconnect = async (
     });
   }
 
-  const isLocationSiteService =
-    socket.handshake?.auth.locationSiteServiceSecret === process.env.NOG_LOCATION_SITE_SERVICE_SECRET;
-  if (isLocationSiteService) {
-    setLocationSiteSocket(null);
+  const isLocationSiteBuilderService =
+    socket.handshake?.auth.locationSiteBuilderServiceSecret ===
+    process.env.NOG_LOCATION_SITE_BUILDER_SERVICE_SECRET;
+  if (isLocationSiteBuilderService) {
+    setLocationSiteBuilderSocket(null);
     logger.warn('Location Site service disconnected', {
       namespaceName: gameNamespace.name
     });

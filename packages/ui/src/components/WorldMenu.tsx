@@ -3,6 +3,7 @@ import logger from '../lib/utils/logger';
 import { useMap } from 'react-leaflet';
 import { Control, DomUtil, Map as LeafletMap } from 'leaflet';
 import { Connection, useConnection } from '../lib/connection';
+import { NogEvent } from '@newordergame/common';
 
 export const WorldMenu = () => {
   const map = useMap();
@@ -50,6 +51,6 @@ const enterBuildingButtonClickHandler =
   (connection: Connection, map: LeafletMap) => (event: MouseEvent) => {
     event.stopPropagation();
     const coordinates = map.getCenter();
-    connection.gameSocket.emit('enter-building', coordinates);
+    connection.gameSocket.emit(NogEvent.ENTER_BUILDING, coordinates);
     logger.info('Requesting building entry');
   };

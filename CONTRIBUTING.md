@@ -55,7 +55,7 @@ NOG_USER_POOL_WEB_CLIENT_ID="..."
 NOG_COGNITO_REGION="eu-central-1"
 
 # Service secrets
-NOG_LOCATION_SITE_SERVICE_SECRET="LOCATION_SITE_SERVICE_SECRET" # Should be equal for Location Site Service and Core
+NOG_LOCATION_SITE_BUILDER_SERVICE_SECRET="LOCATION_SITE_BUILDER_SERVICE_SECRET" # Should be equal for Location Site Service and Core
 NOG_NPC_SERVICE_SECRET="NPC_SERVICE_SECRET" # Should be equal for NPC Service and Core Service
 ```
 

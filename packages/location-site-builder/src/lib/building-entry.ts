@@ -65,7 +65,10 @@ export const handleEnterBuilding =
           logger.info({ buildingId }, 'Created new building');
         }
 
-        socket.emit('enter-building-commit', { characterId, buildingId });
+        socket.emit(NogEvent.ENTER_BUILDING_COMMIT, {
+          characterId,
+          buildingId
+        });
       }
     } catch (error) {
       logger.error({ error, coordinates, sightRange: SIGHT_RANGE });
@@ -82,10 +85,13 @@ export const handleInitLocationSitePage =
     buildingId: number;
   }) => {
     const building = buildingStore.get(buildingId);
-    socket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, { characterId, building });
+    socket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, {
+      characterId,
+      building
+    });
     logger.info(
       { characterId, buildingId },
-      'Sent "init-location-site-page-commit" event'
+      'Sent "init-location-site-page" event'
     );
   };
 

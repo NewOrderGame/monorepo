@@ -1,4 +1,4 @@
-import { Cell, NogEvent } from '@newordergame/common';
+import { Building, Cell, NogEvent } from '@newordergame/common';
 import { Application, Point, Sprite } from 'pixi.js';
 import * as React from 'react';
 import { MutableRefObject, RefObject, useEffect, useRef } from 'react';
@@ -40,9 +40,7 @@ const handleInitLocationSitePage =
     pixiAppRef: MutableRefObject<Application | null>,
     containerRef: MutableRefObject<HTMLDivElement | null>
   ) =>
-  // TODO: Create interface for Building in common module
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (building: any) => {
+  (building: Building) => {
     logger.info('Location Site Page building a building', { building });
     const width =
       (building.maxX + building.maxY + 2) * HEXAGON_TEXTURE_WIDTH -
@@ -79,9 +77,7 @@ const handleInitLocationSitePage =
     containerRef.current?.appendChild(pixiAppRef.current.view);
   };
 
-// TODO: Use proper type instead of "any"
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const useEmitInitLocationSitePage = (connection: any) => {
+const useEmitInitLocationSitePage = (connection: Connection) => {
   useEffect(() => {
     connection.gameSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE);
   }, []);
