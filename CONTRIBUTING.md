@@ -101,7 +101,9 @@ This will run `lerna` and install all required dependencies for all packages.
 
 - Build common module for the first time: `yarn workspace @newordergame/common build`
 
-- Run the development server: `yarn start:dev`
+- For the development server with all services run: `yarn all`
+
+- For the development server with packages from `.nogrc` run: `yarn dev`
 
 Then you will see runtime log and if there are no errors check the game.
 
