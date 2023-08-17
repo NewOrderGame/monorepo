@@ -47,7 +47,8 @@
     "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
     "format": "prettier --write src/**/*.{ts,tsx}",
     "test": "shx cp environment/.env.development .env && react-scripts test --watchAll=false",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "verify": "yarn format && yarn type-check && yarn lint && yarn test"
   },
   "eslintConfig": {
     "extends": [

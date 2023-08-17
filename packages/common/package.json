@@ -15,12 +15,12 @@
     "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
     "format": "prettier --write src/**/*.ts",
     "test": "yarn build && jest",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "verify": "yarn format && yarn type-check && yarn lint && yarn test"
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "yup": "^0.32.11"
   }

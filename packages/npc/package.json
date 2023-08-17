@@ -23,12 +23,11 @@
     "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
     "format": "prettier --write src/**/*.ts",
     "test": "shx cp environment/.env.development .env && jest --detectOpenHandles --collect-coverage",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "verify": "yarn format && yarn type-check && yarn lint && yarn test"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-  },
-  "devDependencies": {
-  }
+  "dependencies": {},
+  "devDependencies": {}
 }

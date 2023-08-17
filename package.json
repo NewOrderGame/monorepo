@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
     "@newordergame/common": "^1.0.57",
     "aws-sdk": "^2.1136.0",
@@ -57,12 +57,16 @@
     "lint": "lerna run lint --stream",
     "format": "lerna run format --stream",
     "test": "lerna run test --stream",
-    "verify": "yarn format && yarn type-check && yarn lint && yarn test"
+    "verify": "lerna run verify --stream"
   },
   "lint-staged": {
-    "*.ts": [
-      "yarn lint",
-      "yarn format"
+    "**/*.{ts,tsx}": [
+      "prettier --write",
+      "eslint",
+      "tsc --noEmit --skipLibCheck --isolatedModules"
+    ],
+    "**/*.json": [
+      "prettier --write"
     ]
   },
   "repository": "git+https://github.com/NewOrderGame/monorepo.git",
