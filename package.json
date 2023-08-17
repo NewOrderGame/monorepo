@@ -49,8 +49,8 @@
   "description": "This repository contains all code for the first period.",
   "scripts": {
     "start": "yarn start:dev",
-    "start:all": "lerna run start --stream",
-    "start:dev": "./run-packages.sh",
+    "all": "lerna run start --stream",
+    "dev": "./run-packages.sh",
     "deploy": "lerna run deploy --stream",
     "build": "lerna run build --stream",
     "type-check": "lerna run type-check --stream",
