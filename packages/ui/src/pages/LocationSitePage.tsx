@@ -41,7 +41,7 @@ const handleInitLocationSitePage =
     containerRef: MutableRefObject<HTMLDivElement | null>
   ) =>
   (building: Building) => {
-    logger.info('Location Site Page building a building', { building });
+    logger.info({ building }, 'Location Site Page building a building');
     const width =
       (building.maxX + building.maxY + 2) * HEXAGON_TEXTURE_WIDTH -
       HEXAGON_TEXTURE_WIDTH / 2;
@@ -69,7 +69,7 @@ const handleInitLocationSitePage =
           HEXAGON_TEXTURE_HEIGHT / 100
         );
         hexagon.on('pointerdown', () =>
-          logger.trace('Hexagon pointer down', { hexagon, x, y })
+          logger.trace({ hexagon, x, y }, 'Hexagon pointer down')
         );
         pixiAppRef.current.stage.addChild(hexagon);
       }

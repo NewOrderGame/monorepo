@@ -5,7 +5,7 @@ if (!process.env.REACT_APP_NOG_CORE_URL) {
   throw new Error('Environment variable REACT_APP_NOG_CORE_URL is missing');
 }
 
-logger.debug('env', { env: process.env });
+logger.debug({ env: process.env }, 'env');
 
 const CORE_URL = process.env.REACT_APP_NOG_CORE_URL;
 

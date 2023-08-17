@@ -1,14 +1,23 @@
 interface Logger {
+  info(message: string): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  info(message: string, meta?: any): void;
+  info(meta: any, message: string): void;
+
+  error(message: string): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error(message: string, meta?: any): void;
+  error(meta: any, message: string): void;
+
+  warn(message: string): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  warn(message: string, meta?: any): void;
+  warn(meta: any, message: string): void;
+
+  debug(message: string): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  debug(message: string, meta?: any): void;
+  debug(meta: any, message: string): void;
+
+  trace(message: string): void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  trace(message: string, meta?: any): void;
+  trace(meta: any, message: string): void;
 }
 
 class DevLogger implements Logger {
@@ -17,7 +26,15 @@ class DevLogger implements Logger {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  info(message: string, meta?: any) {
+  info(metaOrMessage: any, message?: string) {
+    let meta;
+    if (message) {
+      meta = metaOrMessage;
+    } else {
+      message = metaOrMessage;
+      meta = {};
+    }
+
     console.log(
       '%cinfo:',
       'color: blue; background-color: lightgrey',
@@ -27,17 +44,41 @@ class DevLogger implements Logger {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error(message: string, meta?: any) {
+  error(metaOrMessage: any, message?: string) {
+    let meta;
+    if (message) {
+      meta = metaOrMessage;
+    } else {
+      message = metaOrMessage;
+      meta = {};
+    }
+
     console.error(message, { timestamp: Date.now(), ...meta });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  warn(message: string, meta?: any) {
+  warn(metaOrMessage: any, message?: string) {
+    let meta;
+    if (message) {
+      meta = metaOrMessage;
+    } else {
+      message = metaOrMessage;
+      meta = {};
+    }
+
     console.warn('warn: ', message, { timestamp: Date.now(), ...meta });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  debug(message: string, meta?: any) {
+  debug(metaOrMessage: any, message?: string) {
+    let meta;
+    if (message) {
+      meta = metaOrMessage;
+    } else {
+      message = metaOrMessage;
+      meta = {};
+    }
+
     console.debug(
       '%cdebug:',
       'color: orange; background-color: grey',
@@ -49,7 +90,15 @@ class DevLogger implements Logger {
   private lastTraceTime: number;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  trace(message: string, meta?: any) {
+  trace(metaOrMessage: any, message?: string) {
+    let meta;
+    if (message) {
+      meta = metaOrMessage;
+    } else {
+      message = metaOrMessage;
+      meta = {};
+    }
+
     const now = Date.now();
     (meta?.showCallStack ? console.trace : console.debug)(
       '%ctrace:',
@@ -68,23 +117,27 @@ class DevLogger implements Logger {
 
 class ProdLogger implements Logger {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  info(message: string, meta?: any) {
+  info(metaOrMessage: any, message?: string) {
     // noop
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  error(message: string, meta?: any) {
+  error(metaOrMessage: any, message?: string) {
     // noop
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  warn(message: string, meta?: any) {
+  warn(metaOrMessage: any, message?: string) {
     // noop
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  debug(message: string, meta?: any) {
+  debug(metaOrMessage: any, message?: string) {
     // noop
   }
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars
-  trace(message: string, meta?: any) {
+  trace(metaOrMessage: any, message?: string) {
     // noop
   }
 }

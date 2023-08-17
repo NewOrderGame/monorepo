@@ -84,7 +84,7 @@ const connect =
 
     /** Comment/Uncomment this if necessary */
     // core.gameSocket.onAny((event, ...args) => {
-    //   logger.debug('event', { event, args });
+    //   logger.debug({ event, args }, 'event');
     // });
     /** */
 

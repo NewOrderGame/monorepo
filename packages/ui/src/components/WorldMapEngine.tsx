@@ -24,7 +24,7 @@ export const WorldMapEngine = () => {
 
   useMapEvents({
     click(event: LeafletMouseEvent) {
-      logger.info('Request movement', { coordinates: event.latlng });
+      logger.info({ coordinates: event.latlng }, 'Request movement');
       connection.gameSocket.emit(
         NogEvent.MOVE_CHARACTER_AT_WORLD,
         event.latlng
@@ -69,7 +69,7 @@ const useAddConnectionSocketsEventListeners = (
 };
 
 const handleEnterBuilding = (building: Building) => {
-  logger.info('Commit building entry', { building });
+  logger.info({ building }, 'Commit building entry');
 };
 
 let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];
@@ -118,10 +118,7 @@ const handleMoveCharacterAtWorld =
     duration: number;
     distance: number;
   }) => {
-    logger.info('Commit movement', {
-      coordinates,
-      distance
-    });
+    logger.info({ coordinates, distance }, 'Commit movement');
     map.flyTo(coordinates, 18, {
       ...zoomPanOptions,
       duration
