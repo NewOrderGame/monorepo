@@ -5,6 +5,7 @@ import {
   drawLine
 } from '@newordergame/common';
 import logger from './utils/logger';
+import { max } from 'mathjs';
 
 export class Building {
   readonly map: Cell[][];
@@ -15,8 +16,8 @@ export class Building {
     readonly id: number,
     plainBuildingNodes: PlainBuildingNode[]
   ) {
-    this.maxX = Math.max(...plainBuildingNodes.map((node) => node.x));
-    this.maxY = Math.max(...plainBuildingNodes.map((node) => node.y));
+    this.maxX = max(...plainBuildingNodes.map((node) => node.x));
+    this.maxY = max(...plainBuildingNodes.map((node) => node.y));
 
     const wallHexagonsMap: boolean[][] =
       this.collectWallHexagonsMap(plainBuildingNodes);

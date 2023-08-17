@@ -11,7 +11,17 @@ import {
   getGreatCircleBearing,
   isPointInPolygon
 } from 'geolib';
-import { abs, add, evaluate, min, multiply, round, subtract } from 'mathjs';
+import {
+  abs,
+  add,
+  evaluate,
+  max,
+  min,
+  multiply,
+  round,
+  subtract,
+  sqrt
+} from 'mathjs';
 import { Socket } from 'socket.io-client';
 import buildingStore from '../store/building-store';
 import { Building } from './building';
@@ -130,9 +140,9 @@ export const determineLongestWallIndex = (
     const next = index === geometry.length - 1 ? 0 : index + 1;
     const xDiff = node.lon - geometry[next].lon;
     const yDiff = node.lat - geometry[next].lat;
-    return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
+    return sqrt(xDiff * xDiff + yDiff * yDiff);
   });
-  return distances.indexOf(Math.max(...distances));
+  return distances.indexOf(max(...distances));
 };
 
 export const getBuildingsInSight = (

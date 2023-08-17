@@ -2,6 +2,7 @@ import { Coordinates } from '@newordergame/common';
 import logger from './utils/logger';
 import { computeDestinationPoint, getCenter } from 'geolib';
 import axios from 'axios';
+import { floor, random } from 'mathjs';
 
 const OVERPASS_API_URL = 'https://overpass.hochburg.devlysh.com';
 const OVERPASS_API_INTERPRETER_PATH = '/api/interpreter';
@@ -48,8 +49,8 @@ export const getRandomHouseEntryCoordinates = async (
     (element: OverpassElement) => element.type === 'way'
   );
 
-  const way = ways[Math.floor(Math.random() * ways.length)];
-  const index = Math.floor(Math.random() * way.geometry.length);
+  const way = ways[floor(random() * ways.length)];
+  const index = floor(random() * way.geometry.length);
   const nodes: { lat: number; lon: number }[] = [];
   nodes.push(way.geometry[index]);
   nodes.push(
