@@ -1,6 +1,6 @@
 import { Namespace, Socket } from 'socket.io';
 import characterStore from '../../store/character-store';
-import logger from './logger';
+import { logger } from '@newordergame/common';
 import { setNpcSocket } from '../../store/npc-socket-store';
 import characterAtWorldStore from '../../store/character-at-world-store';
 import { setLocationSiteBuilderSocket } from '../../store/location-site-builder-socket-store';

@@ -1,6 +1,11 @@
 import { Namespace, Socket } from 'socket.io';
-import logger from './utils/logger';
-import { Building, Coordinates, NogEvent, NogPage } from '@newordergame/common';
+import {
+  Building,
+  Coordinates,
+  NogEvent,
+  NogPage,
+  logger
+} from '@newordergame/common';
 import {
   getLocationSiteBuilderSocket,
   setLocationSiteBuilderSocket

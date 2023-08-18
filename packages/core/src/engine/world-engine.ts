@@ -1,4 +1,5 @@
 import {
+  logger,
   CharacterAtWorld,
   CharacterInSight,
   Encounter,
@@ -21,7 +22,6 @@ import { StatsGroups } from '../lib/utils/types';
 import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from '../lib/npc';
 import { handleCharactersEncounter } from '../lib/encounter';
-import logger from '../lib/utils/logger';
 
 const doNextTick = (gameNamespace: Namespace) => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();

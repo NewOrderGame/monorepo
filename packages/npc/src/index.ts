@@ -1,5 +1,5 @@
 import { io } from 'socket.io-client';
-import logger from './lib/utils/logger';
+import { logger } from '@newordergame/common';
 import {
   CharacterAtWorld,
   characterIdSchema,

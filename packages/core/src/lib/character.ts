@@ -1,4 +1,5 @@
 import {
+  logger,
   Character,
   CharacterStats,
   DEFAULT_COORDINATES,
@@ -7,7 +8,6 @@ import {
   Outlook
 } from '@newordergame/common';
 import characterStore from '../store/character-store';
-import logger from './utils/logger';
 import { getUser } from './utils/cognito';
 import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 

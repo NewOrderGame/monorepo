@@ -1,6 +1,6 @@
 import { NogEvent } from '@newordergame/common';
 import { io } from '../lib/utils/io';
-import logger from '../lib/utils/logger';
+import { logger } from '@newordergame/common';
 import { Namespace, Socket } from 'socket.io';
 import { handleDisconnect } from '../lib/utils/handle-disconnect';
 import { handleNpcServiceConnection } from '../lib/npc';

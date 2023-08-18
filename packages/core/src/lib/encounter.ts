@@ -1,6 +1,6 @@
 import characterStore from '../store/character-store';
 import moment from 'moment';
-import logger from './utils/logger';
+import { logger } from '@newordergame/common';
 import {
   Character,
   Encounter,

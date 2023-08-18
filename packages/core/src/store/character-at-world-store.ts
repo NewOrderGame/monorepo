@@ -1,5 +1,5 @@
 import { CharacterAtWorld, NogCharacterId } from '@newordergame/common';
-import logger from '../lib/utils/logger';
+import { logger } from '@newordergame/common';
 
 export class InMemoryCharacterAtWorldStore {
   private _charactersAtWorld: Map<NogCharacterId, CharacterAtWorld>;

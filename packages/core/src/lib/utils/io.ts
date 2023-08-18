@@ -1,5 +1,5 @@
 import { Server } from 'socket.io';
-import logger from './logger';
+import { logger } from '@newordergame/common';
 
 const NOG_PORT = process.env.NOG_PORT;
 const NOG_UI_ORIGIN = process.env.NOG_UI_ORIGIN;
@@ -16,4 +16,4 @@ export const io = new Server({
 
 export const listen = () => {
   io.listen(Number(NOG_PORT));
-}
+};

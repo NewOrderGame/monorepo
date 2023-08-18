@@ -1,5 +1,5 @@
 import { Character, NogEvent, NogPage } from '@newordergame/common';
-import logger from '../lib/utils/logger';
+import { logger } from '@newordergame/common';
 import { Namespace, Socket } from 'socket.io';
 import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { getUser } from './utils/cognito';

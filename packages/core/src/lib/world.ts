@@ -1,7 +1,7 @@
 import { Namespace, Socket } from 'socket.io';
-import logger from './utils/logger';
 import characterAtWorldStore from '../store/character-at-world-store';
 import {
+  logger,
   CharacterInSight,
   EncounterInSight,
   NogCharacterId,

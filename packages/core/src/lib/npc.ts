@@ -1,4 +1,5 @@
 import {
+  logger,
   Character,
   CharacterAtWorld,
   characterAtWorldSchema,
@@ -19,7 +20,6 @@ import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
 import characterAtWorldStore from '../store/character-at-world-store';
 import { Socket } from 'socket.io';
-import logger from './utils/logger';
 import { getNpcSocket, setNpcSocket } from '../store/npc-socket-store';
 import characterStore from '../store/character-store';
 import { getDistance as computeDistance } from 'geolib';

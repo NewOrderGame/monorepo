@@ -1,5 +1,4 @@
-import { Character, NogPage } from '@newordergame/common';
-import logger from './logger';
+import { logger, Character, NogPage } from '@newordergame/common';
 
 export const determinePage = (character: Character): NogPage => {
   // TODO: this method should always check what page user is on

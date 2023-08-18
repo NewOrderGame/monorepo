@@ -5,7 +5,7 @@ import {
   TICK_TIME_STATS_DIR
 } from '../../lib/utils/constants';
 import { Stats, StatsGroups } from '../../lib/utils/types';
-import logger from '../../lib/utils/logger';
+import { logger } from '@newordergame/common';
 import { mkdirSync } from 'fs';
 import characterAtWorldStore from '../../store/character-at-world-store';
 import encounterStore from '../../store/encounter-store';

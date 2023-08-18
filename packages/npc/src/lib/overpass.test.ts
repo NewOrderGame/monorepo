@@ -2,7 +2,7 @@ import {
   getBuildingsInSight,
   getRandomHouseEntryCoordinates
 } from './overpass';
-import logger from './utils/logger';
+import { logger } from '@newordergame/common';
 
 describe('Overpass module', () => {
   test(

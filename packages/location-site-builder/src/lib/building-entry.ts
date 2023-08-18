@@ -1,8 +1,10 @@
 import {
+  Building,
   Coordinates,
   NogEvent,
   PlainBuildingNode,
-  WayOverpassElement
+  WayOverpassElement,
+  logger
 } from '@newordergame/common';
 import axios from 'axios';
 import {
@@ -24,14 +26,12 @@ import {
 } from 'mathjs';
 import { Socket } from 'socket.io-client';
 import buildingStore from '../store/building-store';
-import { Building } from './building';
 import {
   OVERPASS_API_BUILDINGS_SKELS_QUERY,
   OVERPASS_API_INTERPRETER_PATH,
   OVERPASS_API_URL,
   SIGHT_RANGE
 } from './constants';
-import logger from './utils/logger';
 
 export const handleEnterBuilding =
   (socket: Socket) =>

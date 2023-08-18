@@ -1,6 +1,6 @@
 import express from 'express';
 import { resolve } from 'path';
-import logger from '../../lib/utils/logger';
+import { logger } from '@newordergame/common';
 import { getTickTimeStats } from './reader';
 import { TICK_TIME_STATS_DIR } from '../../lib/utils/constants';
 import { StatsGroups } from '../../lib/utils/types';

@@ -1,5 +1,5 @@
 import { Coordinates } from '@newordergame/common';
-import logger from './utils/logger';
+import { logger } from '@newordergame/common';
 import { computeDestinationPoint, getCenter } from 'geolib';
 import axios from 'axios';
 import { floor, random } from 'mathjs';
