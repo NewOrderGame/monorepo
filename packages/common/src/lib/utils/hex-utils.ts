@@ -42,8 +42,6 @@ export default class HexUtils {
     return new Hexagon(x, y, z);
   }
 
-  // TODO: this method works with a bug. Gap in the walls during manual testing via UI
-  // !!!
   static drawLine(hexA: Hexagon, hexB: Hexagon): Hexagon[] {
     const distance = this.calculateCubicDistance(hexA, hexB);
 
