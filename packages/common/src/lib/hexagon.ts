@@ -24,22 +24,10 @@ export class Hexagon implements Hexagonal {
     }
   }
 
-  public to2D(): Hexagon2D {
+  to2D(): Hexagon2D {
     return {
       x: this.x,
       y: -this.y
     };
-  }
-
-  public getX(): number {
-    return this.x;
-  }
-
-  public getY(): number {
-    return this.y;
-  }
-
-  public getZ(): number {
-    return this.z!;
   }
 }

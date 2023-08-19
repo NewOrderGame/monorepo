@@ -4,17 +4,19 @@ import { getDistance, getGreatCircleBearing, isPointInPolygon } from 'geolib';
 
 export default class OverpassUtils {
   static convertWayToPlainBuildingNodes(
-    building: WayOverpassElement
+    wayOverpassBuilding: WayOverpassElement
   ): Hexagon2D[] {
-    const longestWallNodeIndex = this.determineLongestWallIndex(building);
-    const longestWallNode = building.geometry[longestWallNodeIndex];
-    const secondWallNode = building.geometry[longestWallNodeIndex + 1];
+    const longestWallNodeIndex =
+      this.determineLongestWallIndex(wayOverpassBuilding);
+    const longestWallNode = wayOverpassBuilding.geometry[longestWallNodeIndex];
+    const secondWallNode =
+      wayOverpassBuilding.geometry[longestWallNodeIndex + 1];
 
     const longestWallBearing = getGreatCircleBearing(
       longestWallNode,
       secondWallNode
     );
-    const rawPlainBuilding = building.geometry.map((node) => {
+    const rawPlainBuilding = wayOverpassBuilding.geometry.map((node) => {
       const distance = getDistance(longestWallNode, node, 0.00001);
       const bearing = getGreatCircleBearing(longestWallNode, node);
       const bearingDelta = subtract(bearing, longestWallBearing);
@@ -34,8 +36,13 @@ export default class OverpassUtils {
     }));
   }
 
-  static determineLongestWallIndex(building: WayOverpassElement): number {
-    const geometry = building.geometry.slice(0, building.geometry.length - 1);
+  static determineLongestWallIndex(
+    wayOverpassBuilding: WayOverpassElement
+  ): number {
+    const geometry = wayOverpassBuilding.geometry.slice(
+      0,
+      wayOverpassBuilding.geometry.length - 1
+    );
     const distances = geometry.map((node, index) => {
       const next = index === geometry.length - 1 ? 0 : index + 1;
       const xDiff = node.lon - geometry[next].lon;
@@ -48,7 +55,7 @@ export default class OverpassUtils {
   static determineBuilding(
     coordinates: Coordinates,
     elements: WayOverpassElement[]
-  ) {
+  ): WayOverpassElement | null {
     return (
       elements.find((way: WayOverpassElement) => {
         return isPointInPolygon(coordinates, way.geometry);

@@ -5,9 +5,9 @@ import { Utils } from '../..';
 
 export default class HexUtils {
   static calculateDistance(hexA: Hexagon, hexB: Hexagon): number {
-    const vX = abs(subtract(hexA.getX(), hexB.getX()));
-    const vY = abs(subtract(hexA.getY(), hexB.getY()));
-    const vZ = abs(subtract(hexA.getZ(), hexB.getZ()));
+    const vX = abs(subtract(hexA.x, hexB.x));
+    const vY = abs(subtract(hexA.y, hexB.y));
+    const vZ = abs(subtract(hexA.z!, hexB.z!));
     return max(vX, vY, vZ);
   }
 
@@ -17,13 +17,11 @@ export default class HexUtils {
     for (let i = 0; i <= distance; i++) {
       const multiplier = divide(i, distance);
       const x = round(
-        evaluate(
-          `(${hexA.getX()} + (${hexB.getX()} - ${hexA.getX()}) * ${multiplier})`
-        )
+        evaluate(`(${hexA.x} + (${hexB.x} - ${hexA.x}) * ${multiplier})`)
       );
       const z = round(
         evaluate(
-          `(${hexA.getZ()} + (${hexB.getZ()} - ${hexA.getZ()}) * ${multiplier}) - 0.001`
+          `(${hexA.z} + (${hexB.z} - ${hexA.z}) * ${multiplier}) - 0.001`
         )
       );
       const y = evaluate(`-${x} -${z}`);
@@ -77,7 +75,7 @@ export default class HexUtils {
     return interiorHexagonsMap;
   }
 
-  public static isHexInsidePolygon(
+  static isHexInsidePolygon(
     hex2D: Hexagon2D,
     plainBuildingNodes: Hexagon2D[]
   ): boolean {
