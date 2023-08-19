@@ -5,5 +5,6 @@ export enum CellActionPermission {
   STAY,
   ACCESS_INVENTORY,
   MODIFY_EQUIPMENT,
-  RESEARCH
+  RESEARCH,
+  ALL
 }
