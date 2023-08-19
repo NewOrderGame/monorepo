@@ -1,7 +1,7 @@
 import { Hexagon } from '../hexagon';
 import { abs, subtract, max } from 'mathjs';
-import { AxialHex, CubicHex, DoubledCoordinate, OffsetHex } from '../types';
-import { EPSILON, Utils } from '../..';
+import { AxialHex, CubicHex } from '../types';
+import { Utils } from '../..';
 
 export default class HexUtils {
   static cubicToAxial(cubic: CubicHex): AxialHex {
@@ -28,30 +28,6 @@ export default class HexUtils {
     return (Math.abs(dq) + Math.abs(dq + dr) + Math.abs(dr)) / 2;
   }
 
-  static offsetToAxial(offset: OffsetHex): AxialHex {
-    const x = offset.col;
-    const y = offset.row - (offset.col - (offset.col & 1)) / 2;
-    return { x: x, y: y };
-  }
-
-  static offsetToCubic(offset: OffsetHex): CubicHex {
-    const axial = this.offsetToAxial(offset);
-    return {
-      x: axial.x,
-      y: axial.y,
-      z: -axial.x - axial.y
-    };
-  }
-
-  static calculateOffsetDistance(
-    offsetA: OffsetHex,
-    offsetB: OffsetHex
-  ): number {
-    const axialA = this.offsetToAxial(offsetA);
-    const axialB = this.offsetToAxial(offsetB);
-    return this.calculateAxialDistance(axialA, axialB);
-  }
-
   private static lerp(a: number, b: number, t: number): number {
     return a + (b - a) * t;
   }
@@ -66,55 +42,38 @@ export default class HexUtils {
     return new Hexagon(x, y, z);
   }
 
-  static doubleWidthDistance(
-    a: DoubledCoordinate,
-    b: DoubledCoordinate
-  ): number {
-    const dCol = Math.abs(a.col - b.col);
-    const dRow = Math.abs(a.row - b.row);
-    return dRow + Math.max(0, (dCol - dRow) / 2);
-  }
-
-  static doubleHeightDistance(
-    a: DoubledCoordinate,
-    b: DoubledCoordinate
-  ): number {
-    const dCol = Math.abs(a.col - b.col);
-    const dRow = Math.abs(a.row - b.row);
-    return dCol + Math.max(0, (dRow - dCol) / 2);
-  }
-
-  // TODO: this method works with a bug. Gape in the walls during manual testing via UI
+  // TODO: this method works with a bug. Gap in the walls during manual testing via UI
   // !!!
   static drawLine(hexA: Hexagon, hexB: Hexagon): Hexagon[] {
     const distance = this.calculateCubicDistance(hexA, hexB);
-    const aCubic = hexA.toCubic();
-    const bCubic = hexB.toCubic();
-    const nudgedA = new Hexagon(
-      aCubic.x + EPSILON,
-      aCubic.y + 2 * EPSILON,
-      aCubic.z - 3 * EPSILON
-    );
-    const nudgedB = new Hexagon(
-      bCubic.x + EPSILON,
-      bCubic.y + 2 * EPSILON,
-      bCubic.z - 3 * EPSILON
-    );
 
     const line: Hexagon[] = [];
     for (let i = 0; i <= distance; i++) {
       const t = i / distance;
-      const interpolatedHex = this.cubeLerp(nudgedA, nudgedB, t);
-      const cubicInterpolatedHex = interpolatedHex.toCubic();
-      line.push(
-        new Hexagon(
-          Math.round(cubicInterpolatedHex.x),
-          Math.round(cubicInterpolatedHex.y),
-          Math.round(cubicInterpolatedHex.z)
-        )
-      );
+      const interpolatedHex = this.cubeLerp(hexA, hexB, t);
+      const rounded = this.cubeRound(interpolatedHex.toCubic());
+      line.push(new Hexagon(rounded.x, rounded.y, rounded.z));
     }
     return line;
+  }
+
+  static cubeRound(cube: CubicHex): CubicHex {
+    let rx = Math.round(cube.x);
+    let ry = Math.round(cube.y);
+    let rz = Math.round(cube.z);
+
+    const x_diff = Math.abs(rx - cube.x);
+    const y_diff = Math.abs(ry - cube.y);
+    const z_diff = Math.abs(rz - cube.z);
+
+    if (x_diff > y_diff && x_diff > z_diff) {
+      rx = -ry - rz;
+    } else if (y_diff > z_diff) {
+      ry = -rx - rz;
+    } else {
+      rz = -rx - ry;
+    }
+    return { x: rx, y: ry, z: rz };
   }
 
   static collectWallHexagonsMap(plainBuildingNodes: AxialHex[]): boolean[][] {
