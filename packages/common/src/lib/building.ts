@@ -2,12 +2,10 @@ import {
   Cell,
   CellActionPermission,
   CellElement,
-  Utils,
-  Hexagon,
-  PlainBuildingNode,
+  Hexagon2D,
   Structural,
-  logger,
-  Hexagon2D
+  Utils,
+  logger
 } from '..';
 import { max } from 'mathjs';
 
@@ -18,23 +16,24 @@ export class Building implements Structural {
 
   constructor(
     readonly id: number,
-    plainBuildingNodes: PlainBuildingNode[]
+    plainBuildingNodes: Hexagon2D[]
   ) {
     this.id = id;
     this.maxX = max(...plainBuildingNodes.map((node) => node.x));
     this.maxY = max(...plainBuildingNodes.map((node) => node.y));
 
     const wallHexagonsMap: boolean[][] =
-      this.collectWallHexagonsMap(plainBuildingNodes);
-    const interiorHexagonsMap: boolean[][] = this.collectInteriorHexagonsMap(
-      plainBuildingNodes,
-      wallHexagonsMap
-    );
+      Utils.Hex.collectWallHexagonsMap(plainBuildingNodes);
+    const interiorHexagonsMap: boolean[][] =
+      Utils.Hex.collectInteriorHexagonsMap(
+        { x: this.maxX, y: this.maxY },
+        plainBuildingNodes,
+        wallHexagonsMap
+      );
 
     this.map = this.createMap({ wallHexagonsMap, interiorHexagonsMap });
 
-    // TODO: remove this line in future
-    this.printMap();
+    logger.debug(this.buildPreviewMap(), 'RENDERED BUILDING');
   }
 
   private createMap({
@@ -75,82 +74,9 @@ export class Building implements Structural {
     return map;
   }
 
-  private collectWallHexagonsMap(
-    plainBuildingNodes: PlainBuildingNode[]
-  ): boolean[][] {
-    return plainBuildingNodes.reduce(
-      (a: boolean[][], currentNode: PlainBuildingNode, index, array) => {
-        if (index === array.length - 1) return a;
-        const line = Utils.Hex.drawLine(
-          new Hexagon(currentNode.x, currentNode.y),
-          new Hexagon(array[index + 1].x, array[index + 1].y)
-        );
-        line.forEach((hex: Hexagon) => {
-          const hex2D: Hexagon2D = hex.to2D();
-
-          if (!a[hex2D.x]) {
-            a[hex2D.x] = [];
-          }
-          a[hex2D.x][hex2D.y] = true;
-        });
-        return a;
-      },
-      []
-    );
-  }
-
-  private collectInteriorHexagonsMap(
-    plainBuildingNodes: PlainBuildingNode[],
-    wallNodesMap: boolean[][]
-  ): boolean[][] {
-    const interiorHexagonsMap: boolean[][] = [];
-
-    for (let x = 0; x <= this.maxX; x++) {
-      interiorHexagonsMap[x] = [];
-
-      for (let y = 0; y <= this.maxY; y++) {
-        const isWall = wallNodesMap[x]?.[y] ?? false;
-
-        const isInterior =
-          !isWall && this.isPointInsidePolygon(x, y, plainBuildingNodes);
-
-        interiorHexagonsMap[x][y] = isWall || isInterior;
-      }
-    }
-
-    return interiorHexagonsMap;
-  }
-
-  private isPointInsidePolygon(
-    x: number,
-    y: number,
-    plainBuildingNodes: PlainBuildingNode[]
-  ): boolean {
-    let inside = false;
-
-    for (
-      let i = 0, j = plainBuildingNodes.length - 1;
-      i < plainBuildingNodes.length;
-      j = i++
-    ) {
-      const xi = plainBuildingNodes[i].x;
-      const yi = plainBuildingNodes[i].y;
-      const xj = plainBuildingNodes[j].x;
-      const yj = plainBuildingNodes[j].y;
-
-      const intersect =
-        yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
-
-      if (intersect) {
-        inside = !inside;
-      }
-    }
-
-    return inside;
-  }
-
   // Utility method to print the building map
-  printMap(): void {
+  buildPreviewMap(): string[] {
+    const map = [];
     for (let y = this.maxY; y >= 0; y--) {
       let line = '';
       for (let x = 0; x <= this.maxX; x++) {
@@ -163,7 +89,8 @@ export class Building implements Structural {
             : ' ';
         line += symbol;
       }
-      logger.debug(line, 'RENDERED BUILDING');
+      map.push(line);
     }
+    return map;
   }
 }

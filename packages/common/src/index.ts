@@ -6,8 +6,11 @@ export * from './lib/defaults';
 
 // Utils
 import HexUtils from './lib/utils/hex-utils';
+import OverpassUtils from './lib/utils/overpass-utils';
+
 export const Utils = {
-  Hex: HexUtils
+  Hex: HexUtils,
+  Overpass: OverpassUtils
 };
 
 // Types
