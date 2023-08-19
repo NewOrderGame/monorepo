@@ -24,6 +24,15 @@ export class Hexagon implements Hexagonal {
     }
   }
 
+  static fromCubic(cubic: CubicHex): Hexagon {
+    return new Hexagon(cubic.x, cubic.y, cubic.z);
+  }
+
+  static fromAxial(axial: AxialHex): Hexagon {
+    const z = axial.y - axial.x;
+    return new Hexagon(axial.x, -axial.y, z);
+  }
+
   toCubic(): CubicHex {
     return {
       x: this.x,

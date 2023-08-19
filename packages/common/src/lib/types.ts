@@ -91,3 +91,13 @@ export type CubicHex = {
   y: number;
   z: number;
 };
+
+export type DoubledCoordinate = {
+  col: number;
+  row: number;
+};
+
+export type OffsetHex = {
+  col: number;
+  row: number;
+};
