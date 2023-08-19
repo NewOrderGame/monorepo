@@ -7,17 +7,9 @@ import {
   WayOverpassElement,
   logger
 } from '@newordergame/common';
-import axios from 'axios';
-import { computeDestinationPoint } from 'geolib';
-import { multiply } from 'mathjs';
 import { Socket } from 'socket.io-client';
 import buildingStore from '../store/building-store';
-import {
-  OVERPASS_API_BUILDINGS_SKELS_QUERY,
-  OVERPASS_API_INTERPRETER_PATH,
-  OVERPASS_API_URL,
-  SIGHT_RANGE
-} from './constants';
+import { SIGHT_RANGE } from '@newordergame/common';
 
 export const handleEnterBuilding =
   (socket: Socket) =>
@@ -29,7 +21,7 @@ export const handleEnterBuilding =
     coordinates: Coordinates;
   }) => {
     try {
-      const buildingsInSight = await getBuildingsInSight(
+      const buildingsInSight = await Utils.Overpass.getBuildingsInSight(
         coordinates,
         SIGHT_RANGE
       );
@@ -78,27 +70,3 @@ export const handleInitLocationSitePage =
       'Sent "init-location-site-page" event'
     );
   };
-
-export const getBuildingsInSight = (
-  coordinates: Coordinates,
-  sightRange: number
-) => {
-  const min = computeDestinationPoint(
-    coordinates,
-    multiply(sightRange, 2),
-    225 // bottom left
-  );
-  const max = computeDestinationPoint(
-    coordinates,
-    multiply(sightRange, 2),
-    45 // top right
-  );
-
-  if (!min.longitude || !min.latitude || !max.longitude || !max.latitude) {
-    throw new Error('Error during getting min and max boundary points');
-  }
-
-  const uri = `${OVERPASS_API_URL}${OVERPASS_API_INTERPRETER_PATH}?data=${OVERPASS_API_BUILDINGS_SKELS_QUERY}&bbox=${min.longitude},${min.latitude},${max.longitude},${max.latitude}`;
-
-  return axios.get(uri).then((response) => response.data);
-};
