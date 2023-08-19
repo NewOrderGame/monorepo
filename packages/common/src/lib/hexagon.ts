@@ -1,13 +1,14 @@
+import { Hexagonal } from './hexagonal';
 import { hexXSchema, hexYSchema, hexZSchema } from './schemas';
-import { MapCoordinates } from './types';
+import { Hexagon2D } from './types';
 import { evaluate } from 'mathjs';
 
-export class CubicHex {
-  private x: number;
-  private y: number;
-  private z: number;
-
-  public constructor(x: number, y: number, z?: number) {
+export class Hexagon implements Hexagonal {
+  constructor(
+    readonly x: number,
+    readonly y: number,
+    readonly z?: number
+  ) {
     hexXSchema.validateSync(x);
     hexYSchema.validateSync(y);
     hexZSchema.validateSync(z);
@@ -23,7 +24,7 @@ export class CubicHex {
     }
   }
 
-  public toMapCoordinates(): MapCoordinates {
+  public to2D(): Hexagon2D {
     return {
       x: this.x,
       y: -this.y
@@ -39,6 +40,6 @@ export class CubicHex {
   }
 
   public getZ(): number {
-    return this.z;
+    return this.z!;
   }
 }

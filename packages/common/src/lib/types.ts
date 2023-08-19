@@ -86,7 +86,7 @@ export type PlainBuildingNode = {
   y: number;
 };
 
-export type MapCoordinates = {
+export type Hexagon2D = {
   x: number;
   y: number;
 };

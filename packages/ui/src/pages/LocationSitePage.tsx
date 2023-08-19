@@ -1,4 +1,4 @@
-import { Building, Cell, NogEvent } from '@newordergame/common';
+import { Building, Cell, NogEvent, CellElement } from '@newordergame/common';
 import { Application, Sprite } from 'pixi.js';
 import React, {
   useCallback,
@@ -135,9 +135,9 @@ const createHexagonSprite = (
 };
 
 const determineSprite = (cell: Cell) => {
-  if (cell.isWall) {
+  if (cell.element === CellElement.WALL) {
     return BLACK_HEXAGON;
-  } else if (cell.isInterior) {
+  } else if (cell.element === CellElement.FLOOR) {
     return WHITE_HEXAGON;
   } else {
     return BLACK_TRANSPARENT_HEXAGON;

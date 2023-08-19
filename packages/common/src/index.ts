@@ -1,10 +1,33 @@
-export * from './lib/defaults';
+/// Logger
 export * from './lib/logger';
-export * from './lib/enums';
-export * from './lib/schemas';
+
+// Constants
+export * from './lib/defaults';
+
+// Utils
+import HexUtils from './lib/utils/hex-utils';
+export const Utils = {
+  Hex: HexUtils
+};
+
+// Types
 export * from './lib/types';
-export * from './lib/building';
+
+// Enums
+export * from './lib/enums';
+export * from './lib/cell-action-permission';
+export * from './lib/cell-element';
+
+// Schemas
+export * from './lib/schemas';
+
+// Structures
+
+/// Interfaces
+export * from './lib/hexagonal';
 export * from './lib/structural';
+
+/// Classes
+export * from './lib/building';
 export * from './lib/cell';
-export * from './lib/hex-utils';
-export * from './lib/cubic-hex';
+export * from './lib/hexagon';

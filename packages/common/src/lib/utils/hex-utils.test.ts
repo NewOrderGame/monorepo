@@ -1,30 +1,31 @@
-import { CubicHex } from './cubic-hex';
-import { calculateDistance, drawLine } from './hex-utils';
 import { expect, describe, test } from '@jest/globals';
+
+import HexUtils from './hex-utils';
+import { Hexagon } from '../hexagon';
 
 describe('Hex utils', () => {
   describe('calculateDistance', () => {
     test('Should calculate distance between hexagons', () => {
-      const hexA = new CubicHex(0, 0);
-      const hexB = new CubicHex(0, 10);
+      const hexA = new Hexagon(0, 0);
+      const hexB = new Hexagon(0, 10);
 
-      const distance = calculateDistance(hexA, hexB);
+      const distance = HexUtils.calculateDistance(hexA, hexB);
 
       expect(distance).toBe(10);
     });
     test('Should calculate distance between hexagons', () => {
-      const hexA = new CubicHex(-1, -1);
-      const hexB = new CubicHex(1, 1);
+      const hexA = new Hexagon(-1, -1);
+      const hexB = new Hexagon(1, 1);
 
-      const distance = calculateDistance(hexA, hexB);
+      const distance = HexUtils.calculateDistance(hexA, hexB);
 
       expect(distance).toBe(2);
     });
     test('Should calculate distance between hexagons', () => {
-      const hexA = new CubicHex(0, 0);
-      const hexB = new CubicHex(-1, 1);
+      const hexA = new Hexagon(0, 0);
+      const hexB = new Hexagon(-1, 1);
 
-      const distance = calculateDistance(hexA, hexB);
+      const distance = HexUtils.calculateDistance(hexA, hexB);
 
       expect(distance).toBe(2);
     });
@@ -32,10 +33,10 @@ describe('Hex utils', () => {
 
   describe('drawLine', () => {
     test('Should return 2 hex line between neighbour hexagons', () => {
-      const hexA = new CubicHex(0, 0);
-      const hexB = new CubicHex(1, 1);
+      const hexA = new Hexagon(0, 0);
+      const hexB = new Hexagon(1, 1);
 
-      const line = drawLine(hexA, hexB);
+      const line = HexUtils.drawLine(hexA, hexB);
 
       expect(line).toEqual(
         expect.arrayContaining([
@@ -46,10 +47,10 @@ describe('Hex utils', () => {
     });
 
     test('Should return 2 hex line between neighbour hexagons with negative X', () => {
-      const hexA = new CubicHex(0, 0);
-      const hexB = new CubicHex(-1, 1);
+      const hexA = new Hexagon(0, 0);
+      const hexB = new Hexagon(-1, 1);
 
-      const line = drawLine(hexA, hexB);
+      const line = HexUtils.drawLine(hexA, hexB);
 
       expect(line).toEqual(
         expect.arrayContaining([
@@ -61,10 +62,10 @@ describe('Hex utils', () => {
     });
 
     test('Should return line between hexagons', () => {
-      const hexA = new CubicHex(0, 0);
-      const hexB = new CubicHex(1, 18);
+      const hexA = new Hexagon(0, 0);
+      const hexB = new Hexagon(1, 18);
 
-      const line = drawLine(hexA, hexB);
+      const line = HexUtils.drawLine(hexA, hexB);
 
       expect(line).toEqual(
         expect.arrayContaining([

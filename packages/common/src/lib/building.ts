@@ -1,22 +1,26 @@
 import {
   Cell,
-  CubicHex,
+  CellActionPermission,
+  CellElement,
+  Utils,
+  Hexagon,
   PlainBuildingNode,
-  drawLine,
+  Structural,
   logger,
-  Structural
+  Hexagon2D
 } from '..';
 import { max } from 'mathjs';
 
 export class Building implements Structural {
-  readonly map: Cell[][];
   readonly maxX: number;
   readonly maxY: number;
+  readonly map: Cell[][];
 
   constructor(
     readonly id: number,
     plainBuildingNodes: PlainBuildingNode[]
   ) {
+    this.id = id;
     this.maxX = max(...plainBuildingNodes.map((node) => node.x));
     this.maxY = max(...plainBuildingNodes.map((node) => node.y));
 
@@ -27,25 +31,44 @@ export class Building implements Structural {
       wallHexagonsMap
     );
 
-    this.map = this.createMap(wallHexagonsMap, interiorHexagonsMap);
+    this.map = this.createMap({ wallHexagonsMap, interiorHexagonsMap });
 
     // TODO: remove this line in future
     this.printMap();
   }
 
-  private createMap(
-    wallNodesMap: boolean[][],
-    interiorHexagonsMap: boolean[][]
-  ): Cell[][] {
+  private createMap({
+    wallHexagonsMap,
+    interiorHexagonsMap
+  }: {
+    wallHexagonsMap: boolean[][];
+    interiorHexagonsMap: boolean[][];
+  }): Cell[][] {
     const map: Cell[][] = [];
 
     for (let x = 0; x <= this.maxX; x++) {
       map[x] = [];
 
       for (let y = 0; y <= this.maxY; y++) {
-        const isWall = wallNodesMap[x]?.[y] ?? false;
+        const isWall = wallHexagonsMap[x]?.[y] ?? false;
         const isInterior = interiorHexagonsMap[x]?.[y] ?? false;
-        map[x][y] = new Cell(x, y, { isWall, isInterior });
+
+        let element: CellElement;
+        let actionPermission: CellActionPermission;
+
+        if (isWall) {
+          element = CellElement.WALL;
+          actionPermission = CellActionPermission.INTERACT;
+        } else if (isInterior) {
+          element = CellElement.FLOOR;
+          actionPermission = CellActionPermission.STAY;
+        } else {
+          element = CellElement.VOID;
+          actionPermission = CellActionPermission.NONE;
+        }
+
+        const cell = new Cell({ element, actionPermission }, x, y);
+        map[x][y] = cell;
       }
     }
 
@@ -58,17 +81,17 @@ export class Building implements Structural {
     return plainBuildingNodes.reduce(
       (a: boolean[][], currentNode: PlainBuildingNode, index, array) => {
         if (index === array.length - 1) return a;
-        const line = drawLine(
-          new CubicHex(currentNode.x, currentNode.y),
-          new CubicHex(array[index + 1].x, array[index + 1].y)
+        const line = Utils.Hex.drawLine(
+          new Hexagon(currentNode.x, currentNode.y),
+          new Hexagon(array[index + 1].x, array[index + 1].y)
         );
-        line.forEach((hex) => {
-          const x = hex.toMapCoordinates().x;
-          const y = hex.toMapCoordinates().y;
-          if (!a[x]) {
-            a[x] = [];
+        line.forEach((hex: Hexagon) => {
+          const hex2D: Hexagon2D = hex.to2D();
+
+          if (!a[hex2D.x]) {
+            a[hex2D.x] = [];
           }
-          a[x][y] = true;
+          a[hex2D.x][hex2D.y] = true;
         });
         return a;
       },
@@ -132,7 +155,12 @@ export class Building implements Structural {
       let line = '';
       for (let x = 0; x <= this.maxX; x++) {
         const cell = this.map[x][y];
-        const symbol = cell.isWall ? 'X' : cell.isInterior ? 'I' : ' ';
+        const symbol =
+          cell.element === CellElement.WALL
+            ? 'X'
+            : cell.element === CellElement.FLOOR
+            ? 'I'
+            : ' ';
         line += symbol;
       }
       logger.debug(line, 'RENDERED BUILDING');
