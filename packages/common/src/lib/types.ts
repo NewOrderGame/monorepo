@@ -81,7 +81,13 @@ export type WayOverpassElement = {
   geometry: { lat: number; lon: number }[];
 } & OverpassElement;
 
-export type Hexagon2D = {
+export type AxialHex = {
   x: number;
   y: number;
+};
+
+export type CubicHex = {
+  x: number;
+  y: number;
+  z: number;
 };

@@ -1,11 +1,11 @@
-import { Coordinates, Hexagon2D, WayOverpassElement } from '../types';
+import { Coordinates, AxialHex, WayOverpassElement } from '../types';
 import { abs, add, evaluate, max, min, round, subtract, sqrt } from 'mathjs';
 import { getDistance, getGreatCircleBearing, isPointInPolygon } from 'geolib';
 
 export default class OverpassUtils {
   static convertWayToPlainBuildingNodes(
     wayOverpassBuilding: WayOverpassElement
-  ): Hexagon2D[] {
+  ): AxialHex[] {
     const longestWallNodeIndex =
       this.determineLongestWallIndex(wayOverpassBuilding);
     const longestWallNode = wayOverpassBuilding.geometry[longestWallNodeIndex];

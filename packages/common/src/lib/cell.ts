@@ -10,9 +10,9 @@ export class Cell extends Hexagon implements Hexagonal {
 
   constructor(
     readonly props: CellProps,
-    readonly x: number,
-    readonly y: number,
-    readonly z?: number
+    x: number,
+    y: number,
+    z?: number
   ) {
     super(x, y, z);
     this.actionPermission = props.actionPermission;

@@ -2,7 +2,7 @@ import {
   Cell,
   CellActionPermission,
   CellElement,
-  Hexagon2D,
+  AxialHex,
   Structural,
   Utils,
   logger
@@ -16,7 +16,7 @@ export class Building implements Structural {
 
   constructor(
     readonly id: number,
-    plainBuildingNodes: Hexagon2D[]
+    plainBuildingNodes: AxialHex[]
   ) {
     this.id = id;
     this.maxX = max(...plainBuildingNodes.map((node) => node.x));

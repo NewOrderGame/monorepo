@@ -50,7 +50,7 @@
   "scripts": {
     "start": "yarn dev",
     "all": "lerna run start --stream",
-    "dev": "./run-packages.sh",
+    "dev": "./scripts/run-packages.sh",
     "deploy": "lerna run deploy --stream",
     "build": "lerna run build --stream",
     "type-check": "lerna run type-check --stream",

@@ -1,11 +1,11 @@
 import {
   Building,
   Coordinates,
+  AxialHex,
   NogEvent,
-  Hexagon2D,
+  Utils,
   WayOverpassElement,
-  logger,
-  Utils
+  logger
 } from '@newordergame/common';
 import axios from 'axios';
 import { computeDestinationPoint } from 'geolib';
@@ -42,9 +42,9 @@ export const handleEnterBuilding =
         const buildingId = wayBuilding.id;
         let building: Building | undefined = buildingStore.get(buildingId);
         if (!building) {
-          const hex2DList: Hexagon2D[] =
+          const axialHexList: AxialHex[] =
             Utils.Overpass.convertWayToPlainBuildingNodes(wayBuilding);
-          building = new Building(buildingId, hex2DList);
+          building = new Building(buildingId, axialHexList);
           buildingStore.set(buildingId, building);
           logger.info({ buildingId }, 'Created new building');
         }

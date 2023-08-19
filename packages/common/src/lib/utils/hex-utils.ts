@@ -1,13 +1,15 @@
 import { Hexagon } from '../hexagon';
 import { abs, subtract, max, round, evaluate, divide } from 'mathjs';
-import { Hexagon2D } from '../types';
+import { AxialHex } from '../types';
 import { Utils } from '../..';
 
 export default class HexUtils {
   static calculateDistance(hexA: Hexagon, hexB: Hexagon): number {
-    const vX = abs(subtract(hexA.x, hexB.x));
-    const vY = abs(subtract(hexA.y, hexB.y));
-    const vZ = abs(subtract(hexA.z!, hexB.z!));
+    const aCubic = hexA.toCubic();
+    const bCubic = hexB.toCubic();
+    const vX = abs(subtract(aCubic.x, bCubic.x));
+    const vY = abs(subtract(aCubic.y, bCubic.y));
+    const vZ = abs(subtract(aCubic.z, bCubic.z));
     return max(vX, vY, vZ);
   }
 
@@ -15,13 +17,15 @@ export default class HexUtils {
     const distance = this.calculateDistance(hexA, hexB);
     const line: Hexagon[] = [];
     for (let i = 0; i <= distance; i++) {
+      const aCubic = hexA.toCubic();
+      const bCubic = hexB.toCubic();
       const multiplier = divide(i, distance);
       const x = round(
-        evaluate(`(${hexA.x} + (${hexB.x} - ${hexA.x}) * ${multiplier})`)
+        evaluate(`(${aCubic.x} + (${bCubic.x} - ${aCubic.x}) * ${multiplier})`)
       );
       const z = round(
         evaluate(
-          `(${hexA.z} + (${hexB.z} - ${hexA.z}) * ${multiplier}) - 0.001`
+          `(${aCubic.z} + (${bCubic.z} - ${aCubic.z}) * ${multiplier}) - 0.001`
         )
       );
       const y = evaluate(`-${x} -${z}`);
@@ -30,21 +34,21 @@ export default class HexUtils {
     return line;
   }
 
-  static collectWallHexagonsMap(plainBuildingNodes: Hexagon2D[]): boolean[][] {
+  static collectWallHexagonsMap(plainBuildingNodes: AxialHex[]): boolean[][] {
     return plainBuildingNodes.reduce(
-      (a: boolean[][], currentNode: Hexagon2D, index, array) => {
+      (a: boolean[][], currentNode: AxialHex, index, array) => {
         if (index === array.length - 1) return a;
         const line = Utils.Hex.drawLine(
           new Hexagon(currentNode.x, currentNode.y),
           new Hexagon(array[index + 1].x, array[index + 1].y)
         );
         line.forEach((hex: Hexagon) => {
-          const hex2D: Hexagon2D = hex.to2D();
+          const axialHex: AxialHex = hex.toAxial();
 
-          if (!a[hex2D.x]) {
-            a[hex2D.x] = [];
+          if (!a[axialHex.x]) {
+            a[axialHex.x] = [];
           }
-          a[hex2D.x][hex2D.y] = true;
+          a[axialHex.x][axialHex.y] = true;
         });
         return a;
       },
@@ -53,8 +57,8 @@ export default class HexUtils {
   }
 
   static collectInteriorHexagonsMap(
-    max: Hexagon2D,
-    building2D: Hexagon2D[],
+    max: AxialHex,
+    building2D: AxialHex[],
     wallNodesMap: boolean[][]
   ): boolean[][] {
     const interiorHexagonsMap: boolean[][] = [];
@@ -76,8 +80,8 @@ export default class HexUtils {
   }
 
   static isHexInsidePolygon(
-    hex2D: Hexagon2D,
-    plainBuildingNodes: Hexagon2D[]
+    hex2D: AxialHex,
+    plainBuildingNodes: AxialHex[]
   ): boolean {
     let inside = false;
 

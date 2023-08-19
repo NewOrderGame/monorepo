@@ -1,14 +1,14 @@
 import { Hexagonal } from './hexagonal';
 import { hexXSchema, hexYSchema, hexZSchema } from './schemas';
-import { Hexagon2D } from './types';
+import { AxialHex, CubicHex } from './types';
 import { evaluate } from 'mathjs';
 
 export class Hexagon implements Hexagonal {
-  constructor(
-    readonly x: number,
-    readonly y: number,
-    readonly z?: number
-  ) {
+  protected readonly x: number;
+  protected readonly y: number;
+  protected readonly z: number;
+
+  constructor(x: number, y: number, z?: number) {
     hexXSchema.validateSync(x);
     hexYSchema.validateSync(y);
     hexZSchema.validateSync(z);
@@ -24,7 +24,15 @@ export class Hexagon implements Hexagonal {
     }
   }
 
-  to2D(): Hexagon2D {
+  toCubic(): CubicHex {
+    return {
+      x: this.x,
+      y: this.y,
+      z: this.z
+    };
+  }
+
+  toAxial(): AxialHex {
     return {
       x: this.x,
       y: -this.y
