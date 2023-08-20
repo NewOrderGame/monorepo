@@ -31,9 +31,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "cross-env BROWSER=none shx cp environment/.env.development .env && react-scripts start",
-    "build": "react-scripts build",
-    "eject": "react-scripts eject",
+    "start": "yarn dev",
+    "dev": "cross-env BROWSER=none shx cp environment/.env.development .env && react-app-rewired start",
+    "build": "react-app-rewired build",
+    "eject": "react-app-rewired eject",
     "deploy": "yarn build && cd aws && yarn deploy && shx cd ..",
     "prettier": "npx prettier --write .",
     "cypress:open": "npx cypress open",
@@ -46,7 +47,7 @@
     "cy:run:all": "concurrently npm:cy:run:user1 npm:cy:run:user2",
     "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
     "format": "prettier --write src/**/*.{ts,tsx}",
-    "test": "shx cp environment/.env.development .env && react-scripts test --watchAll=false",
+    "test": "shx cp environment/.env.development .env && react-app-rewired test --watchAll=false ",
     "type-check": "tsc --noEmit",
     "verify": "yarn format && yarn type-check && yarn lint && yarn test"
   },
