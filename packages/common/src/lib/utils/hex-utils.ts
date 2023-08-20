@@ -1,5 +1,5 @@
 import { Hexagon } from '../hexagon';
-import { abs, subtract, max } from 'mathjs';
+import { abs, max, round } from 'mathjs';
 import { AxialHex, CubicHex } from '../types';
 import { Utils } from '../..';
 
@@ -9,30 +9,32 @@ export default class HexUtils {
   }
 
   static axialToCubic(axial: AxialHex): CubicHex {
-    const z = -axial.x - axial.y;
-    return { x: axial.x, y: axial.y, z: z };
+    const x = axial.x;
+    const z = axial.y;
+    const y = -x - z;
+    return { x: x, y: y, z: z };
   }
 
   static calculateCubicDistance(hexA: Hexagon, hexB: Hexagon): number {
     const aCubic = hexA.toCubic();
     const bCubic = hexB.toCubic();
-    const vX = abs(subtract(aCubic.x, bCubic.x));
-    const vY = abs(subtract(aCubic.y, bCubic.y));
-    const vZ = abs(subtract(aCubic.z, bCubic.z));
-    return max(vX, vY, vZ);
+    const dX = abs(aCubic.x - bCubic.x);
+    const dY = abs(aCubic.y - bCubic.y);
+    const dZ = abs(aCubic.z - bCubic.z);
+    return max(dX, dY, dZ);
   }
 
   static calculateAxialDistance(axialA: AxialHex, axialB: AxialHex): number {
-    const dq = axialA.x - axialB.x;
-    const dr = axialA.y - axialB.y;
-    return (Math.abs(dq) + Math.abs(dq + dr) + Math.abs(dr)) / 2;
+    const dx = axialA.x - axialB.x;
+    const dy = axialB.y - axialA.y;
+    return (abs(dx) + abs(dy) + abs(-dx - dy)) / 2;
   }
 
-  private static lerp(a: number, b: number, t: number): number {
+  static lerp(a: number, b: number, t: number): number {
     return a + (b - a) * t;
   }
 
-  private static cubeLerp(hexA: Hexagon, hexB: Hexagon, t: number): Hexagon {
+  static cubicLerp(hexA: Hexagon, hexB: Hexagon, t: number): Hexagon {
     const aCubic = hexA.toCubic();
     const bCubic = hexB.toCubic();
 
@@ -43,36 +45,51 @@ export default class HexUtils {
   }
 
   static drawLine(hexA: Hexagon, hexB: Hexagon): Hexagon[] {
+    if (hexA.toCubic() === hexB.toCubic()) {
+      return [hexA];
+    }
     const distance = this.calculateCubicDistance(hexA, hexB);
 
     const line: Hexagon[] = [];
     for (let i = 0; i <= distance; i++) {
-      const t = i / distance;
-      const interpolatedHex = this.cubeLerp(hexA, hexB, t);
-      const rounded = this.cubeRound(interpolatedHex.toCubic());
+      const t = i === 0 && distance === 0 ? 0 : i / distance;
+      const interpolatedHex = this.cubicLerp(hexA, hexB, t);
+      const rounded = this.cubicRound(interpolatedHex.toCubic());
       line.push(new Hexagon(rounded.x, rounded.y, rounded.z));
     }
     return line;
   }
 
-  static cubeRound(cube: CubicHex): CubicHex {
-    let rx = Math.round(cube.x);
-    let ry = Math.round(cube.y);
-    let rz = Math.round(cube.z);
-
-    const x_diff = Math.abs(rx - cube.x);
-    const y_diff = Math.abs(ry - cube.y);
-    const z_diff = Math.abs(rz - cube.z);
-
-    if (x_diff > y_diff && x_diff > z_diff) {
-      rx = -ry - rz;
-    } else if (y_diff > z_diff) {
-      ry = -rx - rz;
-    } else {
-      rz = -rx - ry;
-    }
-    return { x: rx, y: ry, z: rz };
+  static axialRound(hex: AxialHex): AxialHex {
+    return this.cubicToAxial(this.cubicRound(this.axialToCubic(hex)));
   }
+
+  static cubicRound(hex: CubicHex): CubicHex {
+    let x = round(hex.x);
+    let y = round(hex.y);
+    let z = round(hex.z);
+
+    const dX = abs(x - hex.x);
+    const dY = abs(y - hex.y);
+    const dZ = abs(z - hex.z);
+
+    if (dX > dY && dX > dZ) {
+      x = -y - z;
+    } else if (dY > dZ) {
+      y = -x - z;
+    } else {
+      z = -x - y;
+    }
+    return { x, y, z };
+  }
+
+  static cleanNegativeZero = (zero: number): number => {
+    if (Object.is(zero, -0)) return 0;
+    return zero;
+  };
+
+  // TODO: Complex methods. This methods require decomposition:
+  /* begin */
 
   static collectWallHexagonsMap(plainBuildingNodes: AxialHex[]): boolean[][] {
     return plainBuildingNodes.reduce(
@@ -121,6 +138,7 @@ export default class HexUtils {
 
   static isHexInsidePolygon(
     hex: AxialHex,
+
     plainBuildingNodes: AxialHex[]
   ): boolean {
     let inside = false;
@@ -151,4 +169,6 @@ export default class HexUtils {
 
     return inside;
   }
+
+  /* end */
 }
