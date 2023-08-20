@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
-import { useAuthenticator } from '@aws-amplify/ui-react';
 import core from './core';
 import { Socket } from 'socket.io-client';
 import { NogEvent, NogPage } from '@newordergame/common';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import logger from './utils/logger';
+import { useAuthenticator } from './hooks/useAuthenticator';
 
 export type Connection = {
   gameSocket: Socket;
@@ -15,32 +15,53 @@ export const ConnectionContext = React.createContext<Connection>(
   {} as Connection
 );
 
+export const useSocketConnection = (
+  accessToken: string,
+  navigate: NavigateFunction
+) => {
+  const [connected, setConnected] = useState(false);
+  const gameSocket = core.gameSocket;
+
+  useEffect(() => {
+    gameSocket.auth = { accessToken };
+
+    gameSocket.on(NogEvent.CONNECT, handleConnect());
+    gameSocket.on(NogEvent.CONNECTED, handleConnected(setConnected));
+    gameSocket.on(
+      NogEvent.DISCONNECT,
+      handleDisconnect(setConnected, navigate)
+    );
+    gameSocket.on(NogEvent.REDIRECT, handleRedirect(setConnected, navigate));
+
+    gameSocket.connect();
+
+    return () => {
+      gameSocket.off(NogEvent.CONNECT);
+      gameSocket.off(NogEvent.CONNECTED);
+      gameSocket.off(NogEvent.DISCONNECT);
+      gameSocket.off(NogEvent.REDIRECT);
+    };
+  }, []);
+
+  return { connected, gameSocket };
+};
+
 export const ConnectionProvider = ({
   children
 }: {
   children: React.ReactNode;
 }) => {
-  const [connected, setConnected] = useState(false);
   const authenticator = useAuthenticator();
   const navigate = useNavigate();
-  const gameSocket = core.gameSocket;
-
-  window.signOut = authenticator.signOut;
 
   const accessToken =
     authenticator.user
       .getSignInUserSession()
       ?.getAccessToken()
       ?.getJwtToken() || '';
+  const { connected, gameSocket } = useSocketConnection(accessToken, navigate);
 
-  const value = {
-    gameSocket
-  };
-
-  useInitConnection(
-    connect(accessToken, gameSocket, navigate, setConnected),
-    disconnect(gameSocket)
-  );
+  const value = { gameSocket };
 
   return (
     <ConnectionContext.Provider value={value}>
@@ -60,46 +81,6 @@ export const useInitConnection = (
       disconnect();
     };
   }, []);
-};
-
-const connect =
-  (
-    accessToken: string,
-    gameSocket: Socket,
-    navigate: NavigateFunction,
-    setConnected: (connected: boolean) => void
-  ) =>
-  () => {
-    gameSocket.auth = {
-      accessToken
-    };
-    logger.info('Connecting to Game...');
-    gameSocket.on(NogEvent.CONNECT, handleConnect());
-    gameSocket.on(NogEvent.CONNECTED, handleConnected(setConnected));
-    gameSocket.on(
-      NogEvent.DISCONNECT,
-      handleDisconnect(setConnected, navigate)
-    );
-    gameSocket.on(NogEvent.REDIRECT, handleRedirect(setConnected, navigate));
-
-    /** Comment/Uncomment this if necessary */
-    // core.gameSocket.onAny((event, ...args) => {
-    //   logger.debug({ event, args }, 'event');
-    // });
-    /** */
-
-    gameSocket.connect();
-
-    return () => {
-      gameSocket.off(NogEvent.CONNECT);
-      gameSocket.off(NogEvent.CONNECTED);
-      gameSocket.off(NogEvent.DISCONNECT);
-      gameSocket.off(NogEvent.REDIRECT);
-    };
-  };
-
-const disconnect = (gameSocket: Socket) => () => {
-  gameSocket.disconnect();
 };
 
 const handleConnect = () => () => {
