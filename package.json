@@ -9,6 +9,7 @@
     "geolib": "^3.3.3",
     "mathjs": "^11.3.2",
     "pino": "^8.0.0",
+    "react-app-rewired": "^2.2.1",
     "socket.io-client": "^4.5.1",
     "source-map-support": "^0.5.16"
   },
