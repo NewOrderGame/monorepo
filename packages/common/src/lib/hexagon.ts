@@ -1,5 +1,5 @@
 import { Hexagonal } from './hexagonal';
-import { hexXSchema, hexYSchema, hexZSchema } from './schemas';
+import { cubicHexSchema, hexXSchema, hexYSchema, hexZSchema } from './schemas';
 import { AxialHex, CubicHex } from './types';
 import { evaluate } from 'mathjs';
 
@@ -9,11 +9,17 @@ export class Hexagon implements Hexagonal {
   protected readonly z: number;
 
   constructor(x: number, y: number, z?: number) {
+    if (isNaN(x) || isNaN(y) || (isNaN(z!) && z !== undefined)) {
+      throw new Error('NaN is present');
+    }
+
     hexXSchema.validateSync(x);
     hexYSchema.validateSync(y);
     hexZSchema.validateSync(z);
 
     if (typeof z === 'number') {
+      cubicHexSchema.validateSync({ x, y, z });
+
       this.x = evaluate(`${x}`);
       this.y = evaluate(`${y}`);
       this.z = evaluate(`${z}`);
