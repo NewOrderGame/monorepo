@@ -1,7 +1,7 @@
 import { Hexagonal } from './hexagonal';
 import { cubicHexSchema, hexXSchema, hexYSchema, hexZSchema } from './schemas';
 import { AxialHex, CubicHex } from './types';
-import { evaluate } from 'mathjs';
+import cleanNegativeZero from './utils/clean-negative-zero';
 
 export class Hexagon implements Hexagonal {
   protected readonly x: number;
@@ -20,13 +20,13 @@ export class Hexagon implements Hexagonal {
     if (typeof z === 'number') {
       cubicHexSchema.validateSync({ x, y, z });
 
-      this.x = evaluate(`${x}`);
-      this.y = evaluate(`${y}`);
-      this.z = evaluate(`${z}`);
+      this.x = cleanNegativeZero(x);
+      this.y = cleanNegativeZero(y);
+      this.z = cleanNegativeZero(z);
     } else {
-      this.x = evaluate(`${x}`);
-      this.y = evaluate(`${-y}`);
-      this.z = evaluate(`${y - x}`);
+      this.x = cleanNegativeZero(x);
+      this.y = cleanNegativeZero(-y);
+      this.z = cleanNegativeZero(y - x);
     }
   }
 
@@ -35,8 +35,8 @@ export class Hexagon implements Hexagonal {
   }
 
   static fromAxial(axial: AxialHex): Hexagon {
-    const z = axial.y - axial.x;
-    return new Hexagon(axial.x, -axial.y, z);
+    const z = cleanNegativeZero(axial.y - axial.x);
+    return new Hexagon(axial.x, cleanNegativeZero(-axial.y), z);
   }
 
   toCubic(): CubicHex {
@@ -50,7 +50,7 @@ export class Hexagon implements Hexagonal {
   toAxial(): AxialHex {
     return {
       x: this.x,
-      y: -this.y
+      y: cleanNegativeZero(-this.y)
     };
   }
 }
