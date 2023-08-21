@@ -2,13 +2,18 @@ import { describe } from '@jest/globals';
 import { AxialHex, CubicHex } from '../types';
 import HexUtils from './hex-utils';
 import { Hexagon } from '../hexagon';
-import { HexDirectionAngle, HexDirectionPov } from '../enums';
+import {
+  HexDirectionAngle,
+  HexDirectionClock,
+  HexDirectionDescriptive,
+  HexDirectionPov
+} from '../enums';
 
 describe('Hex utils', () => {
   describe('cubicToAxial', () => {
-    it('should convert cubic (1, -3, 2) to axial (1, 2)', () => {
+    it('should convert cubic (1, -3, 2) to axial (1, 3)', () => {
       const cubic: CubicHex = { x: 1, y: -3, z: 2 };
-      const expected: AxialHex = { x: 1, y: 2 };
+      const expected: AxialHex = { x: 1, y: 3 };
       expect(HexUtils.cubicToAxial(cubic)).toEqual(expected);
     });
 
@@ -18,29 +23,29 @@ describe('Hex utils', () => {
       expect(HexUtils.cubicToAxial(cubic)).toEqual(expected);
     });
 
-    it('should convert cubic (-1, -1, 2) to axial (-1, 2)', () => {
-      const cubic: CubicHex = { x: -1, y: -1, z: 2 };
-      const expected: AxialHex = { x: -1, y: 2 };
+    it('should convert cubic (-1, -1, 2) to axial (-1, 1)', () => {
+      const cubic: CubicHex = { x: -1, y: -1, z: 0 };
+      const expected: AxialHex = { x: -1, y: 1 };
       expect(HexUtils.cubicToAxial(cubic)).toEqual(expected);
     });
 
-    it('should convert cubic (3, -4, 1) to axial (3, 1)', () => {
+    it('should convert cubic (3, -4, 1) to axial (3, 4)', () => {
       const cubic: CubicHex = { x: 3, y: -4, z: 1 };
-      const expected: AxialHex = { x: 3, y: 1 };
+      const expected: AxialHex = { x: 3, y: 4 };
       expect(HexUtils.cubicToAxial(cubic)).toEqual(expected);
     });
 
-    it('should convert cubic (2, -3, 1) to axial (2, 1)', () => {
-      const cubic: CubicHex = { x: 2, y: -3, z: 1 };
-      const expected: AxialHex = { x: 2, y: 1 };
+    it('should convert cubic (2, -3, 1) to axial (2, 3)', () => {
+      const cubic: CubicHex = { x: 2, y: -3, z: -1 };
+      const expected: AxialHex = { x: 2, y: 3 };
       expect(HexUtils.cubicToAxial(cubic)).toEqual(expected);
     });
   });
 
   describe('axialToCubic', () => {
-    it('should convert axial (1, 2) to cubic (1, -3, 2)', () => {
+    it('should convert axial (1, 2) to cubic (1, -2, 1)', () => {
       const axial: AxialHex = { x: 1, y: 2 };
-      const expected: CubicHex = { x: 1, y: -3, z: 2 };
+      const expected: CubicHex = { x: 1, y: -2, z: 1 };
       expect(HexUtils.axialToCubic(axial)).toEqual(expected);
     });
 
@@ -56,21 +61,21 @@ describe('Hex utils', () => {
       expect(cleanedResult).toEqual(expected);
     });
 
-    it('should convert axial (-1, 2) to cubic (-1, -1, 2)', () => {
+    it('should convert axial (-1, 2) to cubic (-1, -2, 3)', () => {
       const axial: AxialHex = { x: -1, y: 2 };
-      const expected: CubicHex = { x: -1, y: -1, z: 2 };
+      const expected: CubicHex = { x: -1, y: -2, z: 3 };
       expect(HexUtils.axialToCubic(axial)).toEqual(expected);
     });
 
-    it('should convert axial (3, -3) to cubic (3, 0, -3)', () => {
+    it('should convert axial (3, -3) to cubic (3, 3, -6)', () => {
       const axial: AxialHex = { x: 3, y: -3 };
-      const expected: CubicHex = { x: 3, y: 0, z: -3 };
+      const expected: CubicHex = { x: 3, y: 3, z: -6 };
       expect(HexUtils.axialToCubic(axial)).toEqual(expected);
     });
 
-    it('should convert axial (-2, -1) to cubic (-2, 3, -1)', () => {
+    it('should convert axial (-2, -1) to cubic (-2, 1, 1)', () => {
       const axial: AxialHex = { x: -2, y: -1 };
-      const expected: CubicHex = { x: -2, y: 3, z: -1 };
+      const expected: CubicHex = { x: -2, y: 1, z: 1 };
       expect(HexUtils.axialToCubic(axial)).toEqual(expected);
     });
   });
@@ -79,62 +84,83 @@ describe('Hex utils', () => {
     it('should calculate the distance between two identical hexagons as 0', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(0, 0, 0);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(0);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(0);
     });
 
     it('should calculate the distance between (0, 0, 0) and (1, -3, 2) as 3', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(1, -3, 2);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(3);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(3);
     });
 
     it('should calculate the distance between two hexagons with only one differing coordinate', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(3, 0, -3);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(3);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(3);
     });
 
     it('should calculate the distance between distant hexagons', () => {
       const hexA = new Hexagon(-5, 5, 0);
       const hexB = new Hexagon(5, -5, 0);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(10);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(10);
     });
 
     it('should handle negative coordinates', () => {
       const hexA = new Hexagon(-3, 3, 0);
       const hexB = new Hexagon(-4, 4, 0);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(1);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(1);
     });
 
     it('should handle hexagons with all positive coordinates', () => {
       const hexA = new Hexagon(3, 2, -5);
       const hexB = new Hexagon(4, 1, -5);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(1);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(1);
     });
 
     it('should handle hexagons with all negative coordinates', () => {
       const hexA = new Hexagon(-3, -2, 5);
       const hexB = new Hexagon(-4, -1, 5);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(1);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(1);
     });
 
     it('should calculate the distance between hexagons with large coordinate values', () => {
       const hexA = new Hexagon(100, -200, 100);
       const hexB = new Hexagon(-100, 200, -100);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(400);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(400);
     });
 
     it('should calculate the distance between hexagons with even larger coordinate values', () => {
       const hexA = new Hexagon(1000, -2000, 1000);
       const hexB = new Hexagon(-1000, 2000, -1000);
-      expect(HexUtils.calculateCubicDistance(hexA, hexB)).toEqual(4000);
+      expect(
+        HexUtils.calculateCubicDistance(hexA.toCubic(), hexB.toCubic())
+      ).toEqual(4000);
     });
 
     it('should not calculate a distance greater than 1,000,000 for hexagons within a radius of 1,000,000', () => {
       const hexA = new Hexagon(1_000_000, -500_000, -500_000);
       const hexB = new Hexagon(-1_000_000, 500_000, 500_000);
 
-      const distance = HexUtils.calculateCubicDistance(hexA, hexB);
+      const distance = HexUtils.calculateCubicDistance(
+        hexA.toCubic(),
+        hexB.toCubic()
+      );
 
       expect(distance).toBeLessThanOrEqual(2_000_000);
       expect(distance).toBeGreaterThanOrEqual(0);
@@ -145,13 +171,13 @@ describe('Hex utils', () => {
     it('should calculate the distance between two points in axial coordinates', () => {
       const axialA: AxialHex = { x: 0, y: 0 };
       const axialB: AxialHex = { x: 1, y: 2 };
-      expect(HexUtils.calculateAxialDistance(axialA, axialB)).toEqual(2);
+      expect(HexUtils.calculateAxialDistance(axialA, axialB)).toEqual(3);
     });
 
     it('should calculate the distance between two points with negative axial coordinates', () => {
       const axialA: AxialHex = { x: -1, y: -2 };
       const axialB: AxialHex = { x: 1, y: 2 };
-      expect(HexUtils.calculateAxialDistance(axialA, axialB)).toEqual(4);
+      expect(HexUtils.calculateAxialDistance(axialA, axialB)).toEqual(6);
     });
 
     it('should calculate a distance of 0 for the same axial point', () => {
@@ -187,53 +213,89 @@ describe('Hex utils', () => {
   describe('drawLine', () => {
     it('should draw a line between two identical hexagons', () => {
       const hexA = new Hexagon(0, 0, 0);
-      const line = HexUtils.drawLine(hexA, hexA);
+      const line = HexUtils.drawLine(hexA.toCubic(), hexA.toCubic());
       expect(line.length).toEqual(1);
-      expect(line[0].toCubic()).toEqual(hexA.toCubic());
+      expect(line[0]).toEqual(hexA.toCubic());
     });
 
     it('should draw a short line between neighboring hexagons', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(1, -1, 0);
-      const line = HexUtils.drawLine(hexA, hexB);
-      expect(line.length).toBeGreaterThanOrEqual(2);
-      expect(line[0].toCubic()).toEqual(hexA.toCubic());
-      expect(line[line.length - 1].toCubic()).toEqual(hexB.toCubic());
+      const line = HexUtils.drawLine(hexA.toCubic(), hexB.toCubic());
+      expect(line.length).toBe(2);
+      expect(line[0]).toEqual(hexA.toCubic());
+      expect(line[1]).toEqual(hexB.toCubic());
     });
 
     it('should draw a diagonal line between two hexagons', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(3, -3, 0);
-      const line = HexUtils.drawLine(hexA, hexB);
-      expect(line[0].toCubic()).toEqual(hexA.toCubic());
-      expect(line[line.length - 1].toCubic()).toEqual(hexB.toCubic());
+      const line = HexUtils.drawLine(hexA.toCubic(), hexB.toCubic());
+      expect(line[0]).toEqual(hexA.toCubic());
+      expect(line[line.length - 1]).toEqual(hexB.toCubic());
     });
 
     it('should draw a line passing through negative coordinates', () => {
       const hexA = new Hexagon(-1, 1, 0);
       const hexB = new Hexagon(1, -1, 0);
-      const line = HexUtils.drawLine(hexA, hexB);
-      expect(line[0].toCubic()).toEqual(hexA.toCubic());
-      expect(line[line.length - 1].toCubic()).toEqual(hexB.toCubic());
+      const line = HexUtils.drawLine(hexA.toCubic(), hexB.toCubic());
+      expect(line[0]).toEqual(hexA.toCubic());
+      expect(line[line.length - 1]).toEqual(hexB.toCubic());
     });
 
     it('should draw a line between hexagons with larger coordinate values', () => {
       const hexA = new Hexagon(10, -20, 10);
       const hexB = new Hexagon(20, -10, -10);
-      const line = HexUtils.drawLine(hexA, hexB);
-      expect(line[0].toCubic()).toEqual(hexA.toCubic());
-      expect(line[line.length - 1].toCubic()).toEqual(hexB.toCubic());
+      const line = HexUtils.drawLine(hexA.toCubic(), hexB.toCubic());
+      expect(line[0]).toEqual(hexA.toCubic());
+      expect(line[line.length - 1]).toEqual(hexB.toCubic());
     });
 
     it('should ensure varied line lengths are correctly computed', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(5, -5, 0);
       const hexC = new Hexagon(10, -10, 0);
-      const line1 = HexUtils.drawLine(hexA, hexB);
-      const line2 = HexUtils.drawLine(hexA, hexC);
+      const line1 = HexUtils.drawLine(hexA.toCubic(), hexB.toCubic());
+      const line2 = HexUtils.drawLine(hexA.toCubic(), hexC.toCubic());
       expect(line1.length < line2.length).toBeTruthy();
-      expect(line1[0].toCubic()).toEqual(hexA.toCubic());
-      expect(line2[0].toCubic()).toEqual(hexA.toCubic());
+      expect(line1[0]).toEqual(hexA.toCubic());
+      expect(line2[0]).toEqual(hexA.toCubic());
+    });
+
+    it('should ensure the line is continuous without gaps', () => {
+      const hexA = new Hexagon(0, 0, 0);
+      const hexB = new Hexagon(3, -3, 0);
+      const line = HexUtils.drawLine(hexA.toCubic(), hexB.toCubic());
+      for (let i = 0; i < line.length; i++) {
+        const hex = line[i];
+        const neighbors = [0, 1, 2, 3, 4, 5].map((dir) =>
+          HexUtils.cubicNeighbor(hex, dir)
+        );
+        const hasNeighborInLine = neighbors.some((neighbor) =>
+          line.some((lineHex) => HexUtils.hexEqual(neighbor.toCubic(), lineHex))
+        );
+        expect(hasNeighborInLine).toBeTruthy();
+      }
+    });
+
+    it('should ensure the long line is continuous without gaps', () => {
+      const hexA = new Hexagon(0, 0, 0);
+      const hexB = new Hexagon(30, -30, 0); // This creates a long line
+      const line = HexUtils.drawLine(hexA.toCubic(), hexB.toCubic());
+
+      for (let i = 0; i < line.length; i++) {
+        const hex = line[i];
+        const neighbors = [0, 1, 2, 3, 4, 5].map((dir) =>
+          HexUtils.cubicNeighbor(hex, dir)
+        );
+        const hasNeighborInLine = neighbors.some((neighbor) =>
+          line.some((lineHex) => HexUtils.hexEqual(neighbor.toCubic(), lineHex))
+        );
+        expect(hasNeighborInLine).toBeTruthy();
+      }
+
+      expect(line[line.length - 1]).toEqual(hexB.toCubic());
+      expect(line[line.length - 2]).toEqual({ x: 29, y: -29, z: 0 });
     });
   });
 
@@ -296,16 +358,16 @@ describe('Hex utils', () => {
       const hex: AxialHex = { x: 0.7, y: 0.2 };
       const result = HexUtils.axialRound(hex);
 
-      expect(result.x).toBeCloseTo(1);
-      expect(result.y).toBeCloseTo(0);
+      expect(result.x).toBe(1);
+      expect(result.y).toBe(0);
     });
 
     it('should correctly round when values are halfway between two whole numbers', () => {
       const hex: AxialHex = { x: 1.5, y: -1.5 };
       const result = HexUtils.axialRound(hex);
 
-      expect(result.x).toBeCloseTo(2);
-      expect(result.y).toBeCloseTo(-2);
+      expect(result.x).toBe(2);
+      expect(result.y).toBe(-1);
     });
 
     it('should not change coordinates that are already whole numbers', () => {
@@ -320,16 +382,16 @@ describe('Hex utils', () => {
       const hex: AxialHex = { x: -0.7, y: -0.3 };
       const result = HexUtils.axialRound(hex);
 
-      expect(result.x).toBeCloseTo(-1);
-      expect(result.y).toBeCloseTo(0);
+      expect(result.x).toBe(-1);
+      expect(result.y).toBe(0);
     });
 
     it('should handle complex rounding scenarios', () => {
       const hex: AxialHex = { x: 0.4, y: 2.6 };
       const result = HexUtils.axialRound(hex);
 
-      expect(result.x).toBeCloseTo(0);
-      expect(result.y).toBeCloseTo(3);
+      expect(result.x).toBe(1);
+      expect(result.y).toBe(3);
     });
   });
 
@@ -366,8 +428,8 @@ describe('Hex utils', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(10, 10, -20);
 
-      const result = HexUtils.cubicLerp(hexA, hexB, 0.5);
-      const cubicResult = result.toCubic();
+      const result = HexUtils.cubicLerp(hexA.toCubic(), hexB.toCubic(), 0.5);
+      const cubicResult = result;
 
       expect(cubicResult.x).toBeCloseTo(5);
       expect(cubicResult.y).toBeCloseTo(5);
@@ -378,8 +440,8 @@ describe('Hex utils', () => {
       const hexA = new Hexagon(0, 0);
       const hexB = new Hexagon(10, 10);
 
-      const result = HexUtils.cubicLerp(hexA, hexB, 0);
-      const cubicResult = result.toCubic();
+      const result = HexUtils.cubicLerp(hexA.toCubic(), hexB.toCubic(), 0);
+      const cubicResult = result;
 
       expect(cubicResult.x).toBe(0);
       expect(cubicResult.y).toBe(0);
@@ -390,8 +452,8 @@ describe('Hex utils', () => {
       const hexA = new Hexagon(0, 0, 0);
       const hexB = new Hexagon(10, 10, -20);
 
-      const result = HexUtils.cubicLerp(hexA, hexB, 1);
-      const cubicResult = result.toCubic();
+      const result = HexUtils.cubicLerp(hexA.toCubic(), hexB.toCubic(), 1);
+      const cubicResult = result;
 
       expect(cubicResult.x).toBe(10);
       expect(cubicResult.y).toBe(10);
@@ -402,8 +464,8 @@ describe('Hex utils', () => {
       const hexA = new Hexagon(3, 5, -8);
       const hexB = new Hexagon(7, -3, -4);
 
-      const result = HexUtils.cubicLerp(hexA, hexB, 0.5);
-      const cubicResult = result.toCubic();
+      const result = HexUtils.cubicLerp(hexA.toCubic(), hexB.toCubic(), 0.5);
+      const cubicResult = result;
 
       expect(cubicResult.x).toBeCloseTo(5);
       expect(cubicResult.y).toBeCloseTo(1);
@@ -411,44 +473,121 @@ describe('Hex utils', () => {
     });
   });
 });
-describe('Neighbors', () => {
-  describe('Cubic Operations', () => {
+describe('neighbors', () => {
+  describe('cubic direction', () => {
     it('should provide correct cubic direction for a given index', () => {
       const result = HexUtils.cubicDirection(HexDirectionAngle.A120);
-      expect(result).toEqual({ x: 0, y: -1, z: +1 });
+      expect(result).toEqual({ x: 1, y: 0, z: -1 });
     });
-
+  });
+  describe('cubic add', () => {
     it('should add two cubic hexes correctly', () => {
       const hex1 = { x: 1, y: -1, z: 0 };
       const hex2 = { x: -1, y: 1, z: 0 };
       const result = HexUtils.cubicAdd(hex1, hex2);
       expect(result.toCubic()).toEqual({ x: 0, y: 0, z: 0 });
     });
-
+  });
+  describe('cubic neignbor', () => {
     it('should provide correct cubic neighbor for a hex and direction', () => {
-      const cube = { x: 1, y: -1, z: 0 };
-      const result = HexUtils.cubicNeighbor(cube, 2);
+      const hex = { x: 1, y: -1, z: 0 };
+      const result = HexUtils.cubicNeighbor(hex, HexDirectionClock.C8);
       expect(result.toCubic()).toEqual({ x: 1, y: -2, z: 1 });
     });
   });
 
-  describe('Axial Operations', () => {
-    it('should provide correct axial direction for a given index', () => {
-      const result = HexUtils.axialDirection(HexDirectionPov.BACK_RIGHT);
-      expect(result).toEqual({ x: 0, y: 1 });
+  describe('axial direction', () => {
+    describe('should provide correct axial direction with descriptive directions', () => {
+      it('top', () => {
+        const result = HexUtils.axialDirection(HexDirectionDescriptive.TOP);
+        expect(result).toEqual({ x: -1, y: -1 });
+      });
+      it('top right', () => {
+        const result = HexUtils.axialDirection(
+          HexDirectionDescriptive.TOP_RIGHT
+        );
+        expect(result).toEqual({ x: 0, y: -1 });
+      });
+      it('bottom right', () => {
+        const result = HexUtils.axialDirection(
+          HexDirectionDescriptive.BOTTOM_RIGHT
+        );
+        expect(result).toEqual({ x: 1, y: 0 });
+      });
+      it('bottom', () => {
+        const result = HexUtils.axialDirection(HexDirectionDescriptive.BOTTOM);
+        expect(result).toEqual({ x: 1, y: 1 });
+      });
+      it('bottom left', () => {
+        const result = HexUtils.axialDirection(
+          HexDirectionDescriptive.BOTTOM_LEFT
+        );
+        expect(result).toEqual({ x: 0, y: 1 });
+      });
+      it('top left', () => {
+        const result = HexUtils.axialDirection(
+          HexDirectionDescriptive.TOP_LEFT
+        );
+        expect(result).toEqual({ x: -1, y: 0 });
+      });
     });
 
-    it('should add two axial hexes correctly', () => {
-      const hex1 = { x: 1, y: -1 };
-      const hex2 = { x: -1, y: 1 };
-      const result = HexUtils.axialAdd(hex1, hex2);
-      expect(result).toEqual({ x: 0, y: 0 });
+    describe('axial add', () => {
+      it('should add two axial hexes correctly', () => {
+        const hex1 = { x: 1, y: -1 };
+        const hex2 = { x: -1, y: 1 };
+        const result = HexUtils.axialAdd(hex1, hex2);
+        expect(result).toEqual({ x: 0, y: 0 });
+      });
     });
+    describe('axial neighbor', () => {
+      it('should provide correct axial neighbor for a hex and back direction', () => {
+        const hex = { x: 1, y: 1 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionPov.BACK);
+        expect(result).toEqual({ x: 2, y: 2 });
+      });
 
-    it('should provide correct axial neighbor for a hex and direction', () => {
-      const hex = { x: 1, y: -1 };
-      const result = HexUtils.axialNeighbor(hex, 2);
-      expect(result).toEqual({ x: 1, y: 0 });
+      it('should provide correct axial neighbor for a hex and back left direction', () => {
+        const hex = { x: 1, y: 1 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionPov.BACK_LEFT);
+        expect(result).toEqual({ x: 1, y: 2 });
+      });
+
+      it('should provide correct axial neighbor for a hex and front left direction', () => {
+        const hex = { x: 1, y: 1 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionPov.FRONT_LEFT);
+        expect(result).toEqual({ x: 0, y: 1 });
+      });
+
+      it('should provide correct axial neighbor for a hex and front direction', () => {
+        const hex = { x: 1, y: 1 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionPov.FRONT);
+        expect(result).toEqual({ x: 0, y: 0 });
+      });
+
+      it('should provide correct axial neighbor for a hex and front right direction', () => {
+        const hex = { x: 1, y: 1 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionPov.FRONT_RIGHT);
+        expect(result).toEqual({ x: 1, y: 0 });
+      });
+
+      it('should provide correct axial neighbor for a hex and back right direction', () => {
+        const hex = { x: 1, y: 1 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionPov.BACK_RIGHT);
+        expect(result).toEqual({ x: 2, y: 1 });
+      });
+
+      it('should return { x: 34, y:30 } as top neigbor of { x: 35, y:31 }', () => {
+        const hex = { x: 35, y: 31 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionDescriptive.TOP);
+        expect(result).toEqual({ x: 34, y: 30 });
+      });
+
+      it('should return { x: 35, y:32 } as at 8 o`clock neigbor of { x: 35, y:31 }', () => {
+        const hex = { x: 35, y: 31 };
+        const result = HexUtils.axialNeighbor(hex, HexDirectionClock.C8);
+        expect(result).toEqual({ x: 35, y: 32 });
+      });
     });
   });
 });
