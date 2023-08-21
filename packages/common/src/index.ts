@@ -7,10 +7,12 @@ export * from './lib/defaults';
 // Utils
 import HexUtils from './lib/utils/hex-utils';
 import OverpassUtils from './lib/utils/overpass-utils';
+import cleanNegativeZero from './lib/utils/clean-negative-zero';
 
 export const Utils = {
   Hex: HexUtils,
-  Overpass: OverpassUtils
+  Overpass: OverpassUtils,
+  cleanNegativeZero
 };
 
 // Types
