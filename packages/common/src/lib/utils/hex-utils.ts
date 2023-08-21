@@ -6,60 +6,67 @@ import cleanNegativeZero from './clean-negative-zero';
 import { HexDirectionVectors } from '../hex-direction-vectors';
 
 export default class HexUtils {
+  static hexEqual(hex1: CubicHex, hex2: CubicHex): boolean {
+    return hex1.x === hex2.x && hex1.y === hex2.y && hex1.z === hex2.z;
+  }
+
   static cubicToAxial(cubic: CubicHex): AxialHex {
-    return { x: cubic.x, y: cubic.z };
+    return { x: cubic.x, y: cleanNegativeZero(-cubic.y) };
   }
 
   static axialToCubic(axial: AxialHex): CubicHex {
     const x = cleanNegativeZero(axial.x);
-    const z = cleanNegativeZero(axial.y);
-    const y = cleanNegativeZero(-x - z);
+    const y = cleanNegativeZero(-axial.y);
+    const z = cleanNegativeZero(-axial.x + axial.y);
     return { x: x, y: y, z: z };
   }
 
-  static calculateCubicDistance(hexA: Hexagon, hexB: Hexagon): number {
-    const aCubic = hexA.toCubic();
-    const bCubic = hexB.toCubic();
-    const dX = abs(aCubic.x - bCubic.x);
-    const dY = abs(aCubic.y - bCubic.y);
-    const dZ = abs(aCubic.z - bCubic.z);
+  static calculateCubicDistance(hexA: CubicHex, hexB: CubicHex): number {
+    const dX = abs(hexA.x - hexB.x);
+    const dY = abs(hexA.y - hexB.y);
+    const dZ = abs(hexA.z - hexB.z);
     return max(dX, dY, dZ);
   }
 
   static calculateAxialDistance(axialA: AxialHex, axialB: AxialHex): number {
     const dx = axialA.x - axialB.x;
     const dy = axialB.y - axialA.y;
-    return (abs(dx) + abs(dy) + abs(-dx - dy)) / 2;
+    return (abs(dx) + abs(dy) + abs(-dx + dy)) / 2;
   }
 
   static lerp(a: number, b: number, t: number): number {
     return a + (b - a) * t;
   }
 
-  static cubicLerp(hexA: Hexagon, hexB: Hexagon, t: number): Hexagon {
-    const aCubic = hexA.toCubic();
-    const bCubic = hexB.toCubic();
-
-    const x = this.lerp(aCubic.x, bCubic.x, t);
-    const y = this.lerp(aCubic.y, bCubic.y, t);
-    const z = this.lerp(aCubic.z, bCubic.z, t);
-    return new Hexagon(x, y, z);
+  static cubicLerp(hexA: CubicHex, hexB: CubicHex, t: number): CubicHex {
+    const x = this.lerp(hexA.x, hexB.x, t);
+    const y = this.lerp(hexA.y, hexB.y, t);
+    const z = this.lerp(hexA.z, hexB.z, t);
+    return { x, y, z };
   }
 
-  static drawLine(hexA: Hexagon, hexB: Hexagon): Hexagon[] {
-    if (hexA.toCubic() === hexB.toCubic()) {
-      return [hexA];
-    }
+  static drawLine(hexA: CubicHex, hexB: CubicHex): CubicHex[] {
     const distance = this.calculateCubicDistance(hexA, hexB);
 
-    const line: Hexagon[] = [];
+    if (distance === 0) {
+      return [new Hexagon(0, 0, 0).toCubic()];
+    }
+
+    const line: CubicHex[] = [];
     for (let i = 0; i <= distance; i++) {
-      const t = i === 0 && distance === 0 ? 0 : i / distance;
-      const interpolatedHex = this.cubicLerp(hexA, hexB, t);
-      const rounded = this.cubicRound(interpolatedHex.toCubic());
-      line.push(new Hexagon(rounded.x, rounded.y, rounded.z));
+      const t = i / distance;
+      const interpolated = this.cubicLerp(hexA, hexB, t);
+      const rounded = this.cubicRound(interpolated);
+
+      line.push(new Hexagon(rounded.x, rounded.y, rounded.z).toCubic());
     }
     return line;
+  }
+
+  static axialDrawLine(nodeA: AxialHex, nodeB: AxialHex): CubicHex[] {
+    const cubicA = new Hexagon(nodeA.x, nodeA.y).toCubic();
+    const cubicB = new Hexagon(nodeB.x, nodeB.y).toCubic();
+    return Utils.Hex.drawLine(cubicA, cubicB);
   }
 
   static axialRound(hex: AxialHex): AxialHex {
@@ -82,7 +89,11 @@ export default class HexUtils {
     } else {
       z = -x - y;
     }
-    return { x, y, z };
+    return {
+      x: cleanNegativeZero(x),
+      y: cleanNegativeZero(y),
+      z: cleanNegativeZero(z)
+    };
   }
 
   static cubicDirection(direction: HexDirection): CubicHex {
@@ -93,7 +104,7 @@ export default class HexUtils {
     return new Hexagon(hex.x + vec.x, hex.y + vec.y, hex.z + vec.z);
   }
 
-  static cubicNeighbor(cube: CubicHex, direction: number): Hexagon {
+  static cubicNeighbor(cube: CubicHex, direction: HexDirection): Hexagon {
     return this.cubicAdd(cube, this.cubicDirection(direction));
   }
 
@@ -113,25 +124,24 @@ export default class HexUtils {
   /* begin */
 
   static collectWallHexagonsMap(plainBuildingNodes: AxialHex[]): boolean[][] {
-    return plainBuildingNodes.reduce(
-      (a: boolean[][], currentNode: AxialHex, index, array) => {
-        if (index === array.length - 1) return a;
-        const line = Utils.Hex.drawLine(
-          new Hexagon(currentNode.x, currentNode.y),
-          new Hexagon(array[index + 1].x, array[index + 1].y)
-        );
-        line.forEach((hex: Hexagon) => {
-          const axialHex: AxialHex = hex.toAxial();
+    const wallMap: boolean[][] = [];
 
-          if (!a[axialHex.x]) {
-            a[axialHex.x] = [];
-          }
-          a[axialHex.x][axialHex.y] = true;
-        });
-        return a;
-      },
-      []
-    );
+    for (let i = 0; i < plainBuildingNodes.length - 1; i++) {
+      const current = plainBuildingNodes[i];
+      const next = plainBuildingNodes[i + 1];
+
+      const line = this.axialDrawLine(current, next);
+
+      for (const hex of line) {
+        const axialHex = this.cubicToAxial(hex);
+
+        if (!wallMap[axialHex.x]) {
+          wallMap[axialHex.x] = [];
+        }
+        wallMap[axialHex.x][axialHex.y] = true;
+      }
+    }
+    return wallMap;
   }
 
   static collectInteriorHexagonsMap(

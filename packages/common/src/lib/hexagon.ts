@@ -26,7 +26,7 @@ export class Hexagon implements Hexagonal {
     } else {
       this.x = cleanNegativeZero(x);
       this.y = cleanNegativeZero(-y);
-      this.z = cleanNegativeZero(y - x);
+      this.z = cleanNegativeZero(-x + y);
     }
   }
 
@@ -35,8 +35,12 @@ export class Hexagon implements Hexagonal {
   }
 
   static fromAxial(axial: AxialHex): Hexagon {
-    const z = cleanNegativeZero(axial.y - axial.x);
-    return new Hexagon(axial.x, cleanNegativeZero(-axial.y), z);
+    const z = -axial.x + axial.y;
+    return new Hexagon(
+      cleanNegativeZero(axial.x),
+      cleanNegativeZero(-axial.y),
+      cleanNegativeZero(z)
+    );
   }
 
   toCubic(): CubicHex {
