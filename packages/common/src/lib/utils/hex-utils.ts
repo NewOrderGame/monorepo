@@ -2,6 +2,7 @@ import { Hexagon } from '../hexagon';
 import { abs, max, round } from 'mathjs';
 import { AxialHex, CubicHex } from '../types';
 import { Utils } from '../..';
+import cleanNegativeZero from './clean-negative-zero';
 
 export default class HexUtils {
   static cubicToAxial(cubic: CubicHex): AxialHex {
@@ -9,9 +10,9 @@ export default class HexUtils {
   }
 
   static axialToCubic(axial: AxialHex): CubicHex {
-    const x = axial.x;
-    const z = axial.y;
-    const y = -x - z;
+    const x = cleanNegativeZero(axial.x);
+    const z = cleanNegativeZero(axial.y);
+    const y = cleanNegativeZero(-x - z);
     return { x: x, y: y, z: z };
   }
 

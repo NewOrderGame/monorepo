@@ -47,9 +47,9 @@ describe('Hex utils', () => {
       const axial: AxialHex = { x: 0, y: 0 };
       const result = HexUtils.axialToCubic(axial);
       const cleanedResult = {
-        x: HexUtils.cleanNegativeZero(result.x),
-        y: HexUtils.cleanNegativeZero(result.y),
-        z: HexUtils.cleanNegativeZero(result.z)
+        x: result.x,
+        y: result.y,
+        z: result.z
       };
       const expected: CubicHex = { x: 0, y: 0, z: 0 };
       expect(cleanedResult).toEqual(expected);
@@ -407,56 +407,6 @@ describe('Hex utils', () => {
       expect(cubicResult.x).toBeCloseTo(5);
       expect(cubicResult.y).toBeCloseTo(1);
       expect(cubicResult.z).toBeCloseTo(-6);
-    });
-  });
-
-  describe('cleanNegativeZero', () => {
-    it('should convert negative zero to positive zero', () => {
-      const input = -0;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(Object.is(result, 0)).toBe(true);
-    });
-
-    it('should not change positive zero', () => {
-      const input = 0;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(Object.is(result, 0)).toBe(true);
-    });
-
-    it('should not change positive non-zero numbers', () => {
-      const input = 1;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(result).toBe(1);
-    });
-
-    it('should not change negative non-zero numbers', () => {
-      const input = -1;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(result).toBe(-1);
-    });
-
-    it('should not change NaN', () => {
-      const input = NaN;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(Number.isNaN(result)).toBe(true);
-    });
-
-    it('should not change Infinity', () => {
-      const input = Infinity;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(result).toBe(Infinity);
-    });
-
-    it('should not change negative Infinity', () => {
-      const input = -Infinity;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(result).toBe(-Infinity);
-    });
-
-    it('should handle large numbers', () => {
-      const input = 1234567890;
-      const result = HexUtils.cleanNegativeZero(input);
-      expect(result).toBe(1234567890);
     });
   });
 });
