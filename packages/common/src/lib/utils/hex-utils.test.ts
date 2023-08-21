@@ -2,6 +2,7 @@ import { describe } from '@jest/globals';
 import { AxialHex, CubicHex } from '../types';
 import HexUtils from './hex-utils';
 import { Hexagon } from '../hexagon';
+import { HexDirectionAngle, HexDirectionPov } from '../enums';
 
 describe('Hex utils', () => {
   describe('cubicToAxial', () => {
@@ -407,6 +408,47 @@ describe('Hex utils', () => {
       expect(cubicResult.x).toBeCloseTo(5);
       expect(cubicResult.y).toBeCloseTo(1);
       expect(cubicResult.z).toBeCloseTo(-6);
+    });
+  });
+});
+describe('Neighbors', () => {
+  describe('Cubic Operations', () => {
+    it('should provide correct cubic direction for a given index', () => {
+      const result = HexUtils.cubicDirection(HexDirectionAngle.A120);
+      expect(result).toEqual({ x: 0, y: -1, z: +1 });
+    });
+
+    it('should add two cubic hexes correctly', () => {
+      const hex1 = { x: 1, y: -1, z: 0 };
+      const hex2 = { x: -1, y: 1, z: 0 };
+      const result = HexUtils.cubicAdd(hex1, hex2);
+      expect(result.toCubic()).toEqual({ x: 0, y: 0, z: 0 });
+    });
+
+    it('should provide correct cubic neighbor for a hex and direction', () => {
+      const cube = { x: 1, y: -1, z: 0 };
+      const result = HexUtils.cubicNeighbor(cube, 2);
+      expect(result.toCubic()).toEqual({ x: 1, y: -2, z: 1 });
+    });
+  });
+
+  describe('Axial Operations', () => {
+    it('should provide correct axial direction for a given index', () => {
+      const result = HexUtils.axialDirection(HexDirectionPov.BACK_RIGHT);
+      expect(result).toEqual({ x: 0, y: 1 });
+    });
+
+    it('should add two axial hexes correctly', () => {
+      const hex1 = { x: 1, y: -1 };
+      const hex2 = { x: -1, y: 1 };
+      const result = HexUtils.axialAdd(hex1, hex2);
+      expect(result).toEqual({ x: 0, y: 0 });
+    });
+
+    it('should provide correct axial neighbor for a hex and direction', () => {
+      const hex = { x: 1, y: -1 };
+      const result = HexUtils.axialNeighbor(hex, 2);
+      expect(result).toEqual({ x: 1, y: 0 });
     });
   });
 });
