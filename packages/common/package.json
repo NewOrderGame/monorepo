@@ -16,6 +16,7 @@
     "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
     "format": "prettier --write src/**/*.ts",
     "test": "yarn build && jest",
+    "test:debug": "yarn build && node --inspect-brk ../../node_modules/.bin/jest",
     "type-check": "tsc --noEmit",
     "verify": "yarn format && yarn type-check && yarn lint && yarn test"
   },
