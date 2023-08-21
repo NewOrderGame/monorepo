@@ -1,8 +1,9 @@
 import { Hexagon } from '../hexagon';
 import { abs, max, round } from 'mathjs';
-import { AxialHex, CubicHex } from '../types';
+import { AxialHex, CubicHex, HexDirection } from '../types';
 import { Utils } from '../..';
 import cleanNegativeZero from './clean-negative-zero';
+import { HexDirectionVectors } from '../hex-direction-vectors';
 
 export default class HexUtils {
   static cubicToAxial(cubic: CubicHex): AxialHex {
@@ -84,10 +85,29 @@ export default class HexUtils {
     return { x, y, z };
   }
 
-  static cleanNegativeZero = (zero: number): number => {
-    if (Object.is(zero, -0)) return 0;
-    return zero;
-  };
+  static cubicDirection(direction: HexDirection): CubicHex {
+    return HexDirectionVectors.get(direction).toCubic();
+  }
+
+  static cubicAdd(hex: CubicHex, vec: CubicHex): Hexagon {
+    return new Hexagon(hex.x + vec.x, hex.y + vec.y, hex.z + vec.z);
+  }
+
+  static cubicNeighbor(cube: CubicHex, direction: number): Hexagon {
+    return this.cubicAdd(cube, this.cubicDirection(direction));
+  }
+
+  static axialDirection(direction: HexDirection): AxialHex {
+    return HexDirectionVectors.get(direction).toAxial();
+  }
+
+  static axialAdd(hex: AxialHex, vec: AxialHex): AxialHex {
+    return new Hexagon(hex.x + vec.x, hex.y + vec.y).toAxial();
+  }
+
+  static axialNeighbor(hex: AxialHex, direction: number): AxialHex {
+    return this.axialAdd(hex, this.axialDirection(direction));
+  }
 
   // TODO: Complex methods. This methods require decomposition:
   /* begin */

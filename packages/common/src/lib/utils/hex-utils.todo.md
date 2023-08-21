@@ -3,37 +3,37 @@
 ## Cubic
 
 ```
-var cube_direction_vectors = [
-    Cube(+1, 0, -1), Cube(+1, -1, 0), Cube(0, -1, +1), 
-    Cube(-1, 0, +1), Cube(-1, +1, 0), Cube(0, +1, -1), 
+var cubicDirectionVectors = [
+    new Hexagon(+1, 0, -1), new Hexagon(+1, -1, 0), new Hexagon(0, -1, +1), 
+    new Hexagon(-1, 0, +1), new Hexagon(-1, +1, 0), new Hexagon(0, +1, -1), 
 ]
 
-function cube_direction(direction):
-    return cube_direction_vectors[direction]
+function cubicDirection(direction):
+    return cubicDirectionVectors[direction]
 
-function cube_add(hex, vec):
-    return Cube(hex.q + vec.q, hex.r + vec.r, hex.s + vec.s)
+function cubicAdd(hex: CubicHex, vec):
+    return new Hexagon(hex.q + vec.q, hex.r + vec.r, hex.s + vec.s)
 
-function cube_neighbor(cube, direction):
-    return cube_add(cube, cube_direction(direction))
+function cubicNeighbor(cube, direction):
+    return cubicAdd(cube, cube_direction(direction))
 ```
 
 ## Axial
 
 ```
-var axial_direction_vectors = [
+var axialDirectionVectors = [
     Hex(+1, 0), Hex(+1, -1), Hex(0, -1), 
     Hex(-1, 0), Hex(-1, +1), Hex(0, +1), 
 ]
 
-function axial_direction(direction):
-    return axial_direction_vectors[direction]
+function axialDirection(direction):
+    return axialDirectionVectors[direction]
 
-function axial_add(hex, vec):
+function axialAdd(hex: AxialHex, vec):
     return Hex(hex.q + vec.q, hex.r + vec.r)
 
-function axial_neighbor(hex, direction):
-    return axial_add(hex, axial_direction(direction))
+function axialNeighbor(hex: AxialHex, direction):
+    return axialAdd(hex, axial_direction(direction))
 ```
 
 ## Diagonal
