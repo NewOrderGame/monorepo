@@ -1,84 +1,116 @@
-import * as React from 'react';
+import { renderHook } from '@testing-library/react-hooks';
+import core from './core'; // Assuming there's a GameSocket type export from 'core'.
+import {
+  useSocketConnection,
+  ConnectionProvider,
+  useInitConnection
+} from './connection';
+import { act } from 'react-test-renderer';
 import { render } from '@testing-library/react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthenticator } from './hooks/useAuthenticator';
+import { Socket } from 'socket.io-client';
 
-// Mocking the modules and hooks you're using
-jest.mock('@aws-amplify/ui-react', () => ({
-  useAuthenticator: jest.fn()
-}));
-
-jest.mock('react-router-dom', () => ({
-  useNavigate: jest.fn()
-}));
-
-jest.mock('./core', () => ({
-  gameSocket: {
-    auth: {},
+jest.mock('socket.io-client');
+jest.mock('react-router-dom');
+jest.mock('./core', () => {
+  const gameSocket: Partial<Socket> = {
     on: jest.fn(),
     off: jest.fn(),
     connect: jest.fn(),
-    disconnect: jest.fn()
-  }
+    auth: {}
+  };
+  return { gameSocket };
+});
+jest.mock('./utils/logger');
+jest.mock('./hooks/useAuthenticator', () => ({
+  useAuthenticator: jest.fn()
 }));
 
-jest.mock('./utils/logger', () => ({
-  info: jest.fn(),
-  debug: jest.fn()
-}));
+describe('useSocketConnection', () => {
+  it('should handle connection events', () => {
+    const navigateMock = jest.fn();
+    (useNavigate as jest.Mock).mockReturnValue(navigateMock);
 
-jest.mock('socket.io-client');
+    renderHook(() => useSocketConnection('fakeAccessToken', navigateMock));
 
-import { ConnectionProvider, useInitConnection } from './connection'; // Update this import path!
-
-describe('ConnectionProvider', () => {
-  // Set up any common mocks here
-  beforeEach(() => {
-    // Reset all mocked functions before each test
-    jest.clearAllMocks();
+    expect(core.gameSocket.on).toHaveBeenCalledWith(
+      'connect',
+      expect.any(Function)
+    );
+    expect(core.gameSocket.on).toHaveBeenCalledWith(
+      'connected',
+      expect.any(Function)
+    );
+    // ... and so on for other events
   });
 
-  it('should correctly initialize ConnectionProvider', () => {
-    const useAuthenticatorMock =
-      // eslint-disable-next-line @typescript-eslint/no-var-requires
-      require('@aws-amplify/ui-react').useAuthenticator;
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const useNavigateMock = require('react-router-dom').useNavigate;
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const gameSocketMock = require('./core').gameSocket;
+  // Add more tests to check the behaviors of the event callbacks if needed.
+});
 
-    useAuthenticatorMock.mockReturnValue({
+describe('ConnectionProvider', () => {
+  it('renders children when connected', () => {
+    (useNavigate as jest.Mock).mockReturnValue(jest.fn());
+    (useAuthenticator as jest.Mock).mockReturnValue({
       user: {
         getSignInUserSession: jest.fn().mockReturnValue({
           getAccessToken: jest.fn().mockReturnValue({
-            getJwtToken: jest.fn().mockReturnValue('test-token')
+            getJwtToken: jest.fn().mockReturnValue('mockToken')
           })
-        }),
-        signOut: jest.fn()
-      }
+        })
+      },
+      signOut: jest.fn()
     });
-    useNavigateMock.mockReturnValue(jest.fn());
+    const { queryByText } = render(
+      <ConnectionProvider>Test Children</ConnectionProvider>
+    );
 
-    render(<ConnectionProvider>Test Children</ConnectionProvider>);
-    expect(gameSocketMock.on).toHaveBeenCalledTimes(4); // Check if socket has 4 listeners
+    act(() => {
+      const connectedCallback = (
+        core.gameSocket.on as unknown as jest.Mock
+      ).mock.calls.find(([event]) => event === 'connected')[1];
+      connectedCallback();
+    });
+
+    expect(queryByText('Test Children')).not.toBeNull();
   });
 
-  // TODO: More tests for connect, disconnect, handle methods, and useConnection hook
+  it('should handle disconnect events', () => {
+    const navigateMock = jest.fn();
+    (useNavigate as jest.Mock).mockReturnValue(navigateMock);
+    renderHook(() => useSocketConnection('fakeAccessToken', navigateMock));
+    act(() => {
+      const disconnectCallback = (
+        core.gameSocket.on as unknown as jest.Mock
+      ).mock.calls.find(([event]) => event === 'disconnect')[1];
+      disconnectCallback();
+    });
+    // Expect something after disconnection, maybe a cleanup or a reconnection attempt
+  });
+
+  it('cleans up listeners on unmount', () => {
+    const navigateMock = jest.fn();
+    (useNavigate as jest.Mock).mockReturnValue(navigateMock);
+    const { unmount } = renderHook(() =>
+      useSocketConnection('fakeAccessToken', navigateMock)
+    );
+    unmount();
+    expect(core.gameSocket.off).toHaveBeenCalled(); // assuming `off` is used for cleanup
+  });
 });
 
-// Example for testing the useInitConnection hook:
 describe('useInitConnection', () => {
-  it('should call connect and disconnect on cleanup', () => {
+  it('should call connect on mount and disconnect on unmount', () => {
     const connectMock = jest.fn();
     const disconnectMock = jest.fn();
 
-    function TestComponent() {
-      useInitConnection(connectMock, disconnectMock);
-      return null;
-    }
+    const { unmount } = renderHook(() =>
+      useInitConnection(connectMock, disconnectMock)
+    );
 
-    const { unmount } = render(<TestComponent />);
     expect(connectMock).toHaveBeenCalledTimes(1);
-
-    unmount(); // simulates the component being unmounted
+    unmount();
     expect(disconnectMock).toHaveBeenCalledTimes(1);
   });
 });

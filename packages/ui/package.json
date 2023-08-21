@@ -47,7 +47,7 @@
     "cy:run:all": "concurrently npm:cy:run:user1 npm:cy:run:user2",
     "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
     "format": "prettier --write src/**/*.{ts,tsx}",
-    "test": "shx cp environment/.env.development .env && react-app-rewired test --watchAll=false ",
+    "test": "shx cp environment/.env.development .env && react-app-rewired test --watchAll=false --detectOpenHandles",
     "type-check": "tsc --noEmit",
     "verify": "yarn format && yarn type-check && yarn lint && yarn test"
   },
