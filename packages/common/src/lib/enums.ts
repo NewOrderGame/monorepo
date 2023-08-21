@@ -42,3 +42,48 @@ export enum NogEvent {
   ENTER_BUILDING = 'enter-building',
   ENTER_BUILDING_COMMIT = 'enter-building-commit'
 }
+
+export enum HexDirectionNumeric {
+  'N0',
+  'N1',
+  'N2',
+  'N3',
+  'N4',
+  'N5'
+}
+
+export enum HexDirectionAngle {
+  'A0',
+  'A60',
+  'A120',
+  'A180',
+  'A240',
+  'A300'
+}
+
+export enum HexDirectionClock {
+  'C12',
+  'C2',
+  'C4',
+  'C6',
+  'C8',
+  'C10'
+}
+
+export enum HexDirectionDescriptive {
+  'FRONT',
+  'FRONTRIGHT',
+  'BACKRIGHT',
+  'BACK',
+  'BACKLEFT',
+  'FRONTLEFT'
+}
+
+export enum HexDirectionCardinal {
+  'N',
+  'NE',
+  'SE',
+  'S',
+  'SW',
+  'NW'
+}
