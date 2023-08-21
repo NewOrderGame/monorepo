@@ -6,6 +6,7 @@
   "scripts": {
     "start": "yarn dev",
     "dev": "shx cp environment/.env.development .env && nodemon",
+    "debug": "shx cp environment/.env.development .env && nodemon --config ./nodemon.debug.json",
     "start:stats-reader": "ts-node ./src/stats/reader",
     "deploy": "yarn citadel:deploy",
     "citadel:deploy": "yarn docker:build && yarn docker:tag && yarn docker:login && yarn docker:push && yarn citadel:restart",

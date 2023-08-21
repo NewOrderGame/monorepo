@@ -6,6 +6,7 @@
   "scripts": {
     "start": "yarn dev",
     "dev": "shx cp environment/.env.development .env && nodemon",
+    "debug": "shx cp environment/.env.development .env && nodemon --config ./nodemon.debug.json",
     "deploy": "yarn citadel:deploy",
     "docker:build": "docker build -t npc-service .",
     "docker:login": "docker login",
