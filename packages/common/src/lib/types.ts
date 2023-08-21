@@ -1,4 +1,11 @@
-import { NogPage } from './enums';
+import {
+  HexDirectionAngle,
+  HexDirectionCardinal,
+  HexDirectionClock,
+  HexDirectionDescriptive,
+  HexDirectionNumeric,
+  NogPage
+} from './enums';
 
 export type Coordinates = { lat: number; lng: number };
 
@@ -91,3 +98,10 @@ export type CubicHex = {
   y: number;
   z: number;
 };
+
+export type HexDirection =
+  | HexDirectionNumeric
+  | HexDirectionAngle
+  | HexDirectionClock
+  | HexDirectionDescriptive
+  | HexDirectionCardinal;
