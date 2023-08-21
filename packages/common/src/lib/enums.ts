@@ -71,12 +71,21 @@ export enum HexDirectionClock {
 }
 
 export enum HexDirectionDescriptive {
+  'TOP',
+  'TOP_RIGHT',
+  'BOTTOM_RIGHT',
+  'BOTTOM',
+  'BOTTOM_LEFT',
+  'TOP_LEFT'
+}
+
+export enum HexDirectionPov {
   'FRONT',
-  'FRONTRIGHT',
-  'BACKRIGHT',
+  'FRONT_RIGHT',
+  'BACK_RIGHT',
   'BACK',
-  'BACKLEFT',
-  'FRONTLEFT'
+  'BACK_LEFT',
+  'FRONT_LEFT'
 }
 
 export enum HexDirectionCardinal {

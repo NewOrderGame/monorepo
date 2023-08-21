@@ -4,6 +4,7 @@ import {
   HexDirectionClock,
   HexDirectionDescriptive,
   HexDirectionNumeric,
+  HexDirectionPov,
   NogPage
 } from './enums';
 
@@ -104,4 +105,5 @@ export type HexDirection =
   | HexDirectionAngle
   | HexDirectionClock
   | HexDirectionDescriptive
+  | HexDirectionPov
   | HexDirectionCardinal;
