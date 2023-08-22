@@ -1,8 +1,8 @@
 import { Hexagon } from './hexagon';
 import { CellProps } from './cell-props';
 import { Hexagonal } from './hexagonal';
-import { CellActionPermission } from './cell-action-permission';
-import { CellElement } from './cell-element';
+import { CellActionPermission } from './enums';
+import { CellElement } from './enums';
 
 export class Cell extends Hexagon implements Hexagonal {
   actionPermission: CellActionPermission;
