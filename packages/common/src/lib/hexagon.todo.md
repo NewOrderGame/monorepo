@@ -1,33 +1,3 @@
-# Hex range
-
-## Cubic
-
-```
-var results = []
-for each -N ≤ q ≤ +N:
-    for each max(-N, -q-N) ≤ r ≤ min(+N, -q+N):
-        var s = -q-r
-        results.append(cube_add(center, Cube(q, r, s)))
-```
-
-## Axial
-
-```
-var results = []
-for each -N ≤ q ≤ +N:
-    for each max(-N, -q-N) ≤ r ≤ min(+N, -q+N):
-        results.append(axial_add(center, Hex(q, r)))
-```
-
-## Intersecting ranges
-
-```
-var results = []
-for each qmin ≤ q ≤ qmax:
-    for each max(rmin, -q-smax) ≤ r ≤ min(rmax, -q-smin):
-        results.append(Hex(q, r))
-```
-
 # Rings
 
 ## Single ring
@@ -59,6 +29,8 @@ function cube_spiral(center, radius):
 ```
 
 # Map / Cell
+
+## Obstacles
 
 ```
 function hex_reachable(start, movement):

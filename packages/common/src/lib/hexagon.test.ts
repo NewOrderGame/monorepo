@@ -8,7 +8,7 @@ import {
   HexDirectionPov
 } from './enums';
 
-describe.only('Hexagon', () => {
+describe('Hexagon', () => {
   describe('Constructor', () => {
     it('should create a hexagon with valid cubic coordinates', () => {
       const hex = new Hexagon(1, -1, 0);
@@ -339,7 +339,7 @@ describe.only('Hexagon', () => {
             Hexagon.cubicNeighbor(hex, dir)
           );
           const hasNeighborInLine = neighbors.some((neighbor) =>
-            line.some((lineHex) => Hexagon.hexEqual(neighbor, lineHex))
+            line.some((lineHex) => Hexagon.cubicHexEqual(neighbor, lineHex))
           );
           expect(hasNeighborInLine).toBeTruthy();
         }
@@ -356,7 +356,7 @@ describe.only('Hexagon', () => {
             Hexagon.cubicNeighbor(hex, dir)
           );
           const hasNeighborInLine = neighbors.some((neighbor) =>
-            line.some((lineHex) => Hexagon.hexEqual(neighbor, lineHex))
+            line.some((lineHex) => Hexagon.cubicHexEqual(neighbor, lineHex))
           );
           expect(hasNeighborInLine).toBeTruthy();
         }
@@ -672,6 +672,227 @@ describe.only('Hexagon', () => {
             const result = Hexagon.axialNeighbor(hex, HexDirectionClock.C8);
             expect(result).toEqual({ x: 35, y: 32 });
           });
+        });
+      });
+    });
+
+    describe('range', () => {
+      describe('cubic', () => {
+        it('should return a single hex for N=0', () => {
+          const center: CubicHex = { x: 0, y: 0, z: 0 };
+          const result = Hexagon.cubicRange(center, 0);
+          expect(result).toEqual([center]);
+        });
+
+        it('should return a single hex for N=0', () => {
+          const center: CubicHex = { x: 0, y: 0, z: 0 };
+          const result = Hexagon.cubicRange(center, 0);
+          expect(result).toEqual([center]);
+        });
+
+        it('should return the correct number of hexes for a given range', () => {
+          const center: CubicHex = { x: 0, y: 0, z: 0 };
+          const N = 2;
+          const result = Hexagon.cubicRange(center, N);
+          // Formula for hexes in a range: (3 * N * (N + 1)) + 1
+          expect(result.length).toBe(3 * N * (N + 1) + 1);
+        });
+
+        it('should contain all expected hexagons for N=5', () => {
+          const center: CubicHex = { x: 0, y: 0, z: 0 };
+          const N = 5;
+          const result = Hexagon.cubicRange(center, N);
+
+          for (let q = -N; q <= N; q++) {
+            for (let r = Math.max(-N, -q - N); r <= Math.min(N, -q + N); r++) {
+              const s = -q - r;
+              const hex = { x: center.x + q, y: center.y + r, z: center.z + s };
+              expect(result).toContainEqual(hex);
+            }
+          }
+        });
+
+        it('should contain all expected intersecting hexagons', () => {
+          const center1: CubicHex = { x: 0, y: 0, z: 0 };
+          const center2: CubicHex = { x: 1, y: 1, z: -2 };
+          const N = 5;
+          const range1 = Hexagon.cubicRange(center1, N);
+          const range2 = Hexagon.cubicRange(center2, N);
+          const intersection = Hexagon.cubicRangeIntersection(range1, range2);
+
+          range1.forEach((hex1) => {
+            if (range2.some((hex2) => Hexagon.cubicHexEqual(hex1, hex2))) {
+              expect(intersection).toContainEqual(hex1);
+            }
+          });
+        });
+
+        it('should return empty array for non-overlapping ranges', () => {
+          const center1: CubicHex = { x: 0, y: 0, z: 0 };
+          const center2: CubicHex = { x: 10, y: 10, z: -20 };
+          const range1 = Hexagon.cubicRange(center1, 2);
+          const range2 = Hexagon.cubicRange(center2, 2);
+          const intersection = Hexagon.cubicRangeIntersection(range1, range2);
+
+          expect(intersection).toEqual([]);
+        });
+
+        it('should return empty array for non-overlapping ranges', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 10, y: 10 }; // Adjust coordinates to ensure non-overlapping
+          const range1 = Hexagon.axialRange(center1, 2);
+          const range2 = Hexagon.axialRange(center2, 2);
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          expect(intersection).toEqual([]);
+        });
+
+        it('should handle intersections for large N values efficiently', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 5, y: 5 }; // Some overlapping
+          const range1 = Hexagon.axialRange(center1, 100); // Large N
+          const range2 = Hexagon.axialRange(center2, 100); // Large N
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          expect(intersection.length).toBeGreaterThan(0); // Just a basic check; fine-tune as needed
+        });
+
+        it('x + y + z of all hexes in the result should be 0', () => {
+          const center: CubicHex = { x: 0, y: 0, z: 0 };
+          const N = 2;
+          const range = Hexagon.cubicRange(center, N);
+
+          range.forEach((hex) => {
+            expect(hex.x + hex.y + hex.z).toBe(0);
+          });
+        });
+      });
+
+      describe('axial', () => {
+        it('should return a single hex for N=0', () => {
+          const center: AxialHex = { x: 0, y: 0 };
+          const result = Hexagon.axialRange(center, 0);
+          expect(result).toEqual([center]);
+        });
+
+        it('should return the expected intersection hexes', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 1, y: 1 };
+          const range1 = Hexagon.axialRange(center1, 3);
+          const range2 = Hexagon.axialRange(center2, 3);
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          intersection.forEach((hex) => {
+            expect(range1).toContainEqual(hex);
+            expect(range2).toContainEqual(hex);
+          });
+        });
+
+        it('should return the correct number of hexes for a given range', () => {
+          const center: AxialHex = { x: 0, y: 0 };
+          const N = 2;
+          const result = Hexagon.axialRange(center, N);
+          // Formula for hexes in a range: (3 * N * (N + 1)) + 1
+          expect(result.length).toBe(3 * N * (N + 1) + 1);
+        });
+
+        it('should contain all expected hexagons for N=5', () => {
+          const center: AxialHex = { x: 0, y: 0 };
+          const N = 5;
+          const result = Hexagon.axialRange(center, N);
+
+          for (let q = -N; q <= N; q++) {
+            for (let r = Math.max(-N, -q - N); r <= Math.min(N, -q + N); r++) {
+              const hex = { x: center.x + q, y: center.y + r };
+              expect(result).toContainEqual(hex);
+            }
+          }
+        });
+
+        it('should contain all expected intersecting hexagons', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 1, y: 1 };
+          const N = 5;
+          const range1 = Hexagon.axialRange(center1, N);
+          const range2 = Hexagon.axialRange(center2, N);
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          range1.forEach((hex1) => {
+            if (range2.some((hex2) => Hexagon.axialEqual(hex1, hex2))) {
+              expect(intersection).toContainEqual(hex1);
+            }
+          });
+        });
+
+        it('should return empty array for non-overlapping ranges', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 10, y: 10 }; // Adjust coordinates to ensure non-overlapping
+          const range1 = Hexagon.axialRange(center1, 2);
+          const range2 = Hexagon.axialRange(center2, 2);
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          expect(intersection).toEqual([]);
+        });
+
+        it('should handle intersections for large N values efficiently', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 5, y: 5 }; // Some overlapping
+          const range1 = Hexagon.axialRange(center1, 100); // Large N
+          const range2 = Hexagon.axialRange(center2, 100); // Large N
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          expect(intersection.length).toBeGreaterThan(0); // Just a basic check; fine-tune as needed
+        });
+
+        it('should return the expected intersection hexes', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 1, y: 1 };
+          const range1 = Hexagon.axialRange(center1, 3);
+          const range2 = Hexagon.axialRange(center2, 3);
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          // For every hex in the intersection, it should exist in both range1 and range2
+          intersection.forEach((hex) => {
+            expect(range1).toContainEqual(hex);
+            expect(range2).toContainEqual(hex);
+          });
+        });
+      });
+
+      describe('intersection', () => {
+        it('should return the expected intersection hexes', () => {
+          const center1: CubicHex = { x: 0, y: 0, z: 0 };
+          const center2: CubicHex = { x: 1, y: 1, z: -2 };
+          const range1 = Hexagon.cubicRange(center1, 3);
+          const range2 = Hexagon.cubicRange(center2, 3);
+          const intersection = Hexagon.cubicRangeIntersection(range1, range2);
+
+          intersection.forEach((hex) => {
+            expect(range1).toContainEqual(hex);
+            expect(range2).toContainEqual(hex);
+          });
+        });
+
+        it('should return intersection of two ranges', () => {
+          const center1: CubicHex = { x: 0, y: 0, z: 0 };
+          const center2: CubicHex = { x: 1, y: 1, z: -2 };
+          const range1 = Hexagon.cubicRange(center1, 2);
+          const range2 = Hexagon.cubicRange(center2, 2);
+          const intersection = Hexagon.cubicRangeIntersection(range1, range2);
+
+          expect(intersection.length).toBeGreaterThan(0);
+        });
+      });
+
+      describe('intersectingAxialRanges()', () => {
+        it('should return intersection of two ranges', () => {
+          const center1: AxialHex = { x: 0, y: 0 };
+          const center2: AxialHex = { x: 1, y: 1 };
+          const range1 = Hexagon.axialRange(center1, 2);
+          const range2 = Hexagon.axialRange(center2, 2);
+          const intersection = Hexagon.axialRangeIntersection(range1, range2);
+
+          expect(intersection.length).toBeGreaterThan(0);
         });
       });
     });
