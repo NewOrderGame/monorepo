@@ -100,11 +100,11 @@ export default class HexUtils {
     return HexDirectionVectors.get(direction).toCubic();
   }
 
-  static cubicAdd(hex: CubicHex, vec: CubicHex): Hexagon {
-    return new Hexagon(hex.x + vec.x, hex.y + vec.y, hex.z + vec.z);
+  static cubicAdd(hex: CubicHex, vec: CubicHex): CubicHex {
+    return new Hexagon(hex.x + vec.x, hex.y + vec.y, hex.z + vec.z).toCubic();
   }
 
-  static cubicNeighbor(cube: CubicHex, direction: HexDirection): Hexagon {
+  static cubicNeighbor(cube: CubicHex, direction: HexDirection): CubicHex {
     return this.cubicAdd(cube, this.cubicDirection(direction));
   }
 
