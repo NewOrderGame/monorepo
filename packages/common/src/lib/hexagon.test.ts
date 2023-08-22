@@ -884,7 +884,7 @@ describe('Hexagon', () => {
         });
       });
 
-      describe('intersectingAxialRanges()', () => {
+      describe('intersecting axial ranges', () => {
         it('should return intersection of two ranges', () => {
           const center1: AxialHex = { x: 0, y: 0 };
           const center2: AxialHex = { x: 1, y: 1 };
@@ -894,6 +894,118 @@ describe('Hexagon', () => {
 
           expect(intersection.length).toBeGreaterThan(0);
         });
+      });
+    });
+
+    describe('cubicRing', () => {
+      it('should return the center hex when radius is 0', () => {
+        const center: CubicHex = { x: 0, y: 0, z: 0 };
+        const result = Hexagon.cubicRing(center, 0);
+        expect(result).toEqual([center]);
+      });
+
+      it('should return hexes in a ring for radius greater than 0', () => {
+        const center: CubicHex = { x: 0, y: 0, z: 0 };
+        const result = Hexagon.cubicRing(center, 1);
+        expect(result.length).toBe(6);
+      });
+
+      it('should handle negative radius', () => {
+        const center: CubicHex = { x: 0, y: 0, z: 0 };
+        expect(() => Hexagon.cubicRing(center, -1)).toThrow();
+      });
+
+      it('should return hexes for a larger radius', () => {
+        const center: CubicHex = { x: 0, y: 0, z: 0 };
+        const result = Hexagon.cubicRing(center, 2);
+        expect(result.length).toBe(12); // Because it forms a ring around the center
+      });
+    });
+
+    describe('cubicSpiral', () => {
+      it('should return the center hex and its neighbors for N=1', () => {
+        const center: CubicHex = { x: 0, y: 0, z: 0 };
+        const result = Hexagon.cubicSpiral(center, 1);
+        expect(result.length).toBe(7);
+      });
+
+      it('should return hexes for a larger N', () => {
+        const center: CubicHex = { x: 0, y: 0, z: 0 };
+        const result = Hexagon.cubicSpiral(center, 2);
+        expect(result.length).toBe(19); // 1 center + 6 for first radius + 12 for second radius
+      });
+
+      it('should handle negative N', () => {
+        const center: CubicHex = { x: 0, y: 0, z: 0 };
+        expect(() => Hexagon.cubicSpiral(center, -1)).toThrow();
+      });
+    });
+
+    describe('axialRing', () => {
+      it('should return hexes in an axial ring', () => {
+        const center: AxialHex = { x: 0, y: 0 };
+        const result = Hexagon.axialRing(center, 1);
+        expect(result.length).toBe(6);
+      });
+
+      it('should return hexes for a larger axial radius', () => {
+        const center: AxialHex = { x: 0, y: 0 };
+        const result = Hexagon.axialRing(center, 2);
+        expect(result.length).toBe(12);
+      });
+
+      it('should scale a cubic hex negatively', () => {
+        const hex: CubicHex = { x: 2, y: -3, z: 1 };
+        const result = Hexagon.cubicScale(hex, -1);
+        expect(result).toEqual({ x: -2, y: 3, z: -1 });
+      });
+
+      it('should scale a cubic hex to zero', () => {
+        const hex: CubicHex = { x: 2, y: -3, z: 1 };
+        const result = Hexagon.cubicScale(hex, 0);
+        expect(result).toEqual({ x: 0, y: 0, z: 0 });
+      });
+    });
+
+    describe('axialSpiral', () => {
+      it('should return hexes in an axial spiral', () => {
+        const center: AxialHex = { x: 0, y: 0 };
+        const result = Hexagon.axialSpiral(center, 1);
+        expect(result.length).toBe(7); // 1 center + 6 neighbors
+      });
+
+      it('should return hexes for a larger axial N', () => {
+        const center: AxialHex = { x: 0, y: 0 };
+        const result = Hexagon.axialSpiral(center, 2);
+        expect(result.length).toBe(19);
+      });
+
+      it('should scale an axial hex negatively', () => {
+        const hex: AxialHex = { x: 2, y: -3 };
+        const result = Hexagon.axialScale(hex, -1);
+        expect(result).toEqual({ x: -2, y: 3 });
+      });
+
+      it('should scale an axial hex to zero', () => {
+        const hex: AxialHex = { x: 2, y: -3 };
+        const result = Hexagon.axialScale(hex, 0);
+        expect(result).toEqual({ x: 0, y: 0 });
+      });
+    });
+
+    describe('cubicScale', () => {
+      it('should scale a cubic hex', () => {
+        const hex: CubicHex = { x: 2, y: -3, z: 1 };
+        const result = Hexagon.cubicScale(hex, 2);
+        expect(result).toEqual({ x: 4, y: -6, z: 2 });
+      });
+    });
+
+    describe('axialScale', () => {
+      it('should scale an axial hex', () => {
+        const hex: AxialHex = { x: 2, y: -3 };
+        const result = Hexagon.axialScale(hex, 2);
+        expect(result).toEqual({ x: 4, y: -6 });
       });
     });
   });
