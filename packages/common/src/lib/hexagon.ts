@@ -170,10 +170,12 @@ export class Hexagon implements Hexagonal {
     return line;
   }
 
-  static axialDrawLine(nodeA: AxialHex, nodeB: AxialHex): CubicHex[] {
-    const cubicA = new Hexagon(nodeA.x, nodeA.y).toCubic();
-    const cubicB = new Hexagon(nodeB.x, nodeB.y).toCubic();
-    return this.cubicDrawLine(cubicA, cubicB);
+  static axialDrawLine(hexA: AxialHex, hexB: AxialHex): AxialHex[] {
+    const cubicA = this.axialToCubic(hexA);
+    const cubicB = this.axialToCubic(hexB);
+    return this.cubicDrawLine(cubicA, cubicB).map((hex) =>
+      this.cubicToAxial(hex)
+    );
   }
 
   static cubicRound(hex: CubicHex): CubicHex {
@@ -320,12 +322,10 @@ export class Hexagon implements Hexagonal {
       const line = this.axialDrawLine(current, next);
 
       for (const hex of line) {
-        const axialHex = this.cubicToAxial(hex);
-
-        if (!wallMap[axialHex.x]) {
-          wallMap[axialHex.x] = [];
+        if (!wallMap[hex.x]) {
+          wallMap[hex.x] = [];
         }
-        wallMap[axialHex.x][axialHex.y] = true;
+        wallMap[hex.x][hex.y] = true;
       }
     }
     return wallMap;
