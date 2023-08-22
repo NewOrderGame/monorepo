@@ -79,8 +79,12 @@ export class Hexagon implements Hexagonal {
 
   // STATIC METHODS
 
-  static hexEqual(hex1: CubicHex, hex2: CubicHex): boolean {
-    return hex1.x === hex2.x && hex1.y === hex2.y && hex1.z === hex2.z;
+  static cubicHexEqual(hexA: CubicHex, hexB: CubicHex): boolean {
+    return hexA.x === hexB.x && hexA.y === hexB.y && hexA.z === hexB.z;
+  }
+
+  static axialEqual(hexA: AxialHex, hexB: AxialHex): boolean {
+    return hexA.x === hexB.x && hexA.y === hexB.y;
   }
 
   static cubicToAxial(cubic: CubicHex): AxialHex {
@@ -198,6 +202,45 @@ export class Hexagon implements Hexagonal {
 
   static axialNeighbor(hex: AxialHex, direction: number): AxialHex {
     return this.axialAdd(hex, this.axialDirection(direction));
+  }
+
+  static cubicRange(center: CubicHex, N: number): CubicHex[] {
+    const results: CubicHex[] = [];
+    for (let q = -N; q <= N; q++) {
+      for (let r = Math.max(-N, -q - N); r <= Math.min(N, -q + N); r++) {
+        const s = -q - r;
+        results.push(this.cubicAdd(center, { x: q, y: r, z: s }));
+      }
+    }
+    return results;
+  }
+
+  static axialRange(center: AxialHex, N: number): AxialHex[] {
+    const results: AxialHex[] = [];
+    for (let q = -N; q <= N; q++) {
+      for (let r = Math.max(-N, -q - N); r <= Math.min(N, -q + N); r++) {
+        results.push(this.axialAdd(center, { x: q, y: r }));
+      }
+    }
+    return results;
+  }
+
+  static cubicRangeIntersection(
+    rangeA: CubicHex[],
+    rangeB: CubicHex[]
+  ): CubicHex[] {
+    return rangeA.filter((hex1) =>
+      rangeB.some((hex2) => Hexagon.cubicHexEqual(hex1, hex2))
+    );
+  }
+
+  static axialRangeIntersection(
+    rangeA: AxialHex[],
+    rangeB: AxialHex[]
+  ): AxialHex[] {
+    return rangeA.filter((hexA) =>
+      rangeB.some((hexB) => Hexagon.axialEqual(hexA, hexB))
+    );
   }
 
   // TODO: Complex methods. This methods require decomposition:
