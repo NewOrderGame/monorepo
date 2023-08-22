@@ -81,10 +81,10 @@ function cube_spiral(center, radius):
 
 # Field of view
 
-https://www.redblobgames.com/grids/hexagons/#field-of-view
-https://github.com/jbochi/duelo/blob/master/fov.js
-https://s3.amazonaws.com/jbochi/layout.html
-https://www.redblobgames.com/articles/visibility/
+- https://www.redblobgames.com/grids/hexagons/#field-of-view
+- https://github.com/jbochi/duelo/blob/master/fov.js
+- https://s3.amazonaws.com/jbochi/layout.html
+- https://www.redblobgames.com/articles/visibility/
 
 # Hex to pixel
 
@@ -137,5 +137,5 @@ function axial_round(hex):
 
 # Pathfinding
 
-https://www.redblobgames.com/grids/hexagons/#pathfinding
-https://www.redblobgames.com/pathfinding/a-star/introduction.html
+- https://www.redblobgames.com/grids/hexagons/#pathfinding
+- https://www.redblobgames.com/pathfinding/a-star/introduction.html
