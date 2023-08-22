@@ -1,10 +1,10 @@
 import {
+  AxialHex,
   Cell,
   CellActionPermission,
   CellElement,
-  AxialHex,
+  Hexagon,
   Structural,
-  Utils,
   logger
 } from '..';
 import { max } from 'mathjs';
@@ -23,13 +23,12 @@ export class Building implements Structural {
     this.maxY = max(...plainBuildingNodes.map((node) => node.y));
 
     const wallHexagonsMap: boolean[][] =
-      Utils.Hex.collectWallHexagonsMap(plainBuildingNodes);
-    const interiorHexagonsMap: boolean[][] =
-      Utils.Hex.collectInteriorHexagonsMap(
-        { x: this.maxX, y: this.maxY },
-        plainBuildingNodes,
-        wallHexagonsMap
-      );
+      Hexagon.collectWallHexagonsMap(plainBuildingNodes);
+    const interiorHexagonsMap: boolean[][] = Hexagon.collectInteriorHexagonsMap(
+      { x: this.maxX, y: this.maxY },
+      plainBuildingNodes,
+      wallHexagonsMap
+    );
 
     this.map = this.createMap({ wallHexagonsMap, interiorHexagonsMap });
 
@@ -59,7 +58,7 @@ export class Building implements Structural {
           element = CellElement.WALL;
           actionPermission = CellActionPermission.INTERACT;
         } else if (isInterior) {
-          element = CellElement.FLOOR;
+          element = Math.random() < 0.8 ? CellElement.FLOOR : CellElement.ROCK;
           actionPermission = CellActionPermission.STAY;
         } else {
           element = CellElement.VOID;

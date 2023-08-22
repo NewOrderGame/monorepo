@@ -19,34 +19,13 @@ for each -N ≤ q ≤ +N:
         results.append(axial_add(center, Hex(q, r)))
 ```
 
-# Intersecting ranges
+## Intersecting ranges
 
 ```
 var results = []
 for each qmin ≤ q ≤ qmax:
     for each max(rmin, -q-smax) ≤ r ≤ min(rmax, -q-smin):
         results.append(Hex(q, r))
-```
-
-# Obstacles
-
-```
-function hex_reachable(start, movement):
-    var visited = set() # set of hexes
-    add start to visited
-    var fringes = [] # array of arrays of hexes
-    fringes.append([start])
-
-    for each 1 < k ≤ movement:
-        fringes.append([])
-        for each hex in fringes[k-1]:
-            for each 0 ≤ dir < 6:
-                var neighbor = hex_neighbor(hex, dir)
-                if neighbor not in visited and not blocked:
-                    add neighbor to visited
-                    fringes[k].append(neighbor)
-
-    return visited
 ```
 
 # Rings
@@ -79,14 +58,42 @@ function cube_spiral(center, radius):
     return results
 ```
 
-# Field of view
+# Map / Cell
+
+```
+function hex_reachable(start, movement):
+    var visited = set() # set of hexes
+    add start to visited
+    var fringes = [] # array of arrays of hexes
+    fringes.append([start])
+
+    for each 1 < k ≤ movement:
+        fringes.append([])
+        for each hex in fringes[k-1]:
+            for each 0 ≤ dir < 6:
+                var neighbor = hex_neighbor(hex, dir)
+                if neighbor not in visited and not blocked:
+                    add neighbor to visited
+                    fringes[k].append(neighbor)
+
+    return visited
+```
+
+## Field of view
 
 - https://www.redblobgames.com/grids/hexagons/#field-of-view
 - https://github.com/jbochi/duelo/blob/master/fov.js
 - https://s3.amazonaws.com/jbochi/layout.html
 - https://www.redblobgames.com/articles/visibility/
 
-# Hex to pixel
+## Pathfinding
+
+- https://www.redblobgames.com/grids/hexagons/#pathfinding
+- https://www.redblobgames.com/pathfinding/a-star/introduction.html
+
+# Probably unnecessary
+
+## Hex to pixel (?)
 
 ```
 function flat_hex_to_pixel(hex):
@@ -95,7 +102,7 @@ function flat_hex_to_pixel(hex):
     return Point(x, y)
 ```
 
-# Pixel to hex
+## Pixel to hex (?)
 
 ```
 function pixel_to_flat_hex(point):
@@ -103,39 +110,3 @@ function pixel_to_flat_hex(point):
     var r = (-1./3 * point.x  +  sqrt(3)/3 * point.y) / size
     return axial_round(Hex(q, r))
 ```
-
-# Rounding to nearest nex
-
-## Cubic
-
-```
-function cube_round(frac):
-    var q = round(frac.q)
-    var r = round(frac.r)
-    var s = round(frac.s)
-
-    var q_diff = abs(q - frac.q)
-    var r_diff = abs(r - frac.r)
-    var s_diff = abs(s - frac.s)
-
-    if q_diff > r_diff and q_diff > s_diff:
-        q = -r-s
-    else if r_diff > s_diff:
-        r = -q-s
-    else:
-        s = -q-r
-
-    return Cube(q, r, s)
-```
-
-## Axial
-
-```
-function axial_round(hex):
-    return cube_to_axial(cube_round(axial_to_cube(hex)))
-```
-
-# Pathfinding
-
-- https://www.redblobgames.com/grids/hexagons/#pathfinding
-- https://www.redblobgames.com/pathfinding/a-star/introduction.html

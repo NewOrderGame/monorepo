@@ -139,6 +139,8 @@ const determineSprite = (cell: Cell) => {
     return BLACK_HEXAGON;
   } else if (cell.element === CellElement.FLOOR) {
     return WHITE_HEXAGON;
+  } else if (cell.element === CellElement.ROCK) {
+    return BLACK_HEXAGON;
   } else {
     return BLACK_TRANSPARENT_HEXAGON;
   }
