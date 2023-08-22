@@ -111,6 +111,36 @@ export class Hexagon implements Hexagonal {
     return (abs(dx) + abs(dy) + abs(-dx + dy)) / 2;
   }
 
+  static cubicAdd(hexA: CubicHex, hexB: CubicHex): CubicHex {
+    return {
+      x: hexA.x + hexB.x,
+      y: hexA.y + hexB.y,
+      z: hexA.z + hexB.z
+    };
+  }
+
+  static axialAdd(hexA: AxialHex, hexB: AxialHex): AxialHex {
+    return {
+      x: hexA.x + hexB.x,
+      y: hexA.y + hexB.y
+    };
+  }
+
+  static cubicScale(hex: CubicHex, factor: number): CubicHex {
+    return {
+      x: cleanNegativeZero(hex.x * factor),
+      y: cleanNegativeZero(hex.y * factor),
+      z: cleanNegativeZero(hex.z * factor)
+    };
+  }
+
+  static axialScale(hex: AxialHex, factor: number): AxialHex {
+    return {
+      x: cleanNegativeZero(hex.x * factor),
+      y: cleanNegativeZero(hex.y * factor)
+    };
+  }
+
   static lerp(a: number, b: number, t: number): number {
     return a + (b - a) * t;
   }
@@ -181,21 +211,6 @@ export class Hexagon implements Hexagonal {
     return this.getVector(direction).toAxial();
   }
 
-  static cubicAdd(hexA: CubicHex, hexB: CubicHex): CubicHex {
-    return {
-      x: hexA.x + hexB.x,
-      y: hexA.y + hexB.y,
-      z: hexA.z + hexB.z
-    };
-  }
-
-  static axialAdd(hexA: AxialHex, hexB: AxialHex): AxialHex {
-    return {
-      x: hexA.x + hexB.x,
-      y: hexA.y + hexB.y
-    };
-  }
-
   static cubicNeighbor(cube: CubicHex, direction: HexDirection): CubicHex {
     return this.cubicAdd(cube, this.cubicDirection(direction));
   }
@@ -241,6 +256,55 @@ export class Hexagon implements Hexagonal {
     return rangeA.filter((hexA) =>
       rangeB.some((hexB) => Hexagon.axialEqual(hexA, hexB))
     );
+  }
+
+  static cubicRing(center: CubicHex, radius: number): CubicHex[] {
+    if (radius < 0) {
+      throw new Error('Radius sould be greater than zero');
+    }
+    const results: CubicHex[] = [];
+    if (radius === 0) {
+      results.push(center);
+      return results;
+    }
+
+    let hex = Hexagon.cubicAdd(
+      center,
+      this.cubicScale(
+        Hexagon.cubicDirection(HexDirectionNumeric.N4 as HexDirection),
+        radius
+      )
+    );
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < radius; j++) {
+        results.push(hex);
+        hex = Hexagon.cubicNeighbor(hex, i as HexDirection);
+      }
+    }
+    return results;
+  }
+
+  static cubicSpiral(center: CubicHex, radius: number): CubicHex[] {
+    if (radius < 0) {
+      throw new Error('Radius sould be greater than zero');
+    }
+    let results: CubicHex[] = [center];
+    for (let k = 1; k <= radius; k++) {
+      results = results.concat(this.cubicRing(center, k));
+    }
+    return results;
+  }
+
+  static axialRing(center: AxialHex, radius: number): AxialHex[] {
+    const cubicCenter = Hexagon.axialToCubic(center);
+    const cubicRing = this.cubicRing(cubicCenter, radius);
+    return cubicRing.map(Hexagon.cubicToAxial);
+  }
+
+  static axialSpiral(center: AxialHex, N: number): AxialHex[] {
+    const cubicCenter = Hexagon.axialToCubic(center);
+    const cubicSpiral = this.cubicSpiral(cubicCenter, N);
+    return cubicSpiral.map(Hexagon.cubicToAxial);
   }
 
   // TODO: Complex methods. This methods require decomposition:
