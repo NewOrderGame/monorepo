@@ -272,7 +272,7 @@ describe('Hex utils', () => {
           HexUtils.cubicNeighbor(hex, dir)
         );
         const hasNeighborInLine = neighbors.some((neighbor) =>
-          line.some((lineHex) => HexUtils.hexEqual(neighbor.toCubic(), lineHex))
+          line.some((lineHex) => HexUtils.hexEqual(neighbor, lineHex))
         );
         expect(hasNeighborInLine).toBeTruthy();
       }
@@ -289,7 +289,7 @@ describe('Hex utils', () => {
           HexUtils.cubicNeighbor(hex, dir)
         );
         const hasNeighborInLine = neighbors.some((neighbor) =>
-          line.some((lineHex) => HexUtils.hexEqual(neighbor.toCubic(), lineHex))
+          line.some((lineHex) => HexUtils.hexEqual(neighbor, lineHex))
         );
         expect(hasNeighborInLine).toBeTruthy();
       }
@@ -485,14 +485,14 @@ describe('neighbors', () => {
       const hex1 = { x: 1, y: -1, z: 0 };
       const hex2 = { x: -1, y: 1, z: 0 };
       const result = HexUtils.cubicAdd(hex1, hex2);
-      expect(result.toCubic()).toEqual({ x: 0, y: 0, z: 0 });
+      expect(result).toEqual({ x: 0, y: 0, z: 0 });
     });
   });
   describe('cubic neignbor', () => {
     it('should provide correct cubic neighbor for a hex and direction', () => {
       const hex = { x: 1, y: -1, z: 0 };
       const result = HexUtils.cubicNeighbor(hex, HexDirectionClock.C8);
-      expect(result.toCubic()).toEqual({ x: 1, y: -2, z: 1 });
+      expect(result).toEqual({ x: 1, y: -2, z: 1 });
     });
   });
 
