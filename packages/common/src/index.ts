@@ -18,8 +18,6 @@ export * from './lib/types';
 
 // Enums
 export * from './lib/enums';
-export * from './lib/cell-action-permission';
-export * from './lib/cell-element';
 
 // Schemas
 export * from './lib/schemas';

@@ -1,5 +1,5 @@
-import { CellActionPermission } from './cell-action-permission';
-import { CellElement } from './cell-element';
+import { CellActionPermission } from './enums';
+import { CellElement } from './enums';
 
 export interface CellProps {
   actionPermission: CellActionPermission;
