@@ -156,7 +156,7 @@ export class Hexagon implements Hexagonal {
     const distance = this.cubicDistance(hexA, hexB);
 
     if (distance === 0) {
-      return [new Hexagon(0, 0, 0).toCubic()];
+      return [hexA];
     }
 
     const line: CubicHex[] = [];
