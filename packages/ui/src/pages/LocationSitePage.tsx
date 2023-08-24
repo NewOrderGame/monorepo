@@ -1,4 +1,9 @@
-import { Building, Cell, NogEvent, CellElement } from '@newordergame/common';
+import {
+  IndoorHexMap,
+  Cell,
+  NogEvent,
+  CellElement
+} from '@newordergame/common';
 import { Application, Sprite } from 'pixi.js';
 import React, {
   useCallback,
@@ -82,7 +87,7 @@ const handleInitLocationSitePage =
     pixiAppRef: MutableRefObject<Application | null>,
     containerRef: MutableRefObject<HTMLDivElement | null>
   ) =>
-  (building: Building) => {
+  (building: IndoorHexMap) => {
     createPixiApplication(pixiAppRef, building);
     renderBuildingOnPixiStage(pixiAppRef.current!, building);
     containerRef.current?.appendChild(pixiAppRef.current!.view);
@@ -90,7 +95,7 @@ const handleInitLocationSitePage =
 
 const createPixiApplication = (
   pixiAppRef: MutableRefObject<Application | null>,
-  building: Building
+  building: IndoorHexMap
 ) => {
   if (pixiAppRef.current) return;
 
@@ -106,7 +111,10 @@ const createPixiApplication = (
   });
 };
 
-const renderBuildingOnPixiStage = (app: Application, building: Building) => {
+const renderBuildingOnPixiStage = (
+  app: Application,
+  building: IndoorHexMap
+) => {
   for (let x = 0; x <= building.maxX; x++) {
     for (let y = 0; y <= building.maxY; y++) {
       const cell = building.map[x][y];
@@ -118,7 +126,7 @@ const renderBuildingOnPixiStage = (app: Application, building: Building) => {
 
 const createHexagonSprite = (
   cell: Cell,
-  building: Building,
+  building: IndoorHexMap,
   x: number,
   y: number
 ) => {

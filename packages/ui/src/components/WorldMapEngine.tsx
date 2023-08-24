@@ -12,7 +12,7 @@ import { Connection, useConnection } from '../lib/connection';
 import {
   GeoCoordinates,
   NogEvent,
-  Building,
+  IndoorHexMap,
   CharacterInSight,
   EncounterInSight
 } from '@newordergame/common';
@@ -68,7 +68,7 @@ const useAddConnectionSocketsEventListeners = (
   }, [connection.gameSocket, map]);
 };
 
-const handleEnterBuilding = (building: Building) => {
+const handleEnterBuilding = (building: IndoorHexMap) => {
   logger.info({ building }, 'Commit building entry');
 };
 
