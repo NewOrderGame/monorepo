@@ -26,7 +26,7 @@ export * from './lib/schemas';
 
 /// Interfaces
 export * from './lib/hexagonal';
-export * from './lib/hex-map';
+export * from './lib/hexagonal-map';
 export * from './lib/outdoor';
 export * from './lib/indoor';
 
