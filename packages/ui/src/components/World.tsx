@@ -5,12 +5,12 @@ import * as React from 'react';
 import styled from 'styled-components';
 import 'leaflet/dist/leaflet.css';
 import { WorldMenu } from './WorldMenu';
-import { Coordinates } from '@newordergame/common';
+import { GeoCoordinates } from '@newordergame/common';
 
 export const MapWrapper = ({
   firstCoordinates
 }: {
-  firstCoordinates: Coordinates;
+  firstCoordinates: GeoCoordinates;
 }) => {
   return (
     <>

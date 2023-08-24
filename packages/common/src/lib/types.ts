@@ -8,7 +8,7 @@ import {
   NogPage
 } from './enums';
 
-export type Coordinates = { lat: number; lng: number };
+export type GeoCoordinates = { lat: number; lng: number };
 
 export type NogCharacterId = string;
 
@@ -32,7 +32,7 @@ export type Character = {
   characterId: NogCharacterId;
   nickname: string;
   connected: boolean;
-  coordinates: Coordinates;
+  coordinates: GeoCoordinates;
   encounterId: NogEncounterId | null;
   encounterEndTime: number | null;
   encounterStartTime: number | null;
@@ -44,15 +44,15 @@ export type Character = {
 export type Encounter = {
   encounterId: NogEncounterId;
   participants: EncounterParticipant[];
-  coordinates: Coordinates;
+  coordinates: GeoCoordinates;
   encounterStartTime: number | null;
 };
 
 export type CharacterAtWorld = {
   characterId: NogCharacterId;
   nickname: string;
-  coordinates: Coordinates;
-  movesTo: Coordinates | null;
+  coordinates: GeoCoordinates;
+  movesTo: GeoCoordinates | null;
   charactersInSight: CharacterInSight[];
   characterSightFlag: boolean;
   encountersInSight: EncounterInSight[];
@@ -67,7 +67,7 @@ export type EncounterParticipant = {
 };
 
 export type EncounterInSight = {
-  coordinates: Coordinates;
+  coordinates: GeoCoordinates;
   encounterId: NogEncounterId;
   participants: EncounterParticipant[];
   distance: number;
@@ -75,7 +75,7 @@ export type EncounterInSight = {
 
 export type CharacterInSight = {
   characterId: NogCharacterId;
-  coordinates: Coordinates;
+  coordinates: GeoCoordinates;
   nickname: string;
   distance: number;
   isEnemy: boolean;

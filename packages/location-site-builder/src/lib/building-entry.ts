@@ -1,6 +1,6 @@
 import {
   Building,
-  Coordinates,
+  GeoCoordinates,
   AxialHex,
   NogEvent,
   Utils,
@@ -18,7 +18,7 @@ export const handleEnterBuilding =
     coordinates
   }: {
     characterId: string;
-    coordinates: Coordinates;
+    coordinates: GeoCoordinates;
   }) => {
     try {
       const buildingsInSight = await Utils.Overpass.getBuildingsInSight(

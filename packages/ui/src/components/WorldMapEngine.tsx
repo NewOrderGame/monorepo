@@ -10,7 +10,7 @@ import { useMap, useMapEvents } from 'react-leaflet';
 import { useEffect } from 'react';
 import { Connection, useConnection } from '../lib/connection';
 import {
-  Coordinates,
+  GeoCoordinates,
   NogEvent,
   Building,
   CharacterInSight,
@@ -114,7 +114,7 @@ const handleMoveCharacterAtWorld =
     duration,
     distance
   }: {
-    coordinates: Coordinates;
+    coordinates: GeoCoordinates;
     duration: number;
     distance: number;
   }) => {

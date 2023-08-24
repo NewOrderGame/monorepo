@@ -1,4 +1,4 @@
-import { Coordinates } from '@newordergame/common';
+import { GeoCoordinates } from '@newordergame/common';
 import { logger } from '@newordergame/common';
 import { computeDestinationPoint, getCenter } from 'geolib';
 import axios from 'axios';
@@ -20,7 +20,7 @@ const OVERPASS_API_BUILDINGS_SKELS_QUERY = `
 type OverpassElement = { type: string; id: number };
 
 export const getBuildingsInSight = (
-  coordinates: Coordinates,
+  coordinates: GeoCoordinates,
   sightRange: number
 ) => {
   const min = computeDestinationPoint(
@@ -40,9 +40,9 @@ export const getBuildingsInSight = (
 };
 
 export const getRandomHouseEntryCoordinates = async (
-  coordinates: Coordinates,
+  coordinates: GeoCoordinates,
   range: number
-): Promise<Coordinates> => {
+): Promise<GeoCoordinates> => {
   const data = await getBuildingsInSight(coordinates, range);
 
   const ways = data.elements.filter(

@@ -1,7 +1,7 @@
 import { Namespace, Socket } from 'socket.io';
 import {
   Building,
-  Coordinates,
+  GeoCoordinates,
   NogEvent,
   NogPage,
   logger
@@ -50,7 +50,7 @@ export const handleInitLocationSitePageInternal =
   };
 
 export const handleEnterBuilding =
-  (socket: Socket) => (coordinates: Coordinates) => {
+  (socket: Socket) => (coordinates: GeoCoordinates) => {
     const locationSiteBuilderSocket = getLocationSiteBuilderSocket();
     const characterId = socket.data.characterId;
 

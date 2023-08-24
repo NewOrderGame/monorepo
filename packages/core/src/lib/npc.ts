@@ -4,7 +4,7 @@ import {
   CharacterAtWorld,
   characterAtWorldSchema,
   characterIdSchema,
-  Coordinates,
+  GeoCoordinates,
   coordinatesSchema,
   NogCharacterId,
   NogEvent,
@@ -39,7 +39,7 @@ export const handleNpcServiceConnection = (npcSocket: Socket) => {
   npcSocket.emit(NogEvent.INIT_NPC, allNpc);
   allNpc.forEach((npc) => npcSocket.join(npc.characterId));
 
-  npcSocket.on(NogEvent.CREATE_NPC, (coordinates: Coordinates) => {
+  npcSocket.on(NogEvent.CREATE_NPC, (coordinates: GeoCoordinates) => {
     logger.info({ coordinates }, 'Create NPC');
 
     try {
@@ -108,7 +108,7 @@ export const handleNpcServiceConnection = (npcSocket: Socket) => {
       coordinates,
       characterId
     }: {
-      coordinates: Coordinates;
+      coordinates: GeoCoordinates;
       characterId: string;
     }) => {
       logger.info({ coordinates, characterId }, 'Move NPC at world');
