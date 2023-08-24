@@ -4,18 +4,20 @@ import {
   CellActionPermission,
   CellElement,
   Hexagon,
-  Structural,
+  Indoor,
   logger
 } from '..';
 import { max } from 'mathjs';
 
-export class Building implements Structural {
+export class IndoorHexMap implements Indoor {
   readonly maxX: number;
   readonly maxY: number;
   readonly map: Cell[][];
 
   constructor(
-    readonly id: number,
+    readonly id: string,
+    readonly buildingId: string,
+    readonly floorNumber: number,
     plainBuildingNodes: AxialHex[]
   ) {
     this.id = id;

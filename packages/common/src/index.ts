@@ -26,9 +26,11 @@ export * from './lib/schemas';
 
 /// Interfaces
 export * from './lib/hexagonal';
-export * from './lib/structural';
+export * from './lib/hex-map';
+export * from './lib/outdoor';
+export * from './lib/indoor';
 
 /// Classes
-export * from './lib/building';
+export * from './lib/indoor-hex-map';
 export * from './lib/cell';
 export * from './lib/hexagon';

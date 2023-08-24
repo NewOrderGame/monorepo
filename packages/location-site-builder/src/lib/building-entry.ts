@@ -1,5 +1,5 @@
 import {
-  Building,
+  IndoorHexMap,
   GeoCoordinates,
   AxialHex,
   NogEvent,
@@ -8,8 +8,9 @@ import {
   logger
 } from '@newordergame/common';
 import { Socket } from 'socket.io-client';
-import buildingStore from '../store/building-store';
+import buildingStore from '../store/indoor-hex-map-store';
 import { SIGHT_RANGE } from '@newordergame/common';
+import { nanoid } from 'nanoid';
 
 export const handleEnterBuilding =
   (socket: Socket) =>
@@ -32,11 +33,16 @@ export const handleEnterBuilding =
 
       if (wayBuilding) {
         const buildingId = wayBuilding.id;
-        let building: Building | undefined = buildingStore.get(buildingId);
+        let building: IndoorHexMap | undefined = buildingStore.get(buildingId);
         if (!building) {
           const axialHexList: AxialHex[] =
             Utils.Overpass.convertWayToPlainBuildingNodes(wayBuilding);
-          building = new Building(buildingId, axialHexList);
+          building = new IndoorHexMap(
+            nanoid(),
+            buildingId.toString(),
+            1,
+            axialHexList
+          );
           buildingStore.set(buildingId, building);
           logger.info({ buildingId }, 'Created new building');
         }

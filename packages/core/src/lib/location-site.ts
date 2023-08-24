@@ -1,6 +1,6 @@
 import { Namespace, Socket } from 'socket.io';
 import {
-  Building,
+  IndoorHexMap,
   GeoCoordinates,
   NogEvent,
   NogPage,
@@ -43,7 +43,13 @@ export const handleLocationSiteBuilderServiceConnection = (
 
 export const handleInitLocationSitePageInternal =
   (socket: Socket, gameNamespace: Namespace) =>
-  ({ characterId, building }: { characterId: string; building: Building }) => {
+  ({
+    characterId,
+    building
+  }: {
+    characterId: string;
+    building: IndoorHexMap;
+  }) => {
     const characterSocket = gameNamespace.to(characterId);
     characterSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, building);
     logger.info({ characterId }, 'Sent "init-location-site-page-commit"');
