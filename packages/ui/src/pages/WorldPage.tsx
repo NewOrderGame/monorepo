@@ -6,7 +6,7 @@ import { Loader } from '../components/Loader';
 import { Content } from '../components/Content';
 import { World } from '../components/World';
 import { Connection, useConnection } from '../lib/connection';
-import { Coordinates, NogEvent } from '@newordergame/common';
+import { GeoCoordinates, NogEvent } from '@newordergame/common';
 import logger from '../lib/utils/logger';
 
 export const WorldPage = () => {
@@ -15,9 +15,8 @@ export const WorldPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-  const [firstCoordinates, setFirstCoordinates] = useState<Coordinates | null>(
-    null
-  );
+  const [firstCoordinates, setFirstCoordinates] =
+    useState<GeoCoordinates | null>(null);
 
   useInitWorldPage(connection, setFirstCoordinates, setLoading);
   useResize(setWindowWidth, setWindowHeight);
@@ -37,7 +36,7 @@ export const WorldPage = () => {
 
 const useInitWorldPage = (
   connection: Connection,
-  setFirstCoordinates: (coordinstes: Coordinates | null) => void,
+  setFirstCoordinates: (coordinstes: GeoCoordinates | null) => void,
   setLoading: (loading: boolean) => void
 ) => {
   useEffect(() => {

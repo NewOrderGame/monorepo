@@ -1,4 +1,4 @@
-import { Coordinates, AxialHex, WayOverpassElement } from '../types';
+import { GeoCoordinates, AxialHex, WayOverpassElement } from '../types';
 import { abs, add, evaluate, max, min, round, subtract, sqrt } from 'mathjs';
 import { getDistance, getGreatCircleBearing, isPointInPolygon } from 'geolib';
 import axios from 'axios';
@@ -61,7 +61,7 @@ export default class OverpassUtils {
   }
 
   static determineBuilding(
-    coordinates: Coordinates,
+    coordinates: GeoCoordinates,
     elements: WayOverpassElement[]
   ): WayOverpassElement | null {
     return (
@@ -71,7 +71,7 @@ export default class OverpassUtils {
     );
   }
 
-  static getBuildingsInSight(coordinates: Coordinates, sightRange: number) {
+  static getBuildingsInSight(coordinates: GeoCoordinates, sightRange: number) {
     const min = computeDestinationPoint(
       coordinates,
       multiply(sightRange, 2),

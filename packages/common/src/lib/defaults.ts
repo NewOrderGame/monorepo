@@ -1,6 +1,6 @@
-import { Coordinates } from './types';
+import { GeoCoordinates } from './types';
 
-export const DEFAULT_COORDINATES: Coordinates = {
+export const DEFAULT_COORDINATES: GeoCoordinates = {
   lat: 46.47705630400258,
   lng: 30.730369681615272
 };

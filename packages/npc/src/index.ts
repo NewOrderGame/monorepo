@@ -4,7 +4,7 @@ import {
   CharacterAtWorld,
   characterIdSchema,
   CharacterInSight,
-  Coordinates,
+  GeoCoordinates,
   coordinatesSchema,
   NogCharacterId,
   NogEvent,
@@ -96,7 +96,7 @@ game.on(
 
 type MoveAtWorldType = {
   characterId: string;
-  coordinates: Coordinates;
+  coordinates: GeoCoordinates;
   duration: number;
   distance: number;
 };
@@ -142,7 +142,7 @@ game.on(
     coordinates,
     sightRange
   }: {
-    coordinates: Coordinates;
+    coordinates: GeoCoordinates;
     sightRange: number;
   }) => {
     logger.info({ coordinates }, 'Create NPC');
@@ -154,7 +154,7 @@ game.on(
       return;
     }
 
-    let spawnCoordinates: Coordinates;
+    let spawnCoordinates: GeoCoordinates;
     try {
       spawnCoordinates = await getRandomHouseEntryCoordinates(
         coordinates,
