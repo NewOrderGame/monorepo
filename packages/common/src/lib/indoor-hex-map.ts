@@ -11,16 +11,16 @@ export class IndoorHexMap extends HexMap implements Indoor {
     const maxX = Math.max(...plainBuildingNodes.map((node) => node.x));
     const maxY = Math.max(...plainBuildingNodes.map((node) => node.y));
 
-    const wallsAxialHexMap: BoolHexMap =
+    const exteriorWallsAxialHexMap: BoolHexMap =
       Hexagon.collectExteriorWallsHexMap(plainBuildingNodes);
     const interiorAxialHexMap: BoolHexMap = Hexagon.collectInteriorHexMap(
       { x: maxX, y: maxY },
       plainBuildingNodes,
-      wallsAxialHexMap
+      exteriorWallsAxialHexMap
     );
 
     const maps: BoolHexMaps = {
-      wallsAxialHexMap,
+      exteriorWallsAxialHexMap,
       interiorAxialHexMap
     };
 

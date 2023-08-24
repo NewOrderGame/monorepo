@@ -4,7 +4,7 @@ import { HexagonalMap } from './hexagonal-map';
 import { logger } from './logger';
 
 export enum BoolHexMapName {
-  WALLS = 'wallsAxialHexMap',
+  EXTERIOR_WALLS = 'exteriorWallsAxialHexMap',
   INTERIOR = 'interiorAxialHexMap'
 }
 export type BoolHexMap = boolean[][];
@@ -25,7 +25,7 @@ export class HexMap implements HexagonalMap {
   }
 
   private buildMap({
-    wallsAxialHexMap,
+    exteriorWallsAxialHexMap,
     interiorAxialHexMap
   }: BoolHexMaps): Cell[][] {
     const map: Cell[][] = [];
@@ -34,7 +34,7 @@ export class HexMap implements HexagonalMap {
       map[x] = [];
 
       for (let y = 0; y <= this.maxY; y++) {
-        const isWall = wallsAxialHexMap[x]?.[y] ?? false;
+        const isWall = exteriorWallsAxialHexMap[x]?.[y] ?? false;
         const isInterior = interiorAxialHexMap[x]?.[y] ?? false;
 
         let element: CellElement;
