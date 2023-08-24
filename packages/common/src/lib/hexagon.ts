@@ -312,7 +312,7 @@ export class Hexagon implements Hexagonal {
   // TODO: Complex methods. This methods require decomposition:
   /* begin */
 
-  static collectWallHexagonsMap(plainBuildingNodes: AxialHex[]): boolean[][] {
+  static collectExteriorWallsHexMap(plainBuildingNodes: AxialHex[]): boolean[][] {
     const wallMap: boolean[][] = [];
 
     for (let i = 0; i < plainBuildingNodes.length - 1; i++) {
@@ -331,7 +331,7 @@ export class Hexagon implements Hexagonal {
     return wallMap;
   }
 
-  static collectInteriorHexagonsMap(
+  static collectInteriorHexMap(
     max: AxialHex,
     axialBuilding: AxialHex[],
     wallNodesMap: boolean[][]

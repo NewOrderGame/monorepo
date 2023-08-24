@@ -1,6 +1,6 @@
-import { HexMap } from './hex-map';
+import { HexagonalMap } from './hexagonal-map';
 
-export interface Indoor extends HexMap {
+export interface Indoor extends HexagonalMap {
   readonly buildingId: string;
   readonly floorNumber: number;
 }
