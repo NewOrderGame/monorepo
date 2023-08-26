@@ -6,9 +6,9 @@ import { cubicHexSchema, hexXSchema, hexYSchema, hexZSchema } from './schemas';
 import { HexDirectionNumeric } from './enums';
 
 export class Hexagon implements Hexagonal {
-  protected readonly x: number;
-  protected readonly y: number;
-  protected readonly z: number;
+  readonly x: number;
+  readonly y: number;
+  readonly z: number;
 
   constructor(x: number, y: number, z?: number) {
     if (isNaN(x) || isNaN(y) || (isNaN(z!) && z !== undefined)) {
@@ -73,13 +73,15 @@ export class Hexagon implements Hexagonal {
     [HexDirectionNumeric.N5]: new Hexagon(-1, 0, 1)
   };
 
+  static DIRECTIONS_QUANTITY: number = 6;
+
   static getVector(direction: HexDirection): Hexagon {
     return this.vectors[direction];
   }
 
   // STATIC METHODS
 
-  static cubicHexEqual(hexA: CubicHex, hexB: CubicHex): boolean {
+  static cubicEqual(hexA: CubicHex, hexB: CubicHex): boolean {
     return hexA.x === hexB.x && hexA.y === hexB.y && hexA.z === hexB.z;
   }
 
@@ -247,7 +249,7 @@ export class Hexagon implements Hexagonal {
     rangeB: CubicHex[]
   ): CubicHex[] {
     return rangeA.filter((hex1) =>
-      rangeB.some((hex2) => Hexagon.cubicHexEqual(hex1, hex2))
+      rangeB.some((hex2) => Hexagon.cubicEqual(hex1, hex2))
     );
   }
 
@@ -277,7 +279,7 @@ export class Hexagon implements Hexagonal {
         radius
       )
     );
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; Hexagon.DIRECTIONS_QUANTITY; i++) {
       for (let j = 0; j < radius; j++) {
         results.push(hex);
         hex = Hexagon.cubicNeighbor(hex, i as HexDirection);
@@ -312,7 +314,9 @@ export class Hexagon implements Hexagonal {
   // TODO: Complex methods. This methods require decomposition:
   /* begin */
 
-  static collectExteriorWallsHexMap(plainBuildingNodes: AxialHex[]): boolean[][] {
+  static collectExteriorWallsHexMap(
+    plainBuildingNodes: AxialHex[]
+  ): boolean[][] {
     const wallMap: boolean[][] = [];
 
     for (let i = 0; i < plainBuildingNodes.length - 1; i++) {
