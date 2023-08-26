@@ -339,7 +339,7 @@ describe('Hexagon', () => {
             Hexagon.cubicNeighbor(hex, dir)
           );
           const hasNeighborInLine = neighbors.some((neighbor) =>
-            line.some((lineHex) => Hexagon.cubicHexEqual(neighbor, lineHex))
+            line.some((lineHex) => Hexagon.cubicEqual(neighbor, lineHex))
           );
           expect(hasNeighborInLine).toBeTruthy();
         }
@@ -356,7 +356,7 @@ describe('Hexagon', () => {
             Hexagon.cubicNeighbor(hex, dir)
           );
           const hasNeighborInLine = neighbors.some((neighbor) =>
-            line.some((lineHex) => Hexagon.cubicHexEqual(neighbor, lineHex))
+            line.some((lineHex) => Hexagon.cubicEqual(neighbor, lineHex))
           );
           expect(hasNeighborInLine).toBeTruthy();
         }
@@ -721,7 +721,7 @@ describe('Hexagon', () => {
           const intersection = Hexagon.cubicRangeIntersection(range1, range2);
 
           range1.forEach((hex1) => {
-            if (range2.some((hex2) => Hexagon.cubicHexEqual(hex1, hex2))) {
+            if (range2.some((hex2) => Hexagon.cubicEqual(hex1, hex2))) {
               expect(intersection).toContainEqual(hex1);
             }
           });

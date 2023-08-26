@@ -2,7 +2,10 @@ import {
   IndoorHexMap,
   Cell,
   NogEvent,
-  CellElement
+  CellElement,
+  Hexagon,
+  HexMap,
+  CubicHex
 } from '@newordergame/common';
 import { Application, Sprite } from 'pixi.js';
 import React, {
@@ -29,7 +32,7 @@ const CanvasContainer = styled.div`
   width: 100%;
 
   canvas {
-    width 100%;
+    width: 100%;
   }
 `;
 
@@ -68,11 +71,78 @@ const useOnInitLocationSitePage = (
   containerRef: RefObject<HTMLDivElement>
 ) => {
   const pixiAppRef = useRef<Application | null>(null);
+  const buildingRef = useRef<IndoorHexMap | null>(null);
+  const startCellRef = useRef<Cell | null>(null);
+  const pathRef = useRef<Cell[]>([]);
+
+  const handleCellClick = useCallback(
+    (hex: CubicHex) => {
+      if (!buildingRef?.current) return;
+      const axialHex = Hexagon.cubicToAxial(hex);
+
+      if (startCellRef.current === null) {
+        pathRef.current = [];
+        renderBuildingOnPixiStage(
+          pixiAppRef.current!,
+          buildingRef.current,
+          handleCellClick,
+          []
+        );
+        startCellRef.current = buildingRef.current.map[axialHex.x][axialHex.y];
+      } else {
+        const path = HexMap.getPath(
+          buildingRef.current,
+          startCellRef.current,
+          buildingRef.current.map[axialHex.x][axialHex.y]
+        );
+        pathRef.current = path;
+        renderBuildingOnPixiStage(
+          pixiAppRef.current!,
+          buildingRef.current,
+          handleCellClick,
+          path
+        );
+        startCellRef.current = null;
+      }
+
+      // if (!buildingRef?.current) return;
+      // pathRef.current = [];
+      // const startHex = Hexagon.cubicToAxial(hex);
+      // renderBuildingOnPixiStage(
+      //   pixiAppRef.current!,
+      //   buildingRef.current,
+      //   handleCellClick,
+      //   []
+      // );
+      // const path = HexMap.getReachable(
+      //   buildingRef.current,
+      //   buildingRef.current.map[startHex.x][startHex.y],
+      //   2
+      // );
+      // pathRef.current = path;
+      // renderBuildingOnPixiStage(
+      //   pixiAppRef.current!,
+      //   buildingRef.current,
+      //   handleCellClick,
+      //   path
+      // );
+    },
+    [buildingRef.current]
+  );
+  const handler = useCallback(
+    initLocationSitePage(
+      pixiAppRef,
+      containerRef,
+      handleCellClick,
+      pathRef.current,
+      buildingRef
+    ),
+    []
+  );
 
   useEffect(() => {
     logger.info('Location Site Page init');
 
-    const handler = handleInitLocationSitePage(pixiAppRef, containerRef);
     connection.gameSocket.on(NogEvent.INIT_LOCATION_SITE_PAGE, handler);
 
     return () => {
@@ -82,14 +152,23 @@ const useOnInitLocationSitePage = (
   }, [connection.gameSocket, containerRef]);
 };
 
-const handleInitLocationSitePage =
+const initLocationSitePage =
   (
     pixiAppRef: MutableRefObject<Application | null>,
-    containerRef: MutableRefObject<HTMLDivElement | null>
+    containerRef: MutableRefObject<HTMLDivElement | null>,
+    handleCellClick: (hex: CubicHex) => void,
+    path: Cell[],
+    buildingRef: MutableRefObject<IndoorHexMap | null>
   ) =>
   (building: IndoorHexMap) => {
+    buildingRef.current = building;
     createPixiApplication(pixiAppRef, building);
-    renderBuildingOnPixiStage(pixiAppRef.current!, building);
+    renderBuildingOnPixiStage(
+      pixiAppRef.current!,
+      building,
+      handleCellClick,
+      path
+    );
     containerRef.current?.appendChild(pixiAppRef.current!.view);
   };
 
@@ -113,12 +192,21 @@ const createPixiApplication = (
 
 const renderBuildingOnPixiStage = (
   app: Application,
-  building: IndoorHexMap
+  building: IndoorHexMap,
+  handleCellClick: (hex: CubicHex) => void,
+  path: Cell[]
 ) => {
   for (let x = 0; x <= building.maxX; x++) {
     for (let y = 0; y <= building.maxY; y++) {
       const cell = building.map[x][y];
-      const hexagon = createHexagonSprite(cell, building, x, y);
+      const hexagon = createHexagonSprite(
+        cell,
+        building,
+        x,
+        y,
+        handleCellClick,
+        path
+      );
       app.stage.addChild(hexagon);
     }
   }
@@ -128,21 +216,29 @@ const createHexagonSprite = (
   cell: Cell,
   building: IndoorHexMap,
   x: number,
-  y: number
+  y: number,
+  handleCellClick: (hex: CubicHex) => void,
+  path: Cell[]
 ) => {
-  const hexagon = new Sprite(determineSprite(cell));
+  const hexagon = new Sprite(determineSprite(cell, path));
   hexagon.x = (building.maxY - y + x) * HEXAGON_TEXTURE_WIDTH;
   hexagon.y = ((x + y) * HEXAGON_TEXTURE_HEIGHT) / 2;
   hexagon.interactive = true;
   hexagon.buttonMode = true;
   hexagon.scale.set(HEXAGON_TEXTURE_WIDTH / 100, HEXAGON_TEXTURE_HEIGHT / 100);
-  hexagon.on('pointerdown', () =>
-    logger.trace({ hexagon, x, y }, 'Hexagon pointer down')
-  );
+  hexagon.on('pointerdown', () => {
+    logger.trace({ hexagon, x, y }, 'Hexagon pointer down');
+    handleCellClick(new Hexagon(x, y).toCubic());
+  });
   return hexagon;
 };
 
-const determineSprite = (cell: Cell) => {
+const determineSprite = (cell: Cell, path: Cell[]) => {
+  for (const hex of path) {
+    if (Hexagon.cubicEqual(hex, cell)) {
+      return BLACK_TRANSPARENT_HEXAGON;
+    }
+  }
   if (cell.element === CellElement.WALL) {
     return BLACK_HEXAGON;
   } else if (cell.element === CellElement.FLOOR) {
