@@ -11,7 +11,7 @@ import {
 } from '../..';
 
 export default class OverpassUtils {
-  static convertWayToPlainBuildingNodes(
+  static convertWayToAxialHex(
     wayOverpassBuilding: WayOverpassElement
   ): AxialHex[] {
     const longestWallNodeIndex =
