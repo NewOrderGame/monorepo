@@ -279,7 +279,7 @@ export class Hexagon implements Hexagonal {
         radius
       )
     );
-    for (let i = 0; Hexagon.DIRECTIONS_QUANTITY; i++) {
+    for (let i = 0; i < Hexagon.DIRECTIONS_QUANTITY; i++) {
       for (let j = 0; j < radius; j++) {
         results.push(hex);
         hex = Hexagon.cubicNeighbor(hex, i as HexDirection);
