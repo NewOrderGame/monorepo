@@ -25,7 +25,7 @@ export class HexMap implements HexagonalMap {
     logger.debug(this.buildPreviewMap(), 'RENDERED MAP');
   }
 
-  static getReachable(hexMap: HexMap, cell: Cell, steps: number): Cell[] {
+  static findReachable(hexMap: HexMap, cell: Cell, steps: number): Cell[] {
     const axialCell = Hexagon.cubicToAxial(cell);
 
     const visited: Set<Cell> = new Set();
@@ -36,7 +36,7 @@ export class HexMap implements HexagonalMap {
 
     logger.debug({ cell }, 'cell');
     if (startCell.actionPermission < CellActionPermission.PASS) {
-      return Array.from(visited);
+      return [];
     }
 
     for (let k = 1; k <= steps; k++) {
@@ -71,7 +71,7 @@ export class HexMap implements HexagonalMap {
     return Array.from(visited);
   }
 
-  static getPath(hexMap: HexMap, startCell: Cell, goalCell: Cell): Cell[] {
+  static findPath(hexMap: HexMap, startCell: Cell, goalCell: Cell): Cell[] {
     function heuristic(cellA: Cell, cellB: Cell): number {
       const a = Hexagon.cubicToAxial(cellA);
       const b = Hexagon.cubicToAxial(cellB);

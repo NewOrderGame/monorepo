@@ -23,6 +23,7 @@ import {
   BLACK_TRANSPARENT_HEXAGON,
   HEXAGON_TEXTURE_HEIGHT,
   HEXAGON_TEXTURE_WIDTH,
+  LIGHT_GREY_HEXAGON,
   WHITE_HEXAGON
 } from '../lib/constants';
 import logger from '../lib/utils/logger';
@@ -77,20 +78,15 @@ const useOnInitLocationSitePage = (
 
   const handleCellClick = useCallback(
     (hex: CubicHex) => {
+      // /* FIND PATH */
       if (!buildingRef?.current) return;
       const axialHex = Hexagon.cubicToAxial(hex);
 
       if (startCellRef.current === null) {
         pathRef.current = [];
-        renderBuildingOnPixiStage(
-          pixiAppRef.current!,
-          buildingRef.current,
-          handleCellClick,
-          []
-        );
         startCellRef.current = buildingRef.current.map[axialHex.x][axialHex.y];
       } else {
-        const path = HexMap.getPath(
+        const path = HexMap.findPath(
           buildingRef.current,
           startCellRef.current,
           buildingRef.current.map[axialHex.x][axialHex.y]
@@ -105,6 +101,7 @@ const useOnInitLocationSitePage = (
         startCellRef.current = null;
       }
 
+      // /* FIND REACHABLE */
       // if (!buildingRef?.current) return;
       // pathRef.current = [];
       // const startHex = Hexagon.cubicToAxial(hex);
@@ -114,7 +111,7 @@ const useOnInitLocationSitePage = (
       //   handleCellClick,
       //   []
       // );
-      // const path = HexMap.getReachable(
+      // const path = HexMap.findReachable(
       //   buildingRef.current,
       //   buildingRef.current.map[startHex.x][startHex.y],
       //   2
@@ -196,6 +193,7 @@ const renderBuildingOnPixiStage = (
   handleCellClick: (hex: CubicHex) => void,
   path: Cell[]
 ) => {
+  app.stage.removeChildren();
   for (let x = 0; x <= building.maxX; x++) {
     for (let y = 0; y <= building.maxY; y++) {
       const cell = building.map[x][y];
@@ -236,7 +234,7 @@ const createHexagonSprite = (
 const determineSprite = (cell: Cell, path: Cell[]) => {
   for (const hex of path) {
     if (Hexagon.cubicEqual(hex, cell)) {
-      return BLACK_TRANSPARENT_HEXAGON;
+      return LIGHT_GREY_HEXAGON;
     }
   }
   if (cell.element === CellElement.WALL) {
