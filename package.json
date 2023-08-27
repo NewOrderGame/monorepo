@@ -54,8 +54,7 @@
   "name": "monorepo",
   "description": "This repository contains all code for the first period.",
   "scripts": {
-    "start": "yarn dev",
-    "all": "lerna run start --stream",
+    "start": "lerna run start --stream",
     "dev": "./scripts/run-packages.sh",
     "deploy": "lerna run deploy --stream",
     "build": "lerna run build --stream",
