@@ -43,7 +43,9 @@ export class HexMap implements HexagonalMap {
       fringes.push([]);
       for (const cell of fringes[k - 1]) {
         for (let d = 0; d < Hexagon.DIRECTIONS_QUANTITY; d++) {
-          const axialNeighbor = Hexagon.cubicToAxial(cell.neighbors[d]);
+          const axialNeighbor = Hexagon.cubicToAxial(
+            Hexagon.cubicNeighbor(cell, d)
+          );
           if (
             axialNeighbor.x > hexMap.maxX ||
             axialNeighbor.y > hexMap.maxY ||
@@ -101,7 +103,9 @@ export class HexMap implements HexagonalMap {
       }
 
       for (let d = 0; d < Hexagon.DIRECTIONS_QUANTITY; d++) {
-        const axialNeighbor = Hexagon.cubicToAxial(current.neighbors[d]);
+        const axialNeighbor = Hexagon.cubicToAxial(
+          Hexagon.cubicNeighbor(current, d)
+        );
         if (
           axialNeighbor.x > hexMap.maxX ||
           axialNeighbor.y > hexMap.maxY ||
