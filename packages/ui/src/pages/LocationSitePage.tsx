@@ -21,6 +21,7 @@ import { Connection, useConnection } from '../lib/connection';
 import {
   BLACK_HEXAGON,
   BLACK_TRANSPARENT_HEXAGON,
+  DARK_GREY_HEXAGON,
   HEXAGON_TEXTURE_HEIGHT,
   HEXAGON_TEXTURE_WIDTH,
   LIGHT_GREY_HEXAGON,
@@ -75,6 +76,7 @@ const useOnInitLocationSitePage = (
   const buildingRef = useRef<IndoorHexMap | null>(null);
   const startCellRef = useRef<Cell | null>(null);
   const pathRef = useRef<Cell[]>([]);
+  const reachableRef = useRef<Cell[]>([]);
 
   const handleCellClick = useCallback(
     (hex: CubicHex) => {
@@ -84,7 +86,15 @@ const useOnInitLocationSitePage = (
 
       if (startCellRef.current === null) {
         pathRef.current = [];
+
+        const reachable = HexMap.findReachable(
+          buildingRef.current,
+          buildingRef.current.map[axialHex.x][axialHex.y],
+          2
+        );
+
         startCellRef.current = buildingRef.current.map[axialHex.x][axialHex.y];
+        reachableRef.current = reachable;
       } else {
         const path = HexMap.findPath(
           buildingRef.current,
@@ -92,25 +102,21 @@ const useOnInitLocationSitePage = (
           buildingRef.current.map[axialHex.x][axialHex.y]
         );
         pathRef.current = path;
-        renderBuildingOnPixiStage(
-          pixiAppRef.current!,
-          buildingRef.current,
-          handleCellClick,
-          path
-        );
         startCellRef.current = null;
       }
+
+      renderBuildingOnPixiStage(
+        pixiAppRef.current!,
+        buildingRef.current,
+        handleCellClick,
+        pathRef.current,
+        reachableRef.current
+      );
 
       // /* FIND REACHABLE */
       // if (!buildingRef?.current) return;
       // pathRef.current = [];
       // const startHex = Hexagon.cubicToAxial(hex);
-      // renderBuildingOnPixiStage(
-      //   pixiAppRef.current!,
-      //   buildingRef.current,
-      //   handleCellClick,
-      //   []
-      // );
       // const path = HexMap.findReachable(
       //   buildingRef.current,
       //   buildingRef.current.map[startHex.x][startHex.y],
@@ -126,13 +132,15 @@ const useOnInitLocationSitePage = (
     },
     [buildingRef.current]
   );
+
   const handler = useCallback(
     initLocationSitePage(
       pixiAppRef,
       containerRef,
       handleCellClick,
+      buildingRef,
       pathRef.current,
-      buildingRef
+      reachableRef.current
     ),
     []
   );
@@ -154,8 +162,9 @@ const initLocationSitePage =
     pixiAppRef: MutableRefObject<Application | null>,
     containerRef: MutableRefObject<HTMLDivElement | null>,
     handleCellClick: (hex: CubicHex) => void,
+    buildingRef: MutableRefObject<IndoorHexMap | null>,
     path: Cell[],
-    buildingRef: MutableRefObject<IndoorHexMap | null>
+    reachable: Cell[]
   ) =>
   (building: IndoorHexMap) => {
     buildingRef.current = building;
@@ -164,7 +173,8 @@ const initLocationSitePage =
       pixiAppRef.current!,
       building,
       handleCellClick,
-      path
+      path,
+      reachable
     );
     containerRef.current?.appendChild(pixiAppRef.current!.view);
   };
@@ -191,7 +201,8 @@ const renderBuildingOnPixiStage = (
   app: Application,
   building: IndoorHexMap,
   handleCellClick: (hex: CubicHex) => void,
-  path: Cell[]
+  path: Cell[],
+  reachable: Cell[]
 ) => {
   app.stage.removeChildren();
   for (let x = 0; x <= building.maxX; x++) {
@@ -203,7 +214,8 @@ const renderBuildingOnPixiStage = (
         x,
         y,
         handleCellClick,
-        path
+        path,
+        reachable
       );
       app.stage.addChild(hexagon);
     }
@@ -216,9 +228,10 @@ const createHexagonSprite = (
   x: number,
   y: number,
   handleCellClick: (hex: CubicHex) => void,
-  path: Cell[]
+  path: Cell[],
+  reachable: Cell[]
 ) => {
-  const hexagon = new Sprite(determineSprite(cell, path));
+  const hexagon = new Sprite(determineSprite(cell, path, reachable));
   hexagon.x = (building.maxY - y + x) * HEXAGON_TEXTURE_WIDTH;
   hexagon.y = ((x + y) * HEXAGON_TEXTURE_HEIGHT) / 2;
   hexagon.interactive = true;
@@ -231,10 +244,15 @@ const createHexagonSprite = (
   return hexagon;
 };
 
-const determineSprite = (cell: Cell, path: Cell[]) => {
+const determineSprite = (cell: Cell, path: Cell[], reachable: Cell[]) => {
   for (const hex of path) {
     if (Hexagon.cubicEqual(hex, cell)) {
       return LIGHT_GREY_HEXAGON;
+    }
+  }
+  for (const hex of reachable) {
+    if (Hexagon.cubicEqual(hex, cell)) {
+      return DARK_GREY_HEXAGON;
     }
   }
   if (cell.element === CellElement.WALL) {
