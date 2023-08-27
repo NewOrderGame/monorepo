@@ -4,12 +4,12 @@ import { Hexagon } from './hexagon';
 import { HexagonalMap } from './hexagonal-map';
 import { logger } from './logger';
 
-export enum BoolHexMapName {
-  EXTERIOR_WALLS = 'exteriorWallsAxialHexMap',
-  INTERIOR = 'interiorAxialHexMap'
+export enum BoolHexMapLayerName {
+  EXTERIOR_WALLS = 'exteriorWallsBoolHexMapLayer',
+  INTERIOR = 'interiorBoolHexMapLayer'
 }
-export type BoolHexMap = boolean[][];
-export type BoolHexMaps = Record<BoolHexMapName, boolean[][]>;
+export type BoolHexMapLayer = boolean[][];
+export type BoolHexMapLayers = Record<BoolHexMapLayerName, BoolHexMapLayer>;
 
 export class HexMap implements HexagonalMap {
   readonly map: Cell[][];
@@ -18,7 +18,7 @@ export class HexMap implements HexagonalMap {
     readonly id: string,
     readonly maxX: number,
     readonly maxY: number,
-    maps: BoolHexMaps
+    maps: BoolHexMapLayers
   ) {
     this.map = this.buildMap(maps);
 
@@ -140,17 +140,17 @@ export class HexMap implements HexagonalMap {
   }
 
   private buildMap({
-    exteriorWallsAxialHexMap,
-    interiorAxialHexMap
-  }: BoolHexMaps): Cell[][] {
+    exteriorWallsBoolHexMapLayer,
+    interiorBoolHexMapLayer
+  }: BoolHexMapLayers): Cell[][] {
     const map: Cell[][] = [];
 
     for (let x = 0; x <= this.maxX; x++) {
       map[x] = [];
 
       for (let y = 0; y <= this.maxY; y++) {
-        const isWall = exteriorWallsAxialHexMap[x]?.[y] ?? false;
-        const isInterior = interiorAxialHexMap[x]?.[y] ?? false;
+        const isWall = exteriorWallsBoolHexMapLayer[x]?.[y] ?? false;
+        const isInterior = interiorBoolHexMapLayer[x]?.[y] ?? false;
 
         let element: CellElement;
         let actionPermission: CellActionPermission;

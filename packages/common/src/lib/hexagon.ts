@@ -4,6 +4,7 @@ import { Hexagonal } from './hexagonal';
 import cleanNegativeZero from './utils/clean-negative-zero';
 import { cubicHexSchema, hexXSchema, hexYSchema, hexZSchema } from './schemas';
 import { HexDirectionNumeric } from './enums';
+import { BoolHexMapLayer, BoolHexMapLayerName } from './hex-map';
 
 export class Hexagon implements Hexagonal {
   readonly x: number;
@@ -314,10 +315,10 @@ export class Hexagon implements Hexagonal {
   // TODO: Complex methods. This methods require decomposition:
   /* begin */
 
-  static collectExteriorWallsHexMap(
+  static collectExteriorWallsBoolHexMap(
     plainBuildingNodes: AxialHex[]
-  ): boolean[][] {
-    const wallMap: boolean[][] = [];
+  ): BoolHexMapLayer {
+    const wallMap: BoolHexMapLayer = [];
 
     for (let i = 0; i < plainBuildingNodes.length - 1; i++) {
       const current = plainBuildingNodes[i];
@@ -335,18 +336,20 @@ export class Hexagon implements Hexagonal {
     return wallMap;
   }
 
-  static collectInteriorHexMap(
+  static collectInteriorBoolHexMap(
     max: AxialHex,
     axialBuilding: AxialHex[],
-    wallNodesMap: boolean[][]
-  ): boolean[][] {
-    const interiorHexagonsMap: boolean[][] = [];
+    {
+      exteriorWallsBoolHexMapLayer
+    }: Record<BoolHexMapLayerName.EXTERIOR_WALLS, BoolHexMapLayer>
+  ): BoolHexMapLayer {
+    const interiorHexagonsMap: BoolHexMapLayer = [];
 
     for (let x = 0; x <= max.x; x++) {
       interiorHexagonsMap[x] = [];
 
       for (let y = 0; y <= max.y; y++) {
-        const isWall = wallNodesMap[x]?.[y] ?? false;
+        const isWall = exteriorWallsBoolHexMapLayer[x]?.[y] ?? false;
 
         const isInterior =
           !isWall && this.isHexInsidePolygon({ x, y }, axialBuilding);

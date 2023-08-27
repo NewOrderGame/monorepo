@@ -36,7 +36,7 @@ export const handleEnterBuilding =
         let building: IndoorHexMap | undefined = buildingStore.get(buildingId);
         if (!building) {
           const axialHexList: AxialHex[] =
-            Utils.Overpass.convertWayToPlainBuildingNodes(wayBuilding);
+            Utils.Overpass.convertWayToAxialHex(wayBuilding);
           building = new IndoorHexMap(
             nanoid(),
             buildingId.toString(),

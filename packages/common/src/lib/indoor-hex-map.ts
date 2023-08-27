@@ -1,5 +1,5 @@
 import { AxialHex, Hexagon, Indoor } from '..';
-import { BoolHexMap, BoolHexMaps, HexMap } from './hex-map';
+import { BoolHexMapLayer, BoolHexMapLayers, HexMap } from './hex-map';
 
 export class IndoorHexMap extends HexMap implements Indoor {
   constructor(
@@ -11,17 +11,20 @@ export class IndoorHexMap extends HexMap implements Indoor {
     const maxX = Math.max(...plainBuildingNodes.map((node) => node.x));
     const maxY = Math.max(...plainBuildingNodes.map((node) => node.y));
 
-    const exteriorWallsAxialHexMap: BoolHexMap =
-      Hexagon.collectExteriorWallsHexMap(plainBuildingNodes);
-    const interiorAxialHexMap: BoolHexMap = Hexagon.collectInteriorHexMap(
-      { x: maxX, y: maxY },
-      plainBuildingNodes,
-      exteriorWallsAxialHexMap
-    );
+    const exteriorWallsBoolHexMapLayer: BoolHexMapLayer =
+      Hexagon.collectExteriorWallsBoolHexMap(plainBuildingNodes);
+    const interiorBoolHexMapLayer: BoolHexMapLayer =
+      Hexagon.collectInteriorBoolHexMap(
+        { x: maxX, y: maxY },
+        plainBuildingNodes,
+        {
+          exteriorWallsBoolHexMapLayer
+        }
+      );
 
-    const maps: BoolHexMaps = {
-      exteriorWallsAxialHexMap,
-      interiorAxialHexMap
+    const maps: BoolHexMapLayers = {
+      exteriorWallsBoolHexMapLayer,
+      interiorBoolHexMapLayer
     };
 
     super(id, maxX, maxY, maps);
