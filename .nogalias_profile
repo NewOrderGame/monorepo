@@ -3,8 +3,8 @@ alias @all="yarn run"
 alias @common="yarn workspace @newordergame/common"
 alias @core="yarn workspace @newordergame/core"
 
-alias @location-site-builder="yarn workspace @newordergame/location-site-builder"
-alias @lsb="yarn workspace @newordergame/location-site-builder"
+alias @encounter="yarn workspace @newordergame/encounter"
+alias @lsb="yarn workspace @newordergame/encounter"
 
 alias @npc="yarn workspace @newordergame/npc"
 

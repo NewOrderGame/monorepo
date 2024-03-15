@@ -9,7 +9,7 @@ import {
 import {
   getLocationSiteBuilderSocket,
   setLocationSiteBuilderSocket
-} from '../store/location-site-builder-socket-store';
+} from '../store/encounter-socket-store';
 import characterStore from '../store/character-store';
 import characterAtWorldStore from '../store/character-at-world-store';
 

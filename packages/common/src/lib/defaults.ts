@@ -1,8 +1,8 @@
 import { GeoCoordinates } from './types';
 
 export const DEFAULT_COORDINATES: GeoCoordinates = {
-  lat: 46.47705630400258,
-  lng: 30.730369681615272
+  lat: 46.48529995180195,
+  lng: 30.74057757854462
 };
 
 export const EPSILON = 1e-6;

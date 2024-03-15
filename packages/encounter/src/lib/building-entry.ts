@@ -26,10 +26,11 @@ export const handleEnterBuilding =
         coordinates,
         SIGHT_RANGE
       );
-      const elements = buildingsInSight?.elements;
-
       const wayBuilding: WayOverpassElement | null =
-        Utils.Overpass.determineBuilding(coordinates, elements);
+        Utils.Overpass.determineBuilding(
+          coordinates,
+          buildingsInSight?.elements
+        );
 
       if (wayBuilding) {
         const buildingId = wayBuilding.id;

@@ -7,5 +7,5 @@
 @newordergame/common
 @newordergame/ui
 @newordergame/core
-@newordergame/npc
-@newordergame/location-site-builder
+#@newordergame/npc
+#@newordergame/encounter

@@ -16,24 +16,46 @@ export const WorldMenu = () => {
 
 const useInitWorldMenu = (connection: Connection, map: LeafletMap) => {
   useEffect(() => {
-    const control = new (menuControl(connection))({ position: 'bottomleft' });
-    control.addTo(map);
+    const enterBuildingButton = new (menuControl(
+      connection,
+      'Get into the building',
+      handleEnterBuildingButtonClick
+    ))({
+      position: 'bottomleft'
+    });
+    const lookAroundButton = new (menuControl(
+      connection,
+      'Look around',
+      handleEnterBuildingButtonClick
+    ))({
+      position: 'bottomleft'
+    });
+    enterBuildingButton.addTo(map);
+    lookAroundButton.addTo(map);
 
     return () => {
-      control.remove();
+      enterBuildingButton.remove();
+      lookAroundButton.remove();
     };
   }, []);
 };
 
-const menuControl = (connection: Connection) => {
+const menuControl = (
+  connection: Connection,
+  text: string,
+  handleClick: (
+    connection: Connection,
+    map: LeafletMap
+  ) => (event: MouseEvent) => void
+) => {
   const enterBuildingButton = DomUtil.create('button');
 
   return Control.extend({
     onAdd: (map: LeafletMap) => {
-      enterBuildingButton.innerHTML = 'Get into the building';
+      enterBuildingButton.innerHTML = text;
       enterBuildingButton.addEventListener(
         'click',
-        enterBuildingButtonClickHandler(connection, map)
+        handleClick(connection, map)
       );
       return enterBuildingButton;
     },
@@ -41,13 +63,13 @@ const menuControl = (connection: Connection) => {
     onRemove: (map: LeafletMap) => {
       enterBuildingButton.removeEventListener(
         'click',
-        enterBuildingButtonClickHandler(connection, map)
+        handleClick(connection, map)
       );
     }
   });
 };
 
-const enterBuildingButtonClickHandler =
+const handleEnterBuildingButtonClick =
   (connection: Connection, map: LeafletMap) => (event: MouseEvent) => {
     event.stopPropagation();
     const coordinates = map.getCenter();
