@@ -9,9 +9,9 @@ import {
 import {
   getLocationSiteBuilderSocket,
   setLocationSiteBuilderSocket
-} from '../store/encounter-socket-store';
-import characterStore from '../store/character-store';
-import characterAtWorldStore from '../store/character-at-world-store';
+} from './store/encounter-socket-store';
+import characterStore from './store/character-store';
+import characterAtWorldStore from './store/character-at-world-store';
 
 export const handleLocationSiteBuilderServiceConnection = (
   locationSiteBuilderSocket: Socket,

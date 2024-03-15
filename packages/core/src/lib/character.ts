@@ -7,8 +7,8 @@ import {
   NogPage,
   Outlook
 } from '@newordergame/common';
-import characterStore from '../store/character-store';
-import { getUser } from './utils/cognito';
+import characterStore from './store/character-store';
+import { getUser } from './cognito';
 import { GetUserResponse } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 
 export const createCharacter = ({

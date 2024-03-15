@@ -1,5 +1,5 @@
 import { Namespace, Socket } from 'socket.io';
-import characterAtWorldStore from '../store/character-at-world-store';
+import characterAtWorldStore from './store/character-at-world-store';
 import {
   logger,
   CharacterInSight,
@@ -8,15 +8,15 @@ import {
   NogEvent,
   NogPage
 } from '@newordergame/common';
-import characterStore from '../store/character-store';
+import characterStore from './store/character-store';
 import {
   computeDestinationPoint as computeDestination,
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
+import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './constants';
 import { areEnemies } from './character';
-import encounterStore from '../store/encounter-store';
+import encounterStore from './store/encounter-store';
 import { createCharacterAtWorld } from './character-at-world';
 
 export const moveCharacter = (characterId: NogCharacterId) => {

@@ -1,9 +1,9 @@
 import { Namespace, Socket } from 'socket.io';
-import characterStore from '../../store/character-store';
+import characterStore from './store/character-store';
 import { logger } from '@newordergame/common';
-import { setNpcSocket } from '../../store/npc-socket-store';
-import characterAtWorldStore from '../../store/character-at-world-store';
-import { setLocationSiteBuilderSocket } from '../../store/encounter-socket-store';
+import { setNpcSocket } from './store/npc-socket-store';
+import characterAtWorldStore from './store/character-at-world-store';
+import { setLocationSiteBuilderSocket } from './store/encounter-socket-store';
 
 export const handleDisconnect = async (
   socket: Socket,

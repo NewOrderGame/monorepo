@@ -6,22 +6,22 @@ import {
   EncounterInSight,
   NogCharacterId
 } from '@newordergame/common';
-import { SECOND, TICK_PER_SECOND } from '../lib/utils/constants';
-import characterAtWorldStore from '../store/character-at-world-store';
-import encounterStore from '../store/encounter-store';
+import { SECOND, TICK_PER_SECOND } from './constants';
+import characterAtWorldStore from './store/character-at-world-store';
+import encounterStore from './store/encounter-store';
 import {
   checkCharacterVisibility,
   checkEncounterVisibility,
   moveCharacter,
   sendCharactersInSight,
   sendEncountersInSight
-} from '../lib/world';
-import { argv } from '../lib/utils/argv';
+} from './world';
+import { argv } from './argv';
 import { withStats } from '../stats/writer';
-import { StatsGroups } from '../lib/utils/types';
+import { StatsGroups } from './types';
 import { Namespace } from 'socket.io';
-import { handleNpcGeneration } from '../lib/npc';
-import { handleCharactersEncounter } from '../lib/encounter';
+import { handleNpcGeneration } from './npc';
+import { handleCharactersEncounter } from './encounter';
 
 const doNextTick = (gameNamespace: Namespace) => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();

@@ -1,6 +1,6 @@
-import { startGame } from './engine/world-engine';
-import { listen } from './lib/utils/io';
-import { initGameNamespace } from './namespaces/game-namespace';
+import { startGame } from './lib/world-engine';
+import { listen } from './lib/io';
+import { initGameNamespace } from './lib/game-namespace';
 
 const gameNamespace = initGameNamespace();
 const timer = startGame(gameNamespace);

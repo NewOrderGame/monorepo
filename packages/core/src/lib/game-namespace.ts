@@ -1,11 +1,11 @@
 import { NogEvent } from '@newordergame/common';
-import { io } from '../lib/utils/io';
+import { io } from './io';
 import { logger } from '@newordergame/common';
 import { Namespace, Socket } from 'socket.io';
-import { handleDisconnect } from '../lib/utils/handle-disconnect';
-import { handleNpcServiceConnection } from '../lib/npc';
-import { handleLocationSiteBuilderServiceConnection } from '../lib/location-site';
-import { handleUserConnection } from '../lib/user';
+import { handleDisconnect } from './handle-disconnect';
+import { handleNpcServiceConnection } from './npc';
+import { handleLocationSiteBuilderServiceConnection } from './location-site';
+import { handleUserConnection } from './user';
 
 export const initGameNamespace = () => {
   logger.info('Init Game');

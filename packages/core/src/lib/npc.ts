@@ -15,13 +15,13 @@ import {
   DISTANCE_ACCURACY,
   NPC_GENERATION_CHANCE_PER_TICK,
   NPC_GENERATION_THRESHOLD
-} from './utils/constants';
+} from './constants';
 import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
-import characterAtWorldStore from '../store/character-at-world-store';
+import characterAtWorldStore from './store/character-at-world-store';
 import { Socket } from 'socket.io';
-import { getNpcSocket, setNpcSocket } from '../store/npc-socket-store';
-import characterStore from '../store/character-store';
+import { getNpcSocket, setNpcSocket } from './store/npc-socket-store';
+import characterStore from './store/character-store';
 import { getDistance as computeDistance } from 'geolib';
 
 export const handleNpcServiceConnection = (npcSocket: Socket) => {

@@ -2,8 +2,8 @@ import express from 'express';
 import { resolve } from 'path';
 import { logger } from '@newordergame/common';
 import { getTickTimeStats } from './reader';
-import { TICK_TIME_STATS_DIR } from '../../lib/utils/constants';
-import { StatsGroups } from '../../lib/utils/types';
+import { TICK_TIME_STATS_DIR } from '../../lib/constants';
+import { StatsGroups } from '../../lib/types';
 
 const PORT = 5050;
 const app = express();

@@ -1,16 +1,16 @@
-import characterStore from '../store/character-store';
-import characterAtWorldStore from '../store/character-at-world-store';
-import encounterStore from '../store/encounter-store';
+import characterStore from './store/character-store';
+import characterAtWorldStore from './store/character-at-world-store';
+import encounterStore from './store/encounter-store';
 import { createCharacterAtWorld } from './character-at-world';
 import { nanoid } from 'nanoid';
 import { createCharacter } from './character';
 import { CharacterAtWorld, CharacterStats } from '@newordergame/common';
-import { ENCOUNTER_COOL_DOWN_TIME } from './utils/constants';
+import { ENCOUNTER_COOL_DOWN_TIME } from './constants';
 import { getFakeNamespace } from '../test/utils';
 import { handleCharactersEncounter } from './encounter';
 import moment = require('moment');
 
-jest.mock('../namespaces/game-namespace');
+jest.mock('./game-namespace');
 
 const DEFAULT_CHARACTER_STATS: CharacterStats = {
   outlook: [0, 0, 0],

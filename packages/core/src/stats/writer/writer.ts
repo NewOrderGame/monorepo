@@ -3,12 +3,12 @@ import {
   SECOND,
   STATS_SAVE_INTERVAL,
   TICK_TIME_STATS_DIR
-} from '../../lib/utils/constants';
-import { Stats, StatsGroups } from '../../lib/utils/types';
+} from '../../lib/constants';
+import { Stats, StatsGroups } from '../../lib/types';
 import { logger } from '@newordergame/common';
 import { mkdirSync } from 'fs';
-import characterAtWorldStore from '../../store/character-at-world-store';
-import encounterStore from '../../store/encounter-store';
+import characterAtWorldStore from '../../lib/store/character-at-world-store';
+import encounterStore from '../../lib/store/encounter-store';
 
 export const stats: Stats = {
   [StatsGroups.TICK]: []

@@ -1,6 +1,6 @@
-import characterAtWorldStore from '../store/character-at-world-store';
-import encounterStore from '../store/encounter-store';
-import characterStore from '../store/character-store';
+import characterAtWorldStore from './store/character-at-world-store';
+import encounterStore from './store/encounter-store';
+import characterStore from './store/character-store';
 import { createCharacter } from './character';
 import { nanoid } from 'nanoid';
 import { createCharacterAtWorld } from './character-at-world';
@@ -27,7 +27,7 @@ import {
   getDistance as computeDistance,
   getGreatCircleBearing as computeBearing
 } from 'geolib';
-import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './utils/constants';
+import { DISTANCE_ACCURACY, TICK_PER_SECOND } from './constants';
 import { getFakeNamespace, getFakeSocket } from '../test/utils';
 
 const DEFAULT_CHARACTER_STATS: CharacterStats = {

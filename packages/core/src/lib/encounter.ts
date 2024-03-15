@@ -1,4 +1,4 @@
-import characterStore from '../store/character-store';
+import characterStore from './store/character-store';
 import moment from 'moment';
 import { logger } from '@newordergame/common';
 import {
@@ -10,16 +10,16 @@ import {
   NogEvent,
   NogPage
 } from '@newordergame/common';
-import encounterStore from '../store/encounter-store';
+import encounterStore from './store/encounter-store';
 import { Namespace, Socket } from 'socket.io';
-import characterAtWorldStore from '../store/character-at-world-store';
+import characterAtWorldStore from './store/character-at-world-store';
 import { getCenter as computeCenter, getDistance } from 'geolib';
 import {
   DISTANCE_ACCURACY,
   ENCOUNTER_COOL_DOWN_TIME,
   ENCOUNTER_DISTANCE,
   ENCOUNTER_DURATION
-} from './utils/constants';
+} from './constants';
 import { nanoid } from 'nanoid';
 
 export const handleCharactersEncounter = (
