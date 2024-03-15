@@ -53,8 +53,8 @@ export const handleDisconnect = async (
   }
 
   const isLocationSiteBuilderService =
-    socket.handshake?.auth.locationSiteBuilderServiceSecret ===
-    process.env.NOG_LOCATION_SITE_BUILDER_SERVICE_SECRET;
+    socket.handshake?.auth.encounterServiceSecret ===
+    process.env.NOG_ENCOUNTER_SERVICE_SECRET;
   if (isLocationSiteBuilderService) {
     setLocationSiteBuilderSocket(null);
     logger.warn('Location Site service disconnected', {

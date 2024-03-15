@@ -14,30 +14,29 @@ import characterStore from './store/character-store';
 import characterAtWorldStore from './store/character-at-world-store';
 
 export const handleLocationSiteBuilderServiceConnection = (
-  locationSiteBuilderSocket: Socket,
+  encounterSocket: Socket,
   gameNamespace: Namespace
 ) => {
   const isLocationSiteBuilderService =
-    locationSiteBuilderSocket.handshake.auth
-      .locationSiteBuilderServiceSecret ===
-    process.env.NOG_LOCATION_SITE_BUILDER_SERVICE_SECRET;
+    encounterSocket.handshake.auth.encounterServiceSecret ===
+    process.env.NOG_ENCOUNTER_SERVICE_SECRET;
 
   if (!isLocationSiteBuilderService) {
     return;
   }
 
-  locationSiteBuilderSocket.emit(NogEvent.CONNECTED);
+  encounterSocket.emit(NogEvent.CONNECTED);
   logger.info('Location Site service connected');
-  setLocationSiteBuilderSocket(locationSiteBuilderSocket);
+  setLocationSiteBuilderSocket(encounterSocket);
 
-  locationSiteBuilderSocket.on(
+  encounterSocket.on(
     NogEvent.ENTER_BUILDING_COMMIT,
     handleEnterBuildingCommit(gameNamespace)
   );
 
-  locationSiteBuilderSocket.on(
+  encounterSocket.on(
     NogEvent.INIT_LOCATION_SITE_PAGE,
-    handleInitLocationSitePageInternal(locationSiteBuilderSocket, gameNamespace)
+    handleInitLocationSitePageInternal(encounterSocket, gameNamespace)
   );
 };
 
@@ -57,7 +56,7 @@ export const handleInitLocationSitePageInternal =
 
 export const handleEnterBuilding =
   (socket: Socket) => (coordinates: GeoCoordinates) => {
-    const locationSiteBuilderSocket = getLocationSiteBuilderSocket();
+    const encounterSocket = getLocationSiteBuilderSocket();
     const characterId = socket.data.characterId;
 
     if (!characterId) {
@@ -65,7 +64,7 @@ export const handleEnterBuilding =
       return;
     }
 
-    if (!locationSiteBuilderSocket) {
+    if (!encounterSocket) {
       logger.error(
         { characterId, coordinates },
         'Enter building failed. Location site socket missing.'
@@ -73,14 +72,14 @@ export const handleEnterBuilding =
       return;
     }
 
-    locationSiteBuilderSocket.emit(NogEvent.ENTER_BUILDING, {
+    encounterSocket.emit(NogEvent.ENTER_BUILDING, {
       characterId,
       coordinates
     });
   };
 
 export const handleInitLocationSitePage = (socket: Socket) => () => {
-  const locationSiteBuilderSocket = getLocationSiteBuilderSocket();
+  const encounterSocket = getLocationSiteBuilderSocket();
   const characterId = socket.data.characterId;
   const character = characterStore.get(characterId);
 
@@ -89,11 +88,11 @@ export const handleInitLocationSitePage = (socket: Socket) => () => {
     return;
   }
 
-  if (!locationSiteBuilderSocket) {
+  if (!encounterSocket) {
     return;
   }
 
-  locationSiteBuilderSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, {
+  encounterSocket.emit(NogEvent.INIT_LOCATION_SITE_PAGE, {
     characterId,
     buildingId: character.buildingId
   });

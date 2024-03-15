@@ -16,8 +16,7 @@ const game = io(`${CORE_URL}/game`, {
 });
 
 game.auth = {
-  locationSiteBuilderServiceSecret:
-    process.env.NOG_LOCATION_SITE_BUILDER_SERVICE_SECRET
+  encounterServiceSecret: process.env.NOG_ENCOUNTER_SERVICE_SECRET
 };
 
 logger.info('Connecting to Game...');
