@@ -5,6 +5,7 @@ import {
   handleEnterBuilding,
   handleInitLocationSitePage
 } from './lib/building-entry';
+import { handleLookAround } from './lib/look-around';
 
 if (!process.env.NOG_CORE_URL) {
   throw new Error('Environment variable NOG_CORE_URL is missing');
@@ -37,3 +38,5 @@ game.on(NogEvent.CONNECTED, () => {
 game.on(NogEvent.ENTER_BUILDING, handleEnterBuilding(game));
 
 game.on(NogEvent.INIT_LOCATION_SITE_PAGE, handleInitLocationSitePage(game));
+
+game.on(NogEvent.LOOK_AROUND, handleLookAround(game));

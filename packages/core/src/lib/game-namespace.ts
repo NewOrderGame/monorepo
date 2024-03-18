@@ -4,7 +4,7 @@ import { logger } from '@newordergame/common';
 import { Namespace, Socket } from 'socket.io';
 import { handleDisconnect } from './handle-disconnect';
 import { handleNpcServiceConnection } from './npc';
-import { handleLocationSiteBuilderServiceConnection } from './location-site';
+import { handleEncounterServiceConnection } from './enter-building';
 import { handleUserConnection } from './user';
 
 export const initGameNamespace = () => {
@@ -19,7 +19,7 @@ const handleGameConnection =
     logger.info({ socketId: socket.id }, 'Game connected');
 
     handleNpcServiceConnection(socket);
-    handleLocationSiteBuilderServiceConnection(socket, gameNamespace);
+    handleEncounterServiceConnection(socket, gameNamespace);
     await handleUserConnection(socket, gameNamespace);
 
     socket.on(NogEvent.DISCONNECT, () =>

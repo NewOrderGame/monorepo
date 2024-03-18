@@ -8,4 +8,4 @@
 @newordergame/ui
 @newordergame/core
 #@newordergame/npc
-#@newordergame/encounter
+@newordergame/encounter

@@ -10,9 +10,10 @@ import { handleExitEncounter, handleInitEncounterPage } from './encounter';
 import { handleInitWorldPage, handleMoveCharacterAtWorld } from './world';
 import {
   handleEnterBuilding,
-  handleExitLocationSite,
-  handleInitLocationSitePage
-} from './location-site';
+  handleExitBuilding,
+  handleEncounterServiceInitLocationSitePage
+} from './enter-building';
+import { handleLookAround } from './look-around';
 
 export const handleUserConnection = async (
   socket: Socket,
@@ -113,8 +114,10 @@ const addUserEventListeners = (
 
   socket.on(
     NogEvent.INIT_LOCATION_SITE_PAGE,
-    handleInitLocationSitePage(socket)
+    handleEncounterServiceInitLocationSitePage(socket)
   );
 
-  socket.on(NogEvent.EXIT_LOCATION_SITE, handleExitLocationSite(socket));
+  socket.on(NogEvent.EXIT_LOCATION_SITE, handleExitBuilding(socket));
+
+  socket.on(NogEvent.LOOK_AROUND, handleLookAround(socket));
 };

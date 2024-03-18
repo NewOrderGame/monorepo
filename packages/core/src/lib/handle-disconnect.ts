@@ -3,7 +3,7 @@ import characterStore from './store/character-store';
 import { logger } from '@newordergame/common';
 import { setNpcSocket } from './store/npc-socket-store';
 import characterAtWorldStore from './store/character-at-world-store';
-import { setLocationSiteBuilderSocket } from './store/encounter-socket-store';
+import { setEncounterSocket } from './store/encounter-socket-store';
 
 export const handleDisconnect = async (
   socket: Socket,
@@ -56,7 +56,7 @@ export const handleDisconnect = async (
     socket.handshake?.auth.encounterServiceSecret ===
     process.env.NOG_ENCOUNTER_SERVICE_SECRET;
   if (isLocationSiteBuilderService) {
-    setLocationSiteBuilderSocket(null);
+    setEncounterSocket(null);
     logger.warn('Location Site service disconnected', {
       namespaceName: gameNamespace.name
     });

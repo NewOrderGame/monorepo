@@ -40,7 +40,10 @@ export enum NogEvent {
   CREATE_NPC = 'create-npc',
 
   ENTER_BUILDING = 'enter-building',
-  ENTER_BUILDING_COMMIT = 'enter-building-commit'
+  ENTER_BUILDING_COMMIT = 'enter-building-commit',
+
+  LOOK_AROUND = 'look-around',
+  LOOK_AROUND_COMMIT = 'look-around-commit'
 }
 
 export enum CellActionPermission {

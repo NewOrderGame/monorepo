@@ -62,7 +62,8 @@
     "lint": "lerna run lint --stream",
     "format": "lerna run format --stream",
     "test": "lerna run test --stream",
-    "verify": "lerna run verify --stream"
+    "verify": "lerna run verify --stream",
+    "watch-common": "yarn workspace @newordergame/common watch"
   },
   "lint-staged": {
     "**/*.{js,jsx}": [

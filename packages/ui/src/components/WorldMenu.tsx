@@ -26,7 +26,7 @@ const useInitWorldMenu = (connection: Connection, map: LeafletMap) => {
     const lookAroundButton = new (menuControl(
       connection,
       'Look around',
-      handleEnterBuildingButtonClick
+      handleLookAroundButtonClick
     ))({
       position: 'bottomleft'
     });
@@ -75,4 +75,12 @@ const handleEnterBuildingButtonClick =
     const coordinates = map.getCenter();
     connection.gameSocket.emit(NogEvent.ENTER_BUILDING, coordinates);
     logger.info('Requesting building entry');
+  };
+
+const handleLookAroundButtonClick =
+  (connection: Connection, map: LeafletMap) => (event: MouseEvent) => {
+    event.stopPropagation();
+    const coordinates = map.getCenter();
+    connection.gameSocket.emit('look-around', coordinates);
+    logger.info('Requesting look around');
   };
