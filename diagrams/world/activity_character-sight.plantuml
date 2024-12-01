@@ -1,0 +1,26 @@
+@startuml
+title Character Sight and Visibility
+
+start
+
+:On each tick, for each character;
+-> :Server checks visibility of other characters;
+:Server calls checkCharacterVisibility(characterIdA, characterIdB);
+if (Character B in sight range of Character A?) then (Yes)
+    :Server updates charactersInSight list for Character A;
+    :Set characterSightFlag to true;
+else (No)
+    :Do nothing;
+endif
+
+if (characterSightFlag is true?) then (Yes)
+    :Server calls sendCharactersInSight(characterId, charactersInSight, gameNamespace);
+    :Character A receives updated sight information;
+    :Set characterSightFlag to false;
+else (No)
+    :Do nothing;
+endif
+
+stop
+
+@enduml

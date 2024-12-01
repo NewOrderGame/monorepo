@@ -1,0 +1,31 @@
+@startuml
+title World Engine Tick Process
+
+start
+
+:World Engine starts tick;
+:Retrieve all characters at world;
+:Retrieve all encounters;
+
+repeat
+    :Initialize charactersInSight and encountersInSight for characterAtWorldA;
+
+    repeat
+        :Check encounter visibility for characterAtWorldA;
+        :Handle character joining encounter if applicable;
+    repeat while (more encounters?) is (yes)
+
+    repeat
+        :Check character visibility between characterAtWorldA and characterAtWorldB;
+        :Handle characters encounter if applicable;
+    repeat while (more characters?) is (yes)
+
+    :Call moveCharacter(characterAtWorldA.characterId);
+
+    :Send charactersInSight to characterAtWorldA if needed;
+    :Send encountersInSight to characterAtWorldA if needed;
+repeat while (more characters at world?) is (yes)
+
+stop
+
+@enduml
