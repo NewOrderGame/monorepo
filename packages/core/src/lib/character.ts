@@ -28,7 +28,6 @@ export const createCharacter = ({
     encounterId: null,
     buildingId: null,
     encounterEndTime: null,
-    encounterStartTime: null,
     page: NogPage.WORLD,
     stats
   };

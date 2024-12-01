@@ -35,7 +35,6 @@ export type Character = {
   coordinates: GeoCoordinates;
   encounterId: NogEncounterId | null;
   encounterEndTime: number | null;
-  encounterStartTime: number | null;
   page: NogPage;
   stats: CharacterStats;
   buildingId: number | null;
@@ -43,9 +42,12 @@ export type Character = {
 
 export type Encounter = {
   encounterId: NogEncounterId;
+  // startTime: number;
   participants: EncounterParticipant[];
   coordinates: GeoCoordinates;
-  encounterStartTime: number | null;
+  buildingId: NogBuildingId | null;
+  // units: Unit[];
+  // weather: Weather;
 };
 
 export type CharacterAtWorld = {

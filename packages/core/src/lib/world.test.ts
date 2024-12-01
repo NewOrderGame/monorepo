@@ -39,7 +39,6 @@ const DEFAULT_CHARACTER_STATS: CharacterStats = {
 const DEFAULT_ENCOUNTER = {
   encounterId: nanoid(),
   coordinates: { lat: 0, lng: 0 },
-  encounterStartTime: null,
   participants: [
     {
       ...createCharacterAtWorld({

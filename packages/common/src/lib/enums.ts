@@ -2,8 +2,7 @@ export enum NogPage {
   ROOT = '',
   CHARACTER = 'character',
   WORLD = 'world',
-  ENCOUNTER = 'encounter',
-  LOCATION_SITE = 'location-site'
+  ENCOUNTER = 'encounter'
 }
 
 export enum NogNamespace {
@@ -22,8 +21,6 @@ export enum NogEvent {
 
   INIT_ENCOUNTER_PAGE = 'init-encounter-page',
   INIT_WORLD_PAGE = 'init-world-page',
-  INIT_LOCATION_SITE_PAGE = 'init-location-site-page',
-  INIT_LOCATION_SITE_PAGE_COMMIT = 'init-location-site-page-commit',
 
   CREATE_CHARACTER = 'create-character',
   MOVE_CHARACTER_AT_WORLD = 'move-character-at-world',
@@ -34,7 +31,6 @@ export enum NogEvent {
   DESTROY_NPC = 'destroy-npc',
 
   EXIT_ENCOUNTER = 'exit-encounter',
-  EXIT_LOCATION_SITE = 'exit-location-site',
 
   MOVE_NPC_AT_WORLD = 'move-npc-at-world',
   CREATE_NPC = 'create-npc',
@@ -43,7 +39,10 @@ export enum NogEvent {
   ENTER_BUILDING_COMMIT = 'enter-building-commit',
 
   LOOK_AROUND = 'look-around',
-  LOOK_AROUND_COMMIT = 'look-around-commit'
+  LOOK_AROUND_COMMIT = 'look-around-commit',
+
+  CREATE_ENCOUNTER = "create-encounter",
+  CREATE_ENCOUNTER_COMMIT = "create-encounter-commit",
 }
 
 export enum CellActionPermission {

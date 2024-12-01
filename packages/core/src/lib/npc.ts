@@ -59,7 +59,6 @@ export const handleNpcServiceConnection = (npcSocket: Socket) => {
       connected: true,
       encounterId: null,
       encounterEndTime: null,
-      encounterStartTime: null,
       buildingId: null,
       page: NogPage.WORLD,
       stats: {

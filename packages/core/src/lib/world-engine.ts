@@ -21,7 +21,10 @@ import { withStats } from '../stats/writer';
 import { StatsGroups } from './types';
 import { Namespace } from 'socket.io';
 import { handleNpcGeneration } from './npc';
-import { handleCharactersEncounter } from './encounter';
+import {
+  handleCharacterJoinEncounter,
+  handleCharactersEncounter
+} from './encounter';
 
 const doNextTick = (gameNamespace: Namespace) => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();
@@ -55,6 +58,11 @@ const doNextTick = (gameNamespace: Namespace) => {
         characterAtWorldA.characterId,
         encounter.encounterId,
         encounterInSight
+      );
+      handleCharacterJoinEncounter(
+        characterAtWorldA.characterId,
+        encounter.encounterId,
+        gameNamespace
       );
     }
 

@@ -16,13 +16,6 @@ export const WorldMenu = () => {
 
 const useInitWorldMenu = (connection: Connection, map: LeafletMap) => {
   useEffect(() => {
-    const enterBuildingButton = new (menuControl(
-      connection,
-      'Get into the building',
-      handleEnterBuildingButtonClick
-    ))({
-      position: 'bottomleft'
-    });
     const lookAroundButton = new (menuControl(
       connection,
       'Look around',
@@ -30,11 +23,9 @@ const useInitWorldMenu = (connection: Connection, map: LeafletMap) => {
     ))({
       position: 'bottomleft'
     });
-    enterBuildingButton.addTo(map);
     lookAroundButton.addTo(map);
 
     return () => {
-      enterBuildingButton.remove();
       lookAroundButton.remove();
     };
   }, []);
@@ -69,18 +60,10 @@ const menuControl = (
   });
 };
 
-const handleEnterBuildingButtonClick =
-  (connection: Connection, map: LeafletMap) => (event: MouseEvent) => {
-    event.stopPropagation();
-    const coordinates = map.getCenter();
-    connection.gameSocket.emit(NogEvent.ENTER_BUILDING, coordinates);
-    logger.info('Requesting building entry');
-  };
-
 const handleLookAroundButtonClick =
   (connection: Connection, map: LeafletMap) => (event: MouseEvent) => {
     event.stopPropagation();
     const coordinates = map.getCenter();
-    connection.gameSocket.emit('look-around', coordinates);
+    connection.gameSocket.emit(NogEvent.LOOK_AROUND, coordinates);
     logger.info('Requesting look around');
   };

@@ -12,9 +12,8 @@
     "deploy": "cdk deploy --profile devlysh"
   },
   "devDependencies": {
+    "@types/node": "^22.5.5",
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0"
-  },
-  "dependencies": {
   }
 }

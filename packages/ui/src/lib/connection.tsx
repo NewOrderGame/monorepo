@@ -31,7 +31,7 @@ export const useSocketConnection = (
       NogEvent.DISCONNECT,
       handleDisconnect(setConnected, navigate)
     );
-    gameSocket.on(NogEvent.REDIRECT, handleRedirect(setConnected, navigate));
+    gameSocket.on(NogEvent.REDIRECT, handleRedirect(navigate));
 
     gameSocket.connect();
 
@@ -62,6 +62,10 @@ export const ConnectionProvider = ({
   const { connected, gameSocket } = useSocketConnection(accessToken, navigate);
 
   const value = { gameSocket };
+
+  useEffect(() => {
+    window.signOut = () => authenticator.signOut();
+  }, [authenticator]);
 
   return (
     <ConnectionContext.Provider value={value}>
@@ -101,7 +105,7 @@ const handleDisconnect =
   };
 
 const handleRedirect =
-  (setConnected: (connected: boolean) => void, navigate: NavigateFunction) =>
+  (navigate: NavigateFunction) =>
   ({ page }: { page: NogPage }) => {
     const path = `/${page}`;
     if (window.location.pathname !== path) {
