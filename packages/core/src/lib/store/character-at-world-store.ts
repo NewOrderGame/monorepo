@@ -39,12 +39,6 @@ export class InMemoryCharacterAtWorldStore {
   getAll(): CharacterAtWorld[] {
     return Array.from(this._charactersAtWorld.values());
   }
-
-  getAllNpc(): CharacterAtWorld[] {
-    return Array.from(this._charactersAtWorld.values()).filter(
-      (character) => character.isNpc
-    );
-  }
 }
 
 const store = new InMemoryCharacterAtWorldStore();

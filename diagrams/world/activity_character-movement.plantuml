@@ -1,0 +1,30 @@
+@startuml
+title Character Movement
+
+start
+
+:User clicks on destination on map;
+-> Client emits MOVE_CHARACTER_AT_WORLD event with movesTo coordinates;
+-> Server receives MOVE_CHARACTER_AT_WORLD event;
+:Server calls handleMoveCharacterAtWorld(socket, movesTo);
+:Server updates character's movesTo coordinate;
+note right
+    Character's movesTo coordinate is set to destination.
+end note
+-> Server sends MOVE_CHARACTER_AT_WORLD event back to client with movement data;
+
+:Server starts movement loop;
+while (Character has movesTo?)
+    :Server calls moveCharacter(characterId);
+    if (Distance to movesTo <= step size?)
+        :Server sets character's coordinates to movesTo;
+        :Server clears character's movesTo;
+    else
+        :Server updates character's coordinates towards movesTo;
+    endif
+    :Wait for next tick;
+endwhile
+
+stop
+
+@enduml

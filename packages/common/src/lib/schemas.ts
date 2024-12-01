@@ -54,24 +54,5 @@ export const characterAtWorldSchema = object({
   charactersInSight: characterInSightSchema.nullable(),
   characterSightFlag: boolean(),
   encountersInSight: array(encounterInSightSchema).nullable(),
-  encounterSightFlag: boolean(),
-  isNpc: boolean()
+  encounterSightFlag: boolean()
 });
-
-export const hexXSchema = number();
-export const hexYSchema = number();
-export const hexZSchema = number().nullable(true);
-
-export const cubicHexSchema = object()
-  .shape({
-    x: number().required(),
-    y: number().required(),
-    z: number().required()
-  })
-  .test(
-    'sum-equals-zero',
-    'The sum of cubic hex coordinates (x, y, and z) should equal 0',
-    ({ x, y, z }) => {
-      return x! + y! + z! === 0;
-    }
-  );

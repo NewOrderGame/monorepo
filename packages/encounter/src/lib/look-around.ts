@@ -37,6 +37,7 @@ export const handleLookAround =
         });
         logger.info({ characterId, buildingId }, 'Looking at the building');
       } else {
+        logger.info({ characterId, coordinates }, 'Looking around');
         // go to llama
       }
     } catch (error) {

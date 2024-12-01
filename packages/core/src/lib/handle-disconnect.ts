@@ -1,7 +1,6 @@
 import { Namespace, Socket } from 'socket.io';
 import characterStore from './store/character-store';
 import { logger } from '@newordergame/common';
-import { setNpcSocket } from './store/npc-socket-store';
 import characterAtWorldStore from './store/character-at-world-store';
 import { setEncounterSocket } from './store/encounter-socket-store';
 
@@ -40,16 +39,6 @@ export const handleDisconnect = async (
 
   if (characterAtWorld) {
     characterAtWorldStore.delete(characterAtWorld.characterId);
-  }
-
-  const isNpcService =
-    socket.handshake?.auth.npcServiceSecret ===
-    process.env.NOG_NPC_SERVICE_SECRET;
-  if (isNpcService) {
-    setNpcSocket(null);
-    logger.warn('NPC service disconnected', {
-      namespaceName: gameNamespace.name
-    });
   }
 
   const isLocationSiteBuilderService =

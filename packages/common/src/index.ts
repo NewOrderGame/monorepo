@@ -21,17 +21,3 @@ export * from './lib/enums';
 
 // Schemas
 export * from './lib/schemas';
-
-// Structures
-
-/// Interfaces
-export * from './lib/hexagonal';
-export * from './lib/hexagonal-map';
-export * from './lib/outdoor';
-export * from './lib/indoor';
-
-/// Classes
-export * from './lib/hex-map';
-export * from './lib/indoor-hex-map';
-export * from './lib/cell';
-export * from './lib/hexagon';

@@ -1,11 +1,9 @@
 import { Character, CharacterAtWorld } from '@newordergame/common';
 
 export const createCharacterAtWorld = ({
-  character,
-  isNpc
+  character
 }: {
   character: Character;
-  isNpc: boolean;
 }): CharacterAtWorld => {
   return {
     characterId: character.characterId,
@@ -16,7 +14,6 @@ export const createCharacterAtWorld = ({
     encountersInSight: [],
     encounterSightFlag: false,
     charactersInSight: [],
-    characterSightFlag: false,
-    isNpc
+    characterSightFlag: false
   };
 };

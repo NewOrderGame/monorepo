@@ -20,8 +20,10 @@ import { argv } from './argv';
 import { withStats } from '../stats/writer';
 import { StatsGroups } from './types';
 import { Namespace } from 'socket.io';
-import { handleNpcGeneration } from './npc';
-import { handleCharactersEncounter } from './encounter';
+import {
+  handleCharacterJoinEncounter,
+  handleCharactersEncounter
+} from './encounter';
 
 const doNextTick = (gameNamespace: Namespace) => {
   const charactersAtWorld: CharacterAtWorld[] = characterAtWorldStore.getAll();
@@ -56,6 +58,11 @@ const doNextTick = (gameNamespace: Namespace) => {
         encounter.encounterId,
         encounterInSight
       );
+      handleCharacterJoinEncounter(
+        characterAtWorldA.characterId,
+        encounter.encounterId,
+        gameNamespace
+      );
     }
 
     const characterInSightA = charactersInSight.get(
@@ -87,12 +94,10 @@ const doNextTick = (gameNamespace: Namespace) => {
       );
       handleCharactersEncounter(
         characterAtWorldA.characterId,
-        characterAtWorldB.characterId,
-        gameNamespace
+        characterAtWorldB.characterId
       );
     }
 
-    // NPC
     {
       const characterInSight = charactersInSight.get(
         characterAtWorldA.characterId
@@ -101,8 +106,6 @@ const doNextTick = (gameNamespace: Namespace) => {
         logger.error('Character in sight not found');
         return;
       }
-
-      handleNpcGeneration(characterAtWorldA, characterInSight.length);
     }
 
     // Movement

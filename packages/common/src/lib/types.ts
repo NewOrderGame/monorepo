@@ -1,12 +1,4 @@
-import {
-  HexDirectionAngle,
-  HexDirectionCardinal,
-  HexDirectionClock,
-  HexDirectionDescriptive,
-  HexDirectionNumeric,
-  HexDirectionPov,
-  NogPage
-} from './enums';
+import { NogPage } from './enums';
 
 export type GeoCoordinates = { lat: number; lng: number };
 
@@ -35,7 +27,6 @@ export type Character = {
   coordinates: GeoCoordinates;
   encounterId: NogEncounterId | null;
   encounterEndTime: number | null;
-  encounterStartTime: number | null;
   page: NogPage;
   stats: CharacterStats;
   buildingId: number | null;
@@ -43,9 +34,12 @@ export type Character = {
 
 export type Encounter = {
   encounterId: NogEncounterId;
+  // startTime: number;
   participants: EncounterParticipant[];
   coordinates: GeoCoordinates;
-  encounterStartTime: number | null;
+  buildingId: NogBuildingId | null;
+  // units: Unit[];
+  // weather: Weather;
 };
 
 export type CharacterAtWorld = {
@@ -58,7 +52,6 @@ export type CharacterAtWorld = {
   encountersInSight: EncounterInSight[];
   encounterSightFlag: boolean;
   stats: CharacterStats;
-  isNpc: boolean;
 };
 
 export type EncounterParticipant = {
@@ -88,22 +81,3 @@ export type WayOverpassElement = {
   nodes: number[];
   geometry: { lat: number; lon: number }[];
 } & OverpassElement;
-
-export type AxialHex = {
-  x: number;
-  y: number;
-};
-
-export type CubicHex = {
-  x: number;
-  y: number;
-  z: number;
-};
-
-export type HexDirection =
-  | HexDirectionNumeric
-  | HexDirectionAngle
-  | HexDirectionClock
-  | HexDirectionDescriptive
-  | HexDirectionPov
-  | HexDirectionCardinal;

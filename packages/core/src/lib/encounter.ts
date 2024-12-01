@@ -1,31 +1,70 @@
 import characterStore from './store/character-store';
 import moment from 'moment';
-import { logger } from '@newordergame/common';
 import {
   Character,
   Encounter,
   EncounterParticipant,
+  GeoCoordinates,
   NogCharacterId,
   NogEncounterId,
   NogEvent,
-  NogPage
+  NogPage,
+  logger
 } from '@newordergame/common';
 import encounterStore from './store/encounter-store';
 import { Namespace, Socket } from 'socket.io';
 import characterAtWorldStore from './store/character-at-world-store';
-import { getCenter as computeCenter, getDistance } from 'geolib';
+import { getCenter, getDistance } from 'geolib';
 import {
   DISTANCE_ACCURACY,
   ENCOUNTER_COOL_DOWN_TIME,
-  ENCOUNTER_DISTANCE,
-  ENCOUNTER_DURATION
+  ENCOUNTER_DISTANCE
 } from './constants';
+import {
+  getEncounterSocket,
+  setEncounterSocket
+} from './store/encounter-socket-store';
 import { nanoid } from 'nanoid';
+
+export const handleEncounterServiceConnection = (encounterSocket: Socket) => {
+  const isEncounterService =
+    encounterSocket.handshake.auth.encounterServiceSecret ===
+    process.env.NOG_ENCOUNTER_SERVICE_SECRET;
+
+  if (!isEncounterService) {
+    return;
+  }
+
+  encounterSocket.emit(NogEvent.CONNECTED);
+  logger.info('Encounter service connected');
+  setEncounterSocket(encounterSocket);
+
+  // encounterSocket.on(
+  //   NogEvent.CREATE_ENCOUNTER_COMMIT,
+  //   (coordinates: GeoCoordinates) => {
+  //     const encounter = createEncounter();
+  //   }
+  // );
+};
+
+export const createEncounter = (
+  participants: EncounterParticipant[],
+  coordinates: GeoCoordinates
+) => {
+  return {
+    encounterId: nanoid(),
+    startTime: Date.now(),
+    participants,
+    coordinates,
+    buildingId: null
+    // units: Unit[];
+    // weather: Weather;
+  };
+};
 
 export const handleCharactersEncounter = (
   characterIdA: NogCharacterId,
-  characterIdB: NogCharacterId,
-  gameNamespace: Namespace
+  characterIdB: NogCharacterId
 ) => {
   const characterAtWorldA = characterAtWorldStore.get(characterIdA);
   const characterAtWorldB = characterAtWorldStore.get(characterIdB);
@@ -36,18 +75,6 @@ export const handleCharactersEncounter = (
 
   if (characterAtWorldA.characterId === characterAtWorldB.characterId) {
     return;
-  }
-
-  if (characterAtWorldA.isNpc) {
-    gameNamespace
-      .to(characterAtWorldA.characterId)
-      .emit(NogEvent.DESTROY_NPC, [characterAtWorldA.characterId]);
-  }
-
-  if (characterAtWorldB.isNpc) {
-    gameNamespace
-      .to(characterAtWorldB.characterId)
-      .emit(NogEvent.DESTROY_NPC, [characterAtWorldB.characterId]);
   }
 
   const distance = getDistance(
@@ -70,8 +97,7 @@ export const handleCharactersEncounter = (
     return;
   }
 
-  let canEncounter: boolean =
-    !characterA.encounterStartTime && !characterB.encounterStartTime;
+  let canEncounter: boolean = true;
 
   if (characterA.encounterEndTime) {
     const now = moment().valueOf();
@@ -90,6 +116,13 @@ export const handleCharactersEncounter = (
   }
 
   if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
+    const encounterServiceSocket = getEncounterSocket();
+
+    if (!encounterServiceSocket) {
+      logger.error('Encounter service is missing');
+      return;
+    }
+
     logger.info(
       {
         characterAtWorldA: {
@@ -103,7 +136,7 @@ export const handleCharactersEncounter = (
       },
       'Encounter'
     );
-    const center = computeCenter([
+    const center = getCenter([
       characterAtWorldA.coordinates,
       characterAtWorldB.coordinates
     ]);
@@ -113,105 +146,127 @@ export const handleCharactersEncounter = (
       return;
     }
 
-    const encounterId: NogEncounterId = nanoid();
     const centerCoordinates = {
       lat: center.latitude,
       lng: center.longitude
     };
 
-    const encounterStartTime = moment().valueOf();
+    encounterServiceSocket.emit(NogEvent.CREATE_ENCOUNTER, {
+      characterIdA: characterA.characterId,
+      characterIdB: characterB.characterId,
+      coordinates: centerCoordinates
+    });
+  }
+};
 
-    characterA.page = NogPage.ENCOUNTER;
-    characterA.encounterId = encounterId;
-    characterA.coordinates = centerCoordinates;
-    characterA.encounterStartTime = encounterStartTime;
-    characterStore.set(characterA.characterId, { ...characterA });
+export const handleCharacterJoinEncounter = (
+  characterId: NogCharacterId,
+  encounterId: NogEncounterId,
+  gameNamespace: Namespace
+) => {
+  const characterAtWorld = characterAtWorldStore.get(characterId);
+  const encounter = encounterStore.get(encounterId);
 
-    characterB.page = NogPage.ENCOUNTER;
-    characterB.encounterId = encounterId;
-    characterB.coordinates = centerCoordinates;
-    characterB.encounterStartTime = encounterStartTime;
-    characterStore.set(characterB.characterId, { ...characterB });
+  if (!characterAtWorld || !encounter) {
+    return;
+  }
 
-    characterAtWorldStore.delete(characterAtWorldA.characterId);
-    characterAtWorldStore.delete(characterAtWorldB.characterId);
+  const distance = getDistance(
+    {
+      latitude: characterAtWorld.coordinates.lat,
+      longitude: characterAtWorld.coordinates.lng
+    },
+    {
+      latitude: encounter.coordinates.lat,
+      longitude: encounter.coordinates.lng
+    },
+    DISTANCE_ACCURACY
+  );
 
-    const encounter = {
-      encounterId,
-      encounterStartTime,
-      coordinates: centerCoordinates,
-      participants: [
-        {
-          characterId: characterAtWorldA.characterId,
-          nickname: characterAtWorldA.nickname
+  const character = characterStore.get(characterAtWorld.characterId);
+
+  if (!character) {
+    logger.error('Character not found');
+    return;
+  }
+
+  let canEncounter: boolean = true;
+
+  if (character.encounterEndTime) {
+    const now = moment().valueOf();
+    canEncounter =
+      moment(character.encounterEndTime)
+        .add(ENCOUNTER_COOL_DOWN_TIME, 'second')
+        .diff(now) <= 0;
+  }
+
+  if (canEncounter && character.encounterEndTime) {
+    character.encounterEndTime = null;
+    characterStore.set(character.characterId, {
+      ...character
+    });
+  }
+
+  if (distance <= ENCOUNTER_DISTANCE && canEncounter) {
+    logger.info(
+      {
+        characterAtWorld: {
+          characterId: characterAtWorld.characterId,
+          nickname: characterAtWorld.nickname
         },
-        {
-          characterId: characterAtWorldB.characterId,
-          nickname: characterAtWorldB.nickname
+        encounter: {
+          characterId: encounter.encounterId
         }
-      ]
-    };
+      },
+      'Encounter'
+    );
+
+    character.page = NogPage.ENCOUNTER;
+    character.encounterId = encounterId;
+    character.coordinates = encounter.coordinates;
+    characterStore.set(character.characterId, { ...character });
+
+    characterAtWorldStore.delete(characterAtWorld.characterId);
 
     encounterStore.set(encounterId, encounter);
 
     gameNamespace
-      .to(characterAtWorldA.characterId)
+      .to(characterAtWorld.characterId)
       .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
-
-    gameNamespace
-      .to(characterAtWorldB.characterId)
-      .emit(NogEvent.REDIRECT, { page: NogPage.ENCOUNTER });
-
-    setTimeout(() => {
-      exitEncounter({ encounter, characterA, characterB, gameNamespace });
-    }, ENCOUNTER_DURATION);
   }
 };
 
 export const exitEncounter = ({
   encounter,
   characterA,
-  characterB,
   gameNamespace
 }: {
   encounter: Encounter;
   characterA: Character;
-  characterB: Character;
   gameNamespace: Namespace;
 }) => {
   if (characterA) {
     characterA.encounterId = null;
     characterA.page = NogPage.WORLD;
     characterA.encounterEndTime = moment().valueOf();
-    characterA.encounterStartTime = null;
     characterA.coordinates = encounter.coordinates;
 
     characterStore.set(characterA.characterId, {
       ...characterA
     });
 
+    encounter.participants = encounter.participants.filter(
+      (participant) => participant.characterId !== characterA.characterId
+    );
+
+    if (!encounter.participants.length) {
+      encounterStore.delete(encounter.encounterId);
+    }
+
     gameNamespace.to(characterA.characterId).emit(NogEvent.REDIRECT, {
       page: NogPage.WORLD
     });
   }
-
-  if (characterB) {
-    characterB.encounterId = null;
-    characterB.page = NogPage.WORLD;
-    characterB.encounterEndTime = moment().valueOf();
-    characterB.encounterStartTime = null;
-    characterB.coordinates = encounter.coordinates;
-
-    characterStore.set(characterB.characterId, {
-      ...characterB
-    });
-
-    gameNamespace.to(characterB.characterId).emit(NogEvent.REDIRECT, {
-      page: NogPage.WORLD
-    });
-  }
-
-  encounterStore.delete(encounter.encounterId);
 };
 
 export const handleExitEncounter =
@@ -233,23 +288,7 @@ export const handleExitEncounter =
       return;
     }
 
-    const participant = encounter.participants.find(
-      (p: EncounterParticipant) => p.characterId !== characterA.characterId
-    );
-
-    if (!participant) {
-      logger.error('There should be a participant');
-      return;
-    }
-
-    const characterB = characterStore.get(participant.characterId);
-
-    if (!characterB) {
-      logger.error('Character B not found');
-      return;
-    }
-
-    exitEncounter({ encounter, characterA, characterB, gameNamespace });
+    exitEncounter({ encounter, characterA, gameNamespace });
   };
 
 export const handleInitEncounterPage =

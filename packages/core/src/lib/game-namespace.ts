@@ -3,9 +3,8 @@ import { io } from './io';
 import { logger } from '@newordergame/common';
 import { Namespace, Socket } from 'socket.io';
 import { handleDisconnect } from './handle-disconnect';
-import { handleNpcServiceConnection } from './npc';
-import { handleEncounterServiceConnection } from './enter-building';
 import { handleUserConnection } from './user';
+import { handleEncounterServiceConnection } from './encounter';
 
 export const initGameNamespace = () => {
   logger.info('Init Game');
@@ -18,8 +17,7 @@ const handleGameConnection =
   (gameNamespace: Namespace) => async (socket: Socket) => {
     logger.info({ socketId: socket.id }, 'Game connected');
 
-    handleNpcServiceConnection(socket);
-    handleEncounterServiceConnection(socket, gameNamespace);
+    handleEncounterServiceConnection(socket);
     await handleUserConnection(socket, gameNamespace);
 
     socket.on(NogEvent.DISCONNECT, () =>

@@ -37,14 +37,14 @@ const DEFAULT_CHARACTER_STATS: CharacterStats = {
 };
 
 const DEFAULT_ENCOUNTER = {
-  encounterId: nanoid(),
+  encounterId: nanoid().toString(),
   coordinates: { lat: 0, lng: 0 },
-  encounterStartTime: null,
+  buildingId: 1,
   participants: [
     {
       ...createCharacterAtWorld({
         character: {
-          characterId: nanoid(),
+          characterId: nanoid().toString(),
           nickname: 'A',
           coordinates: { lat: 0, lng: 0 },
           stats: {
@@ -52,8 +52,7 @@ const DEFAULT_ENCOUNTER = {
             sightRange: 100,
             speed: 30
           } as CharacterStats
-        } as Character,
-        isNpc: false
+        } as Character
       }),
       charactersInSight: [],
       encountersInSight: []
@@ -61,7 +60,7 @@ const DEFAULT_ENCOUNTER = {
     {
       ...createCharacterAtWorld({
         character: {
-          characterId: nanoid(),
+          characterId: nanoid().toString(),
           nickname: 'B',
           coordinates: { lat: 0, lng: 0 },
           stats: {
@@ -69,8 +68,7 @@ const DEFAULT_ENCOUNTER = {
             sightRange: 100,
             speed: 30
           } as CharacterStats
-        } as Character,
-        isNpc: false
+        } as Character
       }),
       charactersInSight: [],
       encountersInSight: []
@@ -100,8 +98,7 @@ describe('World', () => {
 
         const characterAtWorld = {
           ...createCharacterAtWorld({
-            character: character,
-            isNpc: false
+            character: character
           }),
           charactersInSight: [],
           encountersInSight: []
@@ -134,8 +131,7 @@ describe('World', () => {
 
         const characterAtWorld = {
           ...createCharacterAtWorld({
-            character: character,
-            isNpc: false
+            character: character
           }),
           movesTo: { lat: 46.47684829298625, lng: 30.730953812599186 }
         } as CharacterAtWorld;
@@ -170,8 +166,7 @@ describe('World', () => {
 
         const characterAtWorld = {
           ...createCharacterAtWorld({
-            character: character,
-            isNpc: false
+            character: character
           }),
           coordinates
         } as CharacterAtWorld;
@@ -214,8 +209,7 @@ describe('World', () => {
 
         const characterBefore = {
           ...createCharacterAtWorld({
-            character: character,
-            isNpc: false
+            character: character
           }),
           coordinates: startCoordinates
         } as CharacterAtWorld;
@@ -300,8 +294,7 @@ describe('World', () => {
 
         const characterAtWorld = {
           ...createCharacterAtWorld({
-            character: character,
-            isNpc: false
+            character: character
           }),
           coordinates: startCoordinates
         } as CharacterAtWorld;
@@ -369,8 +362,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight: charactersInSightA,
           encountersInSight: []
@@ -387,8 +379,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           })
         } as CharacterAtWorld;
 
@@ -435,8 +426,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight: charactersInSightA
         };
@@ -452,8 +442,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           })
         } as CharacterAtWorld;
 
@@ -502,8 +491,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight
         };
@@ -554,8 +542,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight
         };
@@ -602,8 +589,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight: [],
           encountersInSight
@@ -658,8 +644,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight: [],
           encountersInSight
@@ -717,8 +702,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight: [],
           encountersInSight
@@ -767,8 +751,7 @@ describe('World', () => {
                 sightRange: 100,
                 speed: 30
               } as CharacterStats
-            } as Character,
-            isNpc: false
+            } as Character
           }),
           charactersInSight: [],
           encountersInSight

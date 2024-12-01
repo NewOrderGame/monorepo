@@ -250,8 +250,7 @@ export const handleInitWorldPage =
       let characterAtWorld = characterAtWorldStore.get(character.characterId);
       if (!characterAtWorld) {
         characterAtWorld = createCharacterAtWorld({
-          character: character,
-          isNpc: false
+          character: character
         });
         characterAtWorldStore.set(character.characterId, characterAtWorld);
         logger.info(

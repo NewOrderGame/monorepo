@@ -8,11 +8,11 @@ import { determinePage } from './determine-page';
 import { handleCreateCharacter } from './character';
 import { handleExitEncounter, handleInitEncounterPage } from './encounter';
 import { handleInitWorldPage, handleMoveCharacterAtWorld } from './world';
-import {
-  handleEnterBuilding,
-  handleExitBuilding,
-  handleEncounterServiceInitLocationSitePage
-} from './enter-building';
+// import {
+//   handleEnterBuilding,
+//   handleExitBuilding,
+//   handleEncounterServiceInitLocationSitePage
+// } from './enter-building';
 import { handleLookAround } from './look-around';
 
 export const handleUserConnection = async (
@@ -110,14 +110,14 @@ const addUserEventListeners = (
     handleExitEncounter(socket, gameNamespace)
   );
 
-  socket.on(NogEvent.ENTER_BUILDING, handleEnterBuilding(socket));
-
-  socket.on(
-    NogEvent.INIT_LOCATION_SITE_PAGE,
-    handleEncounterServiceInitLocationSitePage(socket)
-  );
-
-  socket.on(NogEvent.EXIT_LOCATION_SITE, handleExitBuilding(socket));
-
   socket.on(NogEvent.LOOK_AROUND, handleLookAround(socket));
+
+  // socket.on(NogEvent.ENTER_BUILDING, handleEnterBuilding(socket));
+
+  // socket.on(
+  //   NogEvent.INIT_LOCATION_SITE_PAGE,
+  //   handleEncounterServiceInitLocationSitePage(socket)
+  // );
+
+  // socket.on(NogEvent.EXIT_LOCATION_SITE, handleExitBuilding(socket));
 };

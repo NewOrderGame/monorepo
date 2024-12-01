@@ -12,7 +12,6 @@ import { Connection, useConnection } from '../lib/connection';
 import {
   GeoCoordinates,
   NogEvent,
-  IndoorHexMap,
   CharacterInSight,
   EncounterInSight
 } from '@newordergame/common';
@@ -57,19 +56,12 @@ const useAddConnectionSocketsEventListeners = (
       handleCharactersInSight(map)
     );
 
-    connection.gameSocket.on(NogEvent.ENTER_BUILDING, handleEnterBuilding);
-
     return () => {
       connection.gameSocket.off(NogEvent.MOVE_CHARACTER_AT_WORLD);
       connection.gameSocket.off(NogEvent.CHARACTERS_IN_SIGHT);
       connection.gameSocket.off(NogEvent.ENCOUNTERS_IN_SIGHT);
-      connection.gameSocket.off(NogEvent.ENTER_BUILDING);
     };
   }, [connection.gameSocket, map]);
-};
-
-const handleEnterBuilding = (building: IndoorHexMap) => {
-  logger.info({ building }, 'Commit building entry');
 };
 
 let charactersInSight: (CharacterInSight & { marker: Marker })[] = [];

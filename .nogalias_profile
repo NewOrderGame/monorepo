@@ -6,6 +6,4 @@ alias @core="yarn workspace @newordergame/core"
 alias @encounter="yarn workspace @newordergame/encounter"
 alias @lsb="yarn workspace @newordergame/encounter"
 
-alias @npc="yarn workspace @newordergame/npc"
-
 alias @ui="yarn workspace @newordergame/ui"
