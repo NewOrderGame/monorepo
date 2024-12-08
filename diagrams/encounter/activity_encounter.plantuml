@@ -1,0 +1,47 @@
+@startuml activity_encounter
+start
+:Encounter start;
+if (Determine Encounter type) then (Indoor)
+    if (Check Encounter) then (Exist)
+    else (not Exist)
+        :Create Encounter;
+    endif
+    :Compose prompt for GPT for Indoor Encounter;
+else (Outdoor)
+    :Find Units in sight range;
+    if (Amount of Units is) then (Enough)
+    else (not Enough)
+        :Create Units;
+    endif
+    :Compose prompt for GPT for Outdoor Encounter;
+endif
+:Generate initial text/audio/img presentation of Encounter using GPT;
+
+repeat :Wait for Player enters command (voice or text);
+:Player enters command;
+if (Command format) then (audio)
+    :Transcribe audio to text;
+else (text)
+endif
+
+:Parse command to instructions Action:Unit by using GPT;
+switch (Check status Action and Unit)
+case (null:null)
+    :Ignore command;
+case (valid:valid)
+    :Do Action with Unit;
+case (invalid:valid)
+    :Try Action with Unit;
+    :Ask GTP for possible result;
+case (valid:invalid)
+    :Fail. Unit not found;
+    :Ask GTP for possible result;
+case (invalid:invalid)
+    :Ask GTP for possible result;
+endswitch
+
+backward:Generate next step text/audio result using GPT;
+repeat while (Player wants to leave Encounter) is (no) not (yes)
+
+stop
+@enduml
