@@ -9,7 +9,7 @@
     "start": "yarn dev",
     "dev": "yarn watch",
     "build": "npx tsc",
-    "watch": "npx tsc --watch | sed -u 's/\\x1Bc//g'",
+    "watch": "npx tsc --watch",
     "ship": "yarn publish-package",
     "publish-package": "yarn build && yarn publish --patch",
     "lint": "eslint ./src --config ./.eslintrc.js --no-cache",
